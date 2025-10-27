@@ -429,6 +429,142 @@ section p {
 .shoes:hover {
   animation: flickerShoes 1.8s linear infinite;
 }
+
+
+/* ======== CHUNNKY TEE TEXT SECTION ======== */
+.chunkky-section {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end; /* căn phải toàn bộ khối text */
+  margin: 20px 0 5px; /* cách đều phần trên và dưới */
+}
+
+.chunkky-content {
+  text-align: right;
+  font-family: 'Nunito Sans', sans-serif;
+  margin-right: 6%;
+  max-width: 500px;
+}
+
+.chunkky-content h2 {
+  font-size: 32px;
+  font-weight: 400;
+  color: #111;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.chunkky-content .tm {
+  font-size: 14px;
+  vertical-align: super;
+  margin-left: 3px;
+}
+
+.chunkky-content p {
+  margin-top: 8px;
+  font-size: 16px;
+  color: #333;
+  line-height: 1.5;
+  font-weight: 300;
+}
+
+
+
+/* ======== CHUNKKY BANNER ======== */
+.chunkky-banner {
+  width: 100vw; 
+  margin: 0;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.banner-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+  gap: 0;
+}
+
+.banner-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.banner-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover; 
+}
+
+
+.banner-item:hover img {
+  transform: scale(1.04);
+  filter: brightness(65%);
+}
+
+.banner-info {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 25px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.banner-item:hover .banner-info {
+  opacity: 1;
+}
+
+
+.banner-info .left h3 {
+  font-weight: 400;
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+  text-transform: lowercase;
+}
+
+.banner-info .left .sizes {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 3px;
+}
+
+.banner-info .left .sizes span {
+  color: #fff;
+}
+
+
+.banner-info .right .price {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .banner-container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .banner-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+
 /* Best seller */
 .best-seller {
   text-align: center;
