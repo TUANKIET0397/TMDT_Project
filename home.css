@@ -431,27 +431,29 @@ section p {
 }
 
 
-/* ======== CHUNNKY TEE TEXT SECTION ======== */
+/* ======== CHUNKKY TEXT SECTION ======== */
 .chunkky-section {
   width: 100%;
   display: flex;
-  justify-content: flex-end; /* căn phải toàn bộ khối text */
-  margin: 20px 0 5px; /* cách đều phần trên và dưới */
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 0 80px;
+  margin: 25px 0 10px; 
 }
 
 .chunkky-content {
   text-align: right;
   font-family: 'Nunito Sans', sans-serif;
-  margin-right: 6%;
-  max-width: 500px;
+  max-width: 480px;
 }
 
 .chunkky-content h2 {
-  font-size: 32px;
-  font-weight: 400;
+  font-size: 30px;
+  font-weight: 500;
   color: #111;
   margin: 0;
   line-height: 1.2;
+  letter-spacing: 0.5px;
 }
 
 .chunkky-content .tm {
@@ -461,31 +463,63 @@ section p {
 }
 
 .chunkky-content p {
-  margin-top: 8px;
+  margin-top: 6px;
   font-size: 16px;
   color: #333;
   line-height: 1.5;
   font-weight: 300;
+  max-width: 100%;
 }
 
+/* Responsive */
+@media (max-width: 992px) {
+  .chunkky-section {
+    padding: 0 40px;
+    justify-content: center;
+  }
+
+  .chunkky-content {
+    text-align: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .chunkky-section {
+    padding: 0 20px;
+    margin: 15px 0;
+  }
+
+  .chunkky-content h2 {
+    font-size: 24px;
+  }
+
+  .chunkky-content p {
+    font-size: 14px;
+  }
+}
 
 
 /* ======== CHUNKKY BANNER ======== */
 .chunkky-banner {
-  width: 100vw; 
-  margin: 0;
-  padding: 0;
-  position: relative;
-  overflow: hidden;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 40px 0;
+  padding: 0 80px; 
+  background: transparent;
 }
 
-.banner-container {
+.chunkky-banner .banner-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  width: 100%;
-  gap: 0;
+  gap: 5px;
+  width: 100%; 
+  max-width: 1500px; 
+  overflow: hidden;
+  border-radius: 15px;
 }
 
+/* anh */
 .banner-item {
   position: relative;
   overflow: hidden;
@@ -495,21 +529,19 @@ section p {
   width: 100%;
   height: auto;
   display: block;
-  object-fit: cover; 
+  object-fit: cover;
+  transition: transform 1s ease, filter 0.5s ease;
 }
-
 
 .banner-item:hover img {
   transform: scale(1.04);
   filter: brightness(65%);
 }
 
+/* ====== Text Overlay ====== */
 .banner-info {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   color: white;
   opacity: 0;
   transition: opacity 0.5s ease;
@@ -523,7 +555,6 @@ section p {
 .banner-item:hover .banner-info {
   opacity: 1;
 }
-
 
 .banner-info .left h3 {
   font-weight: 400;
@@ -542,26 +573,27 @@ section p {
   color: #fff;
 }
 
-
 .banner-info .right .price {
   color: #fff;
   font-size: 1.1rem;
   font-weight: 500;
 }
 
-/* Responsive */
+/* ===== Responsive ===== */
 @media (max-width: 992px) {
-  .banner-container {
+  .chunkky-banner .banner-container {
     grid-template-columns: 1fr 1fr;
   }
 }
 
 @media (max-width: 600px) {
-  .banner-container {
+  .chunkky-banner {
+    padding: 0 40px;
+  }
+  .chunkky-banner .banner-container {
     grid-template-columns: 1fr;
   }
 }
-
 
 
 
