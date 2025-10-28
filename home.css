@@ -1,0 +1,732 @@
+/* reset va font chung */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Nunito Sans", sans-serif;
+  font-weight: 300;
+  background-color: #fff;
+}
+
+/* --- main header --- */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 80px;
+  background-color: #fff;
+  border-bottom: 1px solid #e6e6e6;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* Logo */
+.logo {
+  font-weight: 700;
+  font-size: 22px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* --- Menu --- */
+/* Reset va font chung */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: #fff;
+}
+
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 80px;
+  background-color: #fff;
+  border-bottom: 1px solid #e6e6e6;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* Logo */
+.logo {
+  font-weight: 700;
+  font-size: 22px;
+  text-transform: lowercase;
+  letter-spacing: 1px;
+}
+
+/* --- Menu --- */
+.nav-links {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.nav-links li a {
+  text-decoration: none;
+  color: #bcbcbc;
+  font-size: 14px;
+  text-transform: lowercase;
+  transition: color 0.3s ease;
+}
+
+.nav-links li a:hover {
+  color: #000;
+}
+
+/* --- phan mo rong cua all products (mui ten di xuong) --- */
+.nav-links .dropdown select {
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: #bcbcbc;
+  font-family: inherit;
+  cursor: pointer;
+  text-transform: lowercase;
+  outline: none;
+  padding: 4px 8px;
+}
+
+.nav-links .dropdown {
+  position: relative;
+}
+
+.nav-links .dropdown select:hover {
+  color: #000;
+}
+
+/* --- Icons --- */
+.icons {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 18px;
+  color: #bcbcbc;
+}
+
+.icons i {
+  cursor: pointer;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.icons i:hover {
+  transform: scale(1.15);
+  color: #000;
+}
+
+section {
+  padding: 5px 80px 60px;
+}
+
+section h2 {
+  font-size: 28px;
+  font-weight: 400;
+  margin-bottom: 10px;
+  color: #111;
+}
+
+section p {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.6;
+  font-weight: 300;
+}
+
+.hero {
+  text-align: left;
+  margin-top: 60px;
+}
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-left: -25px;
+}
+
+.filters p {
+  font-size: 14px;
+  color: #666;
+  margin-left: auto;
+}
+
+.filters select {
+  border: none;
+  margin: 10px;
+  padding: 5px 10px;
+  font-weight: 300;
+  font-size: 14px;
+  color: #333;
+  background-color: transparent;
+  cursor: pointer;
+}
+/* --- HERO SLIDER --- */
+.slider {
+  overflow: hidden;
+  margin-top: 20px;
+  width: 100%;
+  position: relative;
+}
+
+/* dung truot */
+.slide-track {
+  display: flex;
+  animation: scroll 25s linear infinite;
+  width: calc((378px + 20px) * 8); /* 8 la so luong slide (4 slide x 2 lan de lap lai) */
+  gap: 20px;
+}
+
+.slide {
+  position: relative;
+  flex: 0 0 auto;
+  width: 378px;
+  height: 451px;
+}
+
+.slide img {
+  width: 378px;
+  height: 451px;
+  object-fit: cover;
+  border-radius: 12px;
+  transition: transform 0.4s ease;
+  display: block;
+}
+
+.slide:hover img {
+  transform: scale(1.05);
+}
+
+.caption {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  font-family: "Nunito Sans", sans-serif;
+  color: #fff;
+}
+
+.caption h3 {
+  font-size: 15px;
+  font-weight: 600;
+  background: rgba(0, 0, 0, 0.7);
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+/* mo ta dc an */
+.caption p {
+  font-size: 13px;
+  font-weight: 300;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: all 0.3s ease;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-top: 4px;
+}
+
+/* Hover hien mo ta */
+.slide:hover .caption p {
+  color: #fff;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Animation lap lai */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-1 * ((378px + 20px) * 4)));
+  }
+}
+/* Responsive phu hop voi cac thiet bi khac */
+@media (max-width: 1024px) {
+  .slide img {
+    width: 300px;
+    height: 358px;
+  }
+}
+
+@media (max-width: 768px) {
+  .slide img {
+    width: 240px;
+    height: 286px;
+  }
+}
+
+@media (max-width: 480px) {
+  .slide img {
+    width: 180px;
+    height: 214px;
+  }
+}
+
+/* Categories */
+.categories {
+  background: #fafafa;
+  text-align: left;
+}
+.cat-grid {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 30px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 10px 0;
+}
+
+/* --- Layout chung --- */
+.cat-grid {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 30px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 10px 0;
+}
+
+.cat-grid::-webkit-scrollbar {
+  height: 6px;
+}
+.cat-grid::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+/* --- Item --- */
+.cat-item {
+  flex: 0 0 auto;
+  width: 258px;
+  height: 254px;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  transition: transform 0.3s ease;
+  overflow: hidden;
+  background-repeat: no-repeat;
+}
+
+/*anh mac dinh */
+.tshirt {
+  background-image: url("./home_assets/t-shirt.png");
+}
+.shirt {
+  background-image: url("./home_assets/shirt.png");
+}
+.sweatshirt {
+  background-image: url("./home_assets/swearshirt.png");
+}
+.socks {
+  background-image: url("./home_assets/socks.png");
+}
+.outerwear {
+  background-image: url("./home_assets/outerswear.png");
+}
+.shoes {
+  background-image: url("./home_assets/shoes.png");
+}
+
+/* --- hien thi--- */
+.cat-item p {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  font-weight: bold;
+  font-family: "Nunito Sans", sans-serif;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 6px 10px;
+  border-radius: 6px;
+  z-index: 2;
+}
+
+.cat-item:hover {
+  transform: scale(1.08);
+}
+
+/* --- Animation nhay anh--- */
+
+/* 1️ T-Shirts */
+@keyframes flickerTshirt {
+  0%, 100% { background-image: url("./home_assets/t-shirt1.png"); }
+  25% { background-image: url("./home_assets/t-shirt2.png"); }
+  50% { background-image: url("./home_assets/t-shirt3.png"); }
+  75% { background-image: url("./home_assets/t-shirt4.png"); }
+}
+.tshirt:hover {
+  animation: flickerTshirt 1.8s linear infinite;
+}
+
+/* 2️ Shirts */
+@keyframes flickerShirt {
+  0%, 100% { background-image: url("./home_assets/shirt1.png"); }
+  25% { background-image: url("./home_assets/shirt2.png"); }
+  50% { background-image: url("./home_assets/shirt3.png"); }
+  75% { background-image: url("./home_assets/shirt4.png"); }
+}
+.shirt:hover {
+  animation: flickerShirt 1.8s linear infinite;
+}
+
+/* 3️ Sweatshirts */
+@keyframes flickerSweatshirt {
+  0%, 100% { background-image: url("./home_assets/sweatshirt1.png"); }
+  25% { background-image: url("./home_assets/sweatshirt2.png"); }
+  50% { background-image: url("./home_assets/sweatshirt3.png"); }
+  75% { background-image: url("./home_assets/sweatshirt4.png"); }
+}
+.sweatshirt:hover {
+  animation: flickerSweatshirt 1.8s linear infinite;
+}
+
+/* 4️ Socks */
+@keyframes flickerSocks {
+  0%, 100% { background-image: url("./home_assets/socks1.png"); }
+  25% { background-image: url("./home_assets/socks2.png"); }
+  50% { background-image: url("./home_assets/socks3.png"); }
+  75% { background-image: url("./home_assets/socks4.png"); }
+}
+.socks:hover {
+  animation: flickerSocks 1.8s linear infinite;
+}
+
+/* 5️ Outerwear */
+@keyframes flickerOuterwear {
+  0%, 100% { background-image: url("./home_assets/outerwear1.png"); }
+  25% { background-image: url("./home_assets/outerwear2.png"); }
+  50% { background-image: url("./home_assets/outerwear3.png"); }
+  75% { background-image: url("./home_assets/outerwear4.png"); }
+}
+.outerwear:hover {
+  animation: flickerOuterwear 1.8s linear infinite;
+}
+
+/* 6️ Shoes */
+@keyframes flickerShoes {
+  0%, 100% { background-image: url("./home_assets/shoes1.png"); }
+  25% { background-image: url("./home_assets/shoes2.png"); }
+  50% { background-image: url("./home_assets/shoes3.png"); }
+  75% { background-image: url("./home_assets/shoes4.png"); }
+}
+.shoes:hover {
+  animation: flickerShoes 1.8s linear infinite;
+}
+
+
+/* ======== CHUNKKY TEXT SECTION ======== */
+.chunkky-section {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 0 80px;
+  margin: 25px 0 10px; 
+}
+
+.chunkky-content {
+  text-align: right;
+  font-family: 'Nunito Sans', sans-serif;
+  max-width: 480px;
+}
+
+.chunkky-content h2 {
+  font-size: 30px;
+  font-weight: 500;
+  color: #111;
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: 0.5px;
+}
+
+.chunkky-content .tm {
+  font-size: 14px;
+  vertical-align: super;
+  margin-left: 3px;
+}
+
+.chunkky-content p {
+  margin-top: 6px;
+  font-size: 16px;
+  color: #333;
+  line-height: 1.5;
+  font-weight: 300;
+  max-width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .chunkky-section {
+    padding: 0 40px;
+    justify-content: center;
+  }
+
+  .chunkky-content {
+    text-align: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .chunkky-section {
+    padding: 0 20px;
+    margin: 15px 0;
+  }
+
+  .chunkky-content h2 {
+    font-size: 24px;
+  }
+
+  .chunkky-content p {
+    font-size: 14px;
+  }
+}
+
+
+/* ======== CHUNKKY BANNER ======== */
+.chunkky-banner {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 40px 0;
+  padding: 0 80px; 
+  background: transparent;
+}
+
+.chunkky-banner .banner-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  width: 100%; 
+  max-width: 1500px; 
+  overflow: hidden;
+  border-radius: 15px;
+}
+
+/* anh */
+.banner-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.banner-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  transition: transform 1s ease, filter 0.5s ease;
+}
+
+.banner-item:hover img {
+  transform: scale(1.04);
+  filter: brightness(65%);
+}
+
+/* ====== Text Overlay ====== */
+.banner-info {
+  position: absolute;
+  inset: 0;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 25px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.banner-item:hover .banner-info {
+  opacity: 1;
+}
+
+.banner-info .left h3 {
+  font-weight: 400;
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+  text-transform: lowercase;
+}
+
+.banner-info .left .sizes {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 3px;
+}
+
+.banner-info .left .sizes span {
+  color: #fff;
+}
+
+.banner-info .right .price {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 992px) {
+  .chunkky-banner .banner-container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .chunkky-banner {
+    padding: 0 40px;
+  }
+  .chunkky-banner .banner-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+/* Best seller */
+.best-seller {
+  text-align: center;
+}
+.product-slider {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 40px 0;
+}
+.product-slider img {
+  width: 300px;
+  border-radius: 10px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 25px;
+}
+.item {
+  background: #fff;
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #eee;
+  transition: 0.3s;
+}
+.item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+.item img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+/* Channels */
+.channels {
+  background: #000;
+  color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 60px 80px;
+}
+.left {
+  flex: 1;
+}
+.videos {
+  display: flex;
+  gap: 15px;
+  flex: 2;
+  justify-content: center;
+}
+.videos img {
+  width: 200px;
+  border-radius: 10px;
+}
+.play {
+  position: absolute;
+  color: white;
+  font-size: 32px;
+}
+.insta,
+.tiktok {
+  background: white;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: block;
+}
+
+/* Footer */
+footer {
+  background: #000;
+  color: white;
+  padding: 60px 80px;
+}
+.footer-grid {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.footer-grid div {
+  width: 30%;
+  margin-bottom: 30px;
+}
+.bottom {
+  text-align: center;
+  margin-top: 40px;
+}
+.bottom form {
+  display: inline-flex;
+  border: 1px solid #555;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.bottom input {
+  padding: 10px;
+  border: none;
+  outline: none;
+}
+.bottom button {
+  padding: 10px 20px;
+  border: none;
+  background: white;
+  color: black;
+  cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  header {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  section {
+    padding: 100px 40px 40px;
+  }
+  .channels {
+    flex-direction: column;
+  }
+  .footer-grid div {
+    width: 100%;
+  }
+}
