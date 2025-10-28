@@ -1,0 +1,119 @@
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+}
+
+html {
+    font-size: 62.5%;
+}
+
+/* Header Navigation */
+.login_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 42px;
+    width: 100%;    
+    border-bottom: solid .5px #928B8B;
+    backdrop-filter: blur(20px);
+}
+
+.login_logo_item
+{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.login_logo {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: #333;
+    margin: 0 36px;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 40px;
+    list-style: none;
+}
+
+#product-select {
+    border: none;
+    background: transparent;
+    font-size: 1.4rem;
+    color: #928B8B;
+
+}
+#product-select:hover {
+    color: #333;
+    cursor: pointer;
+}
+
+.nav-menu a {
+    text-decoration: none;
+    color: #928B8B;
+    font-size: 1.4rem;
+    transition: color 0.3s;
+}
+
+.nav-menu a:hover {
+    color: #333;
+}
+
+.header_icons {
+    display: flex;
+    gap: 30px;
+    margin-right: 25px;
+}
+
+.login_header_icon {
+    cursor: pointer;
+}
+
+/* Main Content */
+.about_container {
+    display: flex;
+    align-items: center;
+    margin-top: 12px;
+    justify-content: space-between;
+}
+
+.about_content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; 
+    gap: 24px;
+}
+
+.about_content_title{
+    font-size: 4.8rem;
+    font-weight: 600;
+    color: #000;
+}
+
+.about_content_text {
+    font-size: 1.6rem;
+    color: #000;
+    line-height: 1.5;
+    max-width: 641px;
+    gap: 30px;
+}
+
+.about_content_text p {
+    margin: 24px 0 24px 0;
+}
+
+.about_content_text a {
+    color: #000;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+
+/* Footer */
