@@ -1,328 +1,572 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Shoppmall - Home</title>
-    <link rel="stylesheet" href="home.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    />
 
-    <link
-      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <script
-      src="https://kit.fontawesome.com/a076d05399.js"
-      crossorigin="anonymous"
-    ></script>
-  </head>
-  <body>
-    <!-- HEADER -->
-    <header>
-      <div class="logo">shoppmall</div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shoppmall - Home</title>
+  <link rel="stylesheet" href="home.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-      <nav>
-        <ul class="nav-links">
-          <li class="dropdown">
-            <select id="product-select">
-              <option selected>all products</option>
-              <option>t-shirts</option>
-              <option>shirts</option>
-              <option>knitwear</option>
-              <option>sweatshirts</option>
-              <option>pants</option>
-              <option>outerwear</option>
-              <option>shoes</option>
-            </select>
-          </li>
-          <li><a href="#">t-shirts</a></li>
-          <li><a href="#">shirts</a></li>
-          <li><a href="#">knitwear</a></li>
-          <li><a href="#">sweatshirts</a></li>
-          <li><a href="#">pants</a></li>
-          <li><a href="#">outerwear</a></li>
-          <li><a href="#">shoes</a></li>
-          <li><a href="#">about us</a></li>
-        </ul>
-      </nav>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700&display=swap"
+    rel="stylesheet" />
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
 
-      <div class="icons">
-        <i class="fas fa-search"></i>
-        <i class="fas fa-user"></i>
-        <i class="fas fa-shopping-cart"></i>
-      </div>
-    </header>
+<body>
+  <!-- HEADER -->
+  <header>
+    <div class="logo">shoppmall</div>
 
-    <!-- HERO SLIDER -->
-    <section class="hero">
-      <h2>New arrivals</h2>
-      <p>
-        Discover our meticulous curation of the finest pieces from the men's
-        wardrobe around the world.
-      </p>
+    <nav>
+      <ul class="nav-links">
+        <li class="dropdown">
+          <select id="product-select">
+            <option selected>all products</option>
+            <option>t-shirts</option>
+            <option>shirts</option>
+            <option>knitwear</option>
+            <option>sweatshirts</option>
+            <option>pants</option>
+            <option>outerwear</option>
+            <option>shoes</option>
+          </select>
+        </li>
+        <li><a href="./navigation/t_shirts.html">t-shirts</a></li>
+        <li><a href="./navigation/shirts.html">shirts</a></li>
+        <li><a href="./navigation/knitwear.html">knitwear</a></li>
+        <li><a href="./navigation/sweatshirts.html">sweatshirts</a></li>
+        <li><a href="./navigation/pants.html">pants</a></li>
+        <li><a href="./navigation/outerwear.html">outerwear</a></li>
+        <li><a href="./navigation/shoes.html">shoes</a></li>
+        <li><a href="./navigation/About.html">about us</a></li>
+      </ul>
+    </nav>
 
-      <div class="filters">
-        <select>
-          <option>Prices</option>
-        </select>
-        <select>
-          <option>Category</option>
-        </select>
-        <select>
-          <option>Size</option>
-        </select>
-        <p>250 products</p>
-      </div>
+    <div class="icons">
+      <i class="fas fa-search"></i>
+      <i class="fas fa-user"></i>
+      <i class="fas fa-shopping-cart"></i>
+    </div>
+  </header>
 
-      <div class="slider">
-        <div class="slide-track">
-          <div class="slide">
-            <img src="./home_assets/banner1_pic1.png" alt="Look 1" />
-            <div class="caption">
-              <h3>Restock</h3>
-              <p>We supply in all the world for entire products</p>
-            </div>
+  <!-- HERO SLIDER -->
+  <section class="hero">
+    <h2>New arrivals</h2>
+    <p>
+      Discover our meticulous curation of the finest pieces from the men's
+      wardrobe around the world.
+    </p>
+
+    <div class="filters">
+      <select>
+        <option>Prices</option>
+      </select>
+      <select>
+        <option>Category</option>
+      </select>
+      <select>
+        <option>Size</option>
+      </select>
+      <p>250 products</p>
+    </div>
+
+    <div class="slider">
+      <div class="slide-track">
+        <div class="slide">
+          <img src="./home_assets/banner1_pic1.png" alt="Look 1" />
+          <div class="caption">
+            <h3>Restock</h3>
+            <p>We supply in all the world for entire products</p>
           </div>
+        </div>
 
-          <div class="slide">
-            <img src="./home_assets/banner1_pic2.png" alt="Look 2" />
-            <div class="caption">
-              <h3>Restock</h3>
-              <p>We supply in all the world for entire products</p>
-            </div>
+        <div class="slide">
+          <img src="./home_assets/banner1_pic2.png" alt="Look 2" />
+          <div class="caption">
+            <h3>Restock</h3>
+            <p>We supply in all the world for entire products</p>
           </div>
+        </div>
 
-          <div class="slide">
-            <img src="./home_assets/banner1_pic3.png" alt="Look 3" />
-            <div class="caption">
-              <h3>Restock</h3>
-              <p>We supply in all the world for entire products</p>
-            </div>
+        <div class="slide">
+          <img src="./home_assets/banner1_pic3.png" alt="Look 3" />
+          <div class="caption">
+            <h3>Restock</h3>
+            <p>We supply in all the world for entire products</p>
           </div>
+        </div>
 
-          <div class="slide">
-            <img src="./home_assets/banner1_pic4.png" alt="Look 4" />
-            <div class="caption">
-              <h3>Restock</h3>
-              <p>We supply in all the world for entire products</p>
-            </div>
+        <div class="slide">
+          <img src="./home_assets/banner1_pic4.png" alt="Look 4" />
+          <div class="caption">
+            <h3>Restock</h3>
+            <p>We supply in all the world for entire products</p>
           </div>
+        </div>
 
-          <!-- lap lai de chay vo tan -->
-          <div class="slide">
-            <img src="./home_assets/banner1_pic1.png" alt="Look 1" />
-            <div class="caption">
-              <h3>Restock</h3>
-              <p>We supply in all the world for entire products</p>
-            </div>
+        <!-- lap lai de chay vo tan -->
+        <div class="slide">
+          <img src="./home_assets/banner1_pic1.png" alt="Look 1" />
+          <div class="caption">
+            <h3>Restock</h3>
+            <p>We supply in all the world for entire products</p>
           </div>
-          <div class="slide">
-            <img src="./home_assets/banner1_pic2.png" alt="Look 2" />
-            <div class="caption">
-              <h3>Restock</h3>
-              <p>We supply in all the world for entire products</p>
-            </div>
+        </div>
+        <div class="slide">
+          <img src="./home_assets/banner1_pic2.png" alt="Look 2" />
+          <div class="caption">
+            <h3>Restock</h3>
+            <p>We supply in all the world for entire products</p>
           </div>
-          <div class="slide">
-            <img src="./home_assets/banner1_pic3.png" alt="Look 3" />
-            <div class="caption">
-              <h3>Restock</h3>
-              <p>We supply in all the world for entire products</p>
-            </div>
+        </div>
+        <div class="slide">
+          <img src="./home_assets/banner1_pic3.png" alt="Look 3" />
+          <div class="caption">
+            <h3>Restock</h3>
+            <p>We supply in all the world for entire products</p>
           </div>
-          <div class="slide">
-            <img src="./home_assets/banner1_pic4.png" alt="Look 4" />
-            <div class="caption">
-              <h3>Restock</h3>
-              <p>We supply in all the world for entire products</p>
-            </div>
+        </div>
+        <div class="slide">
+          <img src="./home_assets/banner1_pic4.png" alt="Look 4" />
+          <div class="caption">
+            <h3>Restock</h3>
+            <p>We supply in all the world for entire products</p>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- CATEGORIES -->
-    <section class="categories">
-      <h2>Our products</h2>
-      <p>
-        A carefully curated collection bringing together the best of each
-        category.
-      </p>
-      <div class="cat-grid">
-        <div class="cat-item tshirt"></div>
-        <div class="cat-item shirt"></div>
-        <div class="cat-item sweatshirt"></div>
-        <div class="cat-item socks"></div>
-        <div class="cat-item outerwear"></div>
-        <div class="cat-item shoes"></div>
-      </div>
-    </section>
+  <!-- CATEGORIES -->
+  <section class="categories">
+    <h2>Our products</h2>
+    <p>
+      A carefully curated collection bringing together the best of each
+      category.
+    </p>
+    <div class="cat-grid">
+      <div class="cat-item tshirt"></div>
+      <div class="cat-item shirt"></div>
+      <div class="cat-item sweatshirt"></div>
+      <div class="cat-item socks"></div>
+      <div class="cat-item outerwear"></div>
+      <div class="cat-item shoes"></div>
+    </div>
+  </section>
 
-    <section class="chunkky-section">
-  <div class="chunkky-content">
-    <h2>chunkky tee<span class="tm">™</span></h2>
-    <p>The first "made by shoppmall" 300GSM heavyweight t-shirt</p>
-  </div>
-</section>
+  <section class="chunkky-section">
+    <div class="chunkky-content">
+      <h2>chunkky tee<span class="tm">™</span></h2>
+      <p>The first "made by shoppmall" 300GSM heavyweight t-shirt</p>
+    </div>
+  </section>
 
 
-<!-- CHUNKKY BANNER SECTION -->
-<section class="chunkky-banner">
-  <div class="banner-container">
-    <div class="banner-item">
-      <img src="./home_assets/banner2_pic1.png" alt="Banner 1" />
-      <div class="banner-info">
-        <div class="left">
-          <h3>shirt “chuuncky Tea” - black</h3>
-          <p class="sizes">S M L <span>XL</span></p>
+  <!-- CHUNKKY BANNER SECTION -->
+  <section class="chunkky-banner">
+    <div class="banner-container">
+      <div class="banner-item">
+        <img src="./home_assets/banner2_pic1.png" alt="Banner 1" />
+        <div class="banner-info">
+          <div class="left">
+            <h3>shirt “chuuncky Tea” - black</h3>
+            <p class="sizes">S M L <span>XL</span></p>
+          </div>
+          <div class="right">
+            <p class="price">155$</p>
+          </div>
         </div>
-        <div class="right">
-          <p class="price">155$</p>
+      </div>
+
+      <div class="banner-item">
+        <img src="./home_assets/banner2_pic2.png" alt="Banner 2" />
+        <div class="banner-info">
+          <div class="left">
+            <h3>hoodie “chunkky Tea” - gray</h3>
+            <p class="sizes">S M L <span>XL</span></p>
+          </div>
+          <div class="right">
+            <p class="price">165$</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="banner-item">
+        <img src="./home_assets/banner2_pic3.png" alt="Banner 3" />
+        <div class="banner-info">
+          <div class="left">
+            <h3>sweatshirt “chunkky Tea” - beige</h3>
+            <p class="sizes">S M L <span>XL</span></p>
+          </div>
+          <div class="right">
+            <p class="price">175$</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="best-seller">
+    <h2>Best seller</h2>
+    <small>A curated selection of our top-selling products.</small>
+
+    <div class="best-scroll">
+      <!-- product 1 -->
+      <div class="best-item">
+        <div class="image-wrapper">
+          <span class="new-label">NEW</span>
+          <img src="./home_assets/item1.png" alt="Rock Jean">
+          <div class="overlay-name">ROCK JEAN</div>
+        </div>
+        <div class="info">
+          <p class="desc">Type II Trucker Jacket 'Pioneer Jacket' - Raw Selvedge Denim</p>
+          <div class="bottom">
+            <p class="price">260.00$</p>
+            <button class="buy-btn">Buy</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- san pham t2 -->
+      <div class="best-item">
+        <div class="image-wrapper">
+          <span class="new-label">NEW</span>
+          <img src="./home_assets/jacket2.png" alt="Rock Jean">
+          <div class="overlay-name">ROCK JEAN</div>
+        </div>
+        <div class="info">
+          <p class="desc">Type II Trucker Jacket “Heritage Edition” - Indigo Denim</p>
+          <div class="bottom">
+            <p class="price">275.00$</p>
+            <button class="buy-btn">Buy</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- san pham 3 -->
+      <div class="best-item">
+        <div class="image-wrapper">
+          <span class="new-label">NEW</span>
+          <img src="./home_assets/jacket2.png" alt="Rock Jean">
+          <div class="overlay-name">ROCK JEAN</div>
+        </div>
+        <div class="info">
+          <p class="desc">Type II Trucker Jacket “Heritage Edition” - Indigo Denim</p>
+          <div class="bottom">
+            <p class="price">275.00$</p>
+            <button class="buy-btn">Buy</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- san pham 4 -->
+      <div class="best-item">
+        <div class="image-wrapper">
+          <span class="new-label">NEW</span>
+          <img src="./home_assets/item1.png" alt="Rock Jean">
+          <div class="overlay-name">ROCK JEAN</div>
+        </div>
+        <div class="info">
+          <p class="desc">Type II Trucker Jacket 'Pioneer Jacket' - Raw Selvedge Denim</p>
+          <div class="bottom">
+            <p class="price">260.00$</p>
+            <button class="buy-btn">Buy</button>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- san pham 5 -->
+      <div class="best-item">
+        <div class="image-wrapper">
+          <span class="new-label">NEW</span>
+          <img src="./home_assets/item1.png" alt="Rock Jean">
+          <div class="overlay-name">ROCK JEAN</div>
+        </div>
+        <div class="info">
+          <p class="desc">Type II Trucker Jacket 'Pioneer Jacket' - Raw Selvedge Denim</p>
+          <div class="bottom">
+            <p class="price">260.00$</p>
+            <button class="buy-btn">Buy</button>
+          </div>
+        </div>
+      </div>
+      <!-- san pham 6 -->
+      <div class="best-item">
+        <div class="image-wrapper">
+          <span class="new-label">NEW</span>
+          <img src="./home_assets/item1.png" alt="Rock Jean">
+          <div class="overlay-name">ROCK JEAN</div>
+        </div>
+        <div class="info">
+          <p class="desc">Type II Trucker Jacket 'Pioneer Jacket' - Raw Selvedge Denim</p>
+          <div class="bottom">
+            <p class="price">260.00$</p>
+            <button class="buy-btn">Buy</button>
+          </div>
+        </div>
+      </div>
+      <!-- san pham 7 -->
+      <div class="best-item">
+        <div class="image-wrapper">
+          <span class="new-label">NEW</span>
+          <img src="./home_assets/item1.png" alt="Rock Jean">
+          <div class="overlay-name">ROCK JEAN</div>
+        </div>
+        <div class="info">
+          <p class="desc">Type II Trucker Jacket 'Pioneer Jacket' - Raw Selvedge Denim</p>
+          <div class="bottom">
+            <p class="price">260.00$</p>
+            <button class="buy-btn">Buy</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="banner-item">
-      <img src="./home_assets/banner2_pic2.png" alt="Banner 2" />
-      <div class="banner-info">
-        <div class="left">
-          <h3>hoodie “chunkky Tea” - gray</h3>
-          <p class="sizes">S M L <span>XL</span></p>
+
+
+    </div>
+
+        <div class="best-scroll">
+      <!-- product 1 -->
+      <div class="best-item">
+        <div class="image-wrapper">
+          <span class="new-label">NEW</span>
+          <img src="./home_assets/item1.png" alt="Rock Jean">
+          <div class="overlay-name">ROCK JEAN</div>
         </div>
-        <div class="right">
-          <p class="price">165$</p>
+        <div class="info">
+          <p class="desc">Type II Trucker Jacket 'Pioneer Jacket' - Raw Selvedge Denim</p>
+          <div class="bottom">
+            <p class="price">260.00$</p>
+            <button class="buy-btn">Buy</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- san pham t2 -->
+      <div class="best-item">
+        <div class="image-wrapper">
+          <span class="new-label">NEW</span>
+          <img src="./home_assets/jacket2.png" alt="Rock Jean">
+          <div class="overlay-name">ROCK JEAN</div>
+        </div>
+        <div class="info">
+          <p class="desc">Type II Trucker Jacket “Heritage Edition” - Indigo Denim</p>
+          <div class="bottom">
+            <p class="price">275.00$</p>
+            <button class="buy-btn">Buy</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- san pham 3 -->
+      <div class="best-item">
+        <div class="image-wrapper">
+          <span class="new-label">NEW</span>
+          <img src="./home_assets/jacket2.png" alt="Rock Jean">
+          <div class="overlay-name">ROCK JEAN</div>
+        </div>
+        <div class="info">
+          <p class="desc">Type II Trucker Jacket “Heritage Edition” - Indigo Denim</p>
+          <div class="bottom">
+            <p class="price">275.00$</p>
+            <button class="buy-btn">Buy</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- san pham 4 -->
+      <div class="best-item">
+        <div class="image-wrapper">
+          <span class="new-label">NEW</span>
+          <img src="./home_assets/item1.png" alt="Rock Jean">
+          <div class="overlay-name">ROCK JEAN</div>
+        </div>
+        <div class="info">
+          <p class="desc">Type II Trucker Jacket 'Pioneer Jacket' - Raw Selvedge Denim</p>
+          <div class="bottom">
+            <p class="price">260.00$</p>
+            <button class="buy-btn">Buy</button>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- san pham 5 -->
+      <div class="best-item">
+        <div class="image-wrapper">
+          <span class="new-label">NEW</span>
+          <img src="./home_assets/item1.png" alt="Rock Jean">
+          <div class="overlay-name">ROCK JEAN</div>
+        </div>
+        <div class="info">
+          <p class="desc">Type II Trucker Jacket 'Pioneer Jacket' - Raw Selvedge Denim</p>
+          <div class="bottom">
+            <p class="price">260.00$</p>
+            <button class="buy-btn">Buy</button>
+          </div>
+        </div>
+      </div>
+      <!-- san pham 6 -->
+      <div class="best-item">
+        <div class="image-wrapper">
+          <span class="new-label">NEW</span>
+          <img src="./home_assets/item1.png" alt="Rock Jean">
+          <div class="overlay-name">ROCK JEAN</div>
+        </div>
+        <div class="info">
+          <p class="desc">Type II Trucker Jacket 'Pioneer Jacket' - Raw Selvedge Denim</p>
+          <div class="bottom">
+            <p class="price">260.00$</p>
+            <button class="buy-btn">Buy</button>
+          </div>
+        </div>
+      </div>
+      <!-- san pham 7 -->
+      <div class="best-item">
+        <div class="image-wrapper">
+          <span class="new-label">NEW</span>
+          <img src="./home_assets/item1.png" alt="Rock Jean">
+          <div class="overlay-name">ROCK JEAN</div>
+        </div>
+        <div class="info">
+          <p class="desc">Type II Trucker Jacket 'Pioneer Jacket' - Raw Selvedge Denim</p>
+          <div class="bottom">
+            <p class="price">260.00$</p>
+            <button class="buy-btn">Buy</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="banner-item">
-      <img src="./home_assets/banner2_pic3.png" alt="Banner 3" />
-      <div class="banner-info">
-        <div class="left">
-          <h3>sweatshirt “chunkky Tea” - beige</h3>
-          <p class="sizes">S M L <span>XL</span></p>
-        </div>
-        <div class="right">
-          <p class="price">175$</p>
-        </div>
+
+
+    </div>
+  </section>
+
+
+  <!-- CHANNELS -->
+  <section class="channels">
+    <div class="left">
+      <h2>Shoppmall channels</h2>
+      <p>Iconic pieces, spring stories.</p>
+      <button class="insta">
+        <i class="fab fa-instagram"></i> Follow us on Instagram
+      </button>
+      <button class="tiktok">
+        <i class="fab fa-tiktok"></i> Follow us on TikTok
+      </button>
+    </div>
+    <div class="videos">
+      <div class="vid">
+        <img src="vid1.jpg" /><span class="play">&#9658;</span>
+      </div>
+      <div class="vid">
+        <img src="vid2.jpg" /><span class="play">&#9658;</span>
+      </div>
+      <div class="vid">
+        <img src="vid3.jpg" /><span class="play">&#9658;</span>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
+  <!-- FOOTER -->
+      <footer>
+        <div class="footer-grid">
+          <div>
+            <h3>Fair pricing</h3>
+            <p>
+              We offer a meticulous selection of high-quality clothing and
+              accessories at the best prices.
+            </p>
+          </div>
+          <div>
+            <h3>Fast delivery</h3>
+            <p>
+              Dispatch within 24 business hours. Swift and reliable delivery to
+              your doorstep.
+            </p>
+          </div>
+          <div>
+            <h3>Return and exchange</h3>
+            <p>You have up to 14 days to return your products to us.</p>
+          </div>
+        </div>
+        <div class="bottom">
+          <div class="bottom-left">
+            <ul>
+              <li><a href="#">ABOUT US</a></li>
+              <li><a href="#">Web Design</a></li>
+              <li><a href="#">Dog Trainer</a></li>
+              <li><a href="#">Medical Assistant</a></li>
+              <li><a href="#">Medical Assistant</a></li>
+              <li><a href="#">Medical Assistant</a></li>
+              <li><a href="#">Dog Trainer</a></li>
+              <li><a href="#">Nursing Assistant</a></li>
+              <li><a href="#">President of Sales</a></li>
+              <li><a href="#">President of Sales</a></li>
+              <li><a href="#">Nursing Assistant</a></li>
+              <li><a href="#">Medical Assistant</a></li>
+              <li><a href="#">Marketing Coordinator</a></li>
+              <li><a href="#">Nursing Assistant</a></li>
+              <li><a href="#">Nursing Assistant</a></li>
+              <li><a href="#">President of Sales</a></li>
+            </ul>
+          </div>
+          <div class="bottom-center">
+            <ul>
+              <li><a href="#">Initiate a Return</a></li>
+              <li><a href="#">Help & Questions</a></li>
+              <li><a href="#">Join Us</a></li>
+              <li><a href="#">Terms and Conditions</a></li>
+              <li><a href="#">Legal Mentions</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+            </ul>
+          </div>
+          <div class="bottom-right">
+            <div class="rating-box">
+              <div class="stars">
+                ★★★★★
+              </div>
+              <p><strong>4.9</strong> out of 5 stars</p>
+              <p>Based on <strong>808 customer </strong>reviews</p>
 
-    <!-- BEST SELLER -->
-    <section class="best-seller">
-      <h2>Best seller</h2>
-      <p>A curated selection of our top-selling products.</p>
-      <div class="product-slider">
-        <div class="product">
-          <img src="model1.jpg" />
-          <h3>shirt “chuunky Tea”</h3>
-          <p>155$</p>
-        </div>
-        <div class="product">
-          <img src="model2.jpg" />
-          <h3>shirt “chuunky Tea”</h3>
-          <p>155$</p>
-        </div>
-        <div class="product">
-          <img src="model3.jpg" />
-          <h3>shirt “chuunky Tea”</h3>
-          <p>155$</p>
-        </div>
-      </div>
+              <div class="social-buttons">
+                <button><i class="fa-brands fa-google"></i> Google</button>
+                <button class="Twitter"><i class="fa-brands fa-x-twitter"></i> Twitter</button>
+              </div>
+            </div>
 
-      <div class="grid">
-        <!-- san pham -->
-        <div class="item">
-          <img src="prod1.jpg" />
-          <h4>ROCK JEAN</h4>
-          <p>260.00$</p>
-        </div>
-        <div class="item">
-          <img src="prod2.jpg" />
-          <h4>ROCK JEAN</h4>
-          <p>260.00$</p>
-        </div>
-        <div class="item">
-          <img src="prod3.jpg" />
-          <h4>ROCK JEAN</h4>
-          <p>260.00$</p>
-        </div>
-        <div class="item">
-          <img src="prod4.jpg" />
-          <h4>ROCK JEAN</h4>
-          <p>260.00$</p>
-        </div>
-      </div>
-    </section>
+            <!-- Khối đăng ký email -->
+            <div class="subscribe-box">
+              <p><strong>10% off your first order</strong></p>
+              <form>
+                <input type="email" placeholder="Email" required />
+                <button type="submit">SUBSCRIBE</button>
+              </form>
+            </div>
 
-    <!-- CHANNELS -->
-    <section class="channels">
-      <div class="left">
-        <h2>Shoppmall channels</h2>
-        <p>Iconic pieces, spring stories.</p>
-        <button class="insta">
-          <i class="fab fa-instagram"></i> Follow us on Instagram
-        </button>
-        <button class="tiktok">
-          <i class="fab fa-tiktok"></i> Follow us on TikTok
-        </button>
-      </div>
-      <div class="videos">
-        <div class="vid">
-          <img src="vid1.jpg" /><span class="play">&#9658;</span>
+            <!-- Logo thanh toán -->
+            <div class="payment-box">
+              <img src="./home_assets/amex.png" alt="Amex" />
+              <img src="./home_assets/applepay.png" alt="Apple Pay" />
+              <img src="./home_assets/mastercard.png" alt="MasterCard" />
+              <img src="./home_assets/paypal.png" alt="PayPal" />
+              <img src="./home_assets/shop.png" alt="Shop Pay" />
+              <img src="./home_assets/visa.png" alt="Visa" />
+            </div>
+             <p class="copyright">© 2025 shoppmall. All rights reserved.</p>
+          </div>
         </div>
-        <div class="vid">
-          <img src="vid2.jpg" /><span class="play">&#9658;</span>
-        </div>
-        <div class="vid">
-          <img src="vid3.jpg" /><span class="play">&#9658;</span>
-        </div>
-      </div>
-    </section>
+      </footer>
 
-    <!-- FOOTER -->
-    <footer>
-      <div class="footer-grid">
-        <div>
-          <h3>Fair pricing</h3>
-          <p>
-            We offer a meticulous selection of high-quality clothing and
-            accessories at the best prices.
-          </p>
-        </div>
-        <div>
-          <h3>Fast delivery</h3>
-          <p>
-            Dispatch within 24 business hours. Swift and reliable delivery to
-            your doorstep.
-          </p>
-        </div>
-        <div>
-          <h3>Return and exchange</h3>
-          <p>You have up to 14 days to return your products to us.</p>
-        </div>
-      </div>
-      <div class="bottom">
-        <form>
-          <input type="email" placeholder="Email" required />
-          <button type="submit">Subscribe</button>
-        </form>
-        <p>© 2025 shoppmall. All rights reserved.</p>
-      </div>
-    </footer>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <script src="script.js"></script>
+</body>
 
-    <script
-      src="https://kit.fontawesome.com/a076d05399.js"
-      crossorigin="anonymous"
-    ></script>
-    <script src="script.js"></script>
-  </body>
 </html>
