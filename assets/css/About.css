@@ -12,68 +12,100 @@ html {
     font-size: 62.5%;
 }
 
+body {
+  font-family: "Nunito Sans", sans-serif;
+  background-color: #fff;
+}
+
 /* Header Navigation */
-.login_header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 42px;
-    width: 100%;    
-    border-bottom: solid .5px #928B8B;
-    backdrop-filter: blur(20px);
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 80px;
+  background-color: #fff;
+  border-bottom: 1px solid #e6e6e6;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-.login_logo_item
-{
-    display: flex;
-    align-items: center;
-    gap: 20px;
+/* Logo */
+.logo {
+  font-weight: 700;
+  font-size: 22px;
+  text-transform: lowercase;
+  letter-spacing: 1px;
 }
 
-.login_logo {
-    font-size: 2.4rem;
-    font-weight: 800;
-    color: #333;
-    margin: 0 36px;
+/* --- Menu --- */
+.nav-links {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 25px;
 }
 
-.nav-menu {
-    display: flex;
-    gap: 40px;
-    list-style: none;
+.nav-links li a {
+  text-decoration: none;
+  color: #bcbcbc;
+  font-size: 14px;
+  text-transform: lowercase;
+  transition: color 0.3s ease;
 }
 
-#product-select {
-    border: none;
-    background: transparent;
-    font-size: 1.4rem;
-    color: #928B8B;
-
-}
-#product-select:hover {
-    color: #333;
-    cursor: pointer;
+.nav-links li a:hover {
+  color: #000;
 }
 
-.nav-menu a {
-    text-decoration: none;
-    color: #928B8B;
-    font-size: 1.4rem;
-    transition: color 0.3s;
+/* --- phan mo rong cua all products (mui ten di xuong) --- */
+.nav-links .dropdown select {
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: #bcbcbc;
+  font-family: inherit;
+  cursor: pointer;
+  text-transform: lowercase;
+  outline: none;
+  padding: 4px 8px;
 }
 
-.nav-menu a:hover {
-    color: #333;
+.nav-links .dropdown {
+  position: relative;
 }
 
-.header_icons {
-    display: flex;
-    gap: 30px;
-    margin-right: 25px;
+.nav-links .dropdown select:hover {
+  color: #000;
 }
 
-.login_header_icon {
-    cursor: pointer;
+/* --- Icons --- */
+.icons {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 18px;
+}
+
+.icons a {
+  color: #bcbcbc;               
+  cursor: pointer;
+  text-decoration: none;       
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.icons a:link,
+.icons a:visited {
+  color: #bcbcbc;
+}
+
+.icons a:hover {
+  transform: scale(1.15);
+  color: #000;                  
+}
+
+.icons a:active {
+  color: #555;                  
 }
 
 /* Main Content */
@@ -87,8 +119,8 @@ html {
 .about_content {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; 
     gap: 24px;
+    margin: 0 150px 80px 0;
 }
 
 .about_content_title{
@@ -117,3 +149,158 @@ html {
 
 
 /* Footer */
+footer {
+  background: #ffffff;
+  color: white;
+  padding: 60px 5px 0 5px;
+}
+h3 {
+  font-size: 36px;
+  margin: 7px 0;
+}
+
+.footer-grid {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.footer-grid div {
+width: 33.1%;
+background-color: #171717;
+height: 146px;
+padding: 25px 43px;
+}
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  color: white;
+}
+.bottom-left, .bottom-center, .bottom-right {
+  background-color: #000000;
+  width: 33.1%;
+height: 733px;
+padding: 25px 43px;
+}
+.bottom ul {
+  list-style: none;
+  font-size: 16px;  
+  margin-top: 24px;
+}
+.bottom li {
+  margin-bottom: 13px;
+}
+.bottom a {
+  text-decoration: none;
+  color: #828D8B;
+}
+
+/* Rating Box */
+.rating-box {
+  background: #5f5f5f;
+  padding: 12px;
+  width: 290px;
+  height: 163px;
+  margin-top: 24px;
+}
+
+.stars {
+  font-size: 24px;
+  color: #ffffff;
+}
+
+.rating-box p {
+  margin: 0 0 0 4px;
+  font-size: 16px;
+  color: #ddd;
+}
+
+.social-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.social-buttons button {
+  background: #d9d9d9;
+  color: rgb(0, 0, 0);
+  cursor: pointer;
+  width: 109px;
+  height: 42px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.3s;
+}
+
+.social-buttons .Twitter {
+  width: 93px;
+  justify-content: center;
+}
+
+.social-buttons button:hover {
+  background: #777;
+}
+/* ----- Đăng ký email ----- */
+.subscribe-box {
+  margin-bottom: 10px;
+}
+
+.subscribe-box p {
+  font-size: 16px;
+  color: #ffffff;
+  margin-top: 25px;
+  margin-bottom: 10px;
+}
+
+.subscribe-box form {
+  display: flex;
+  gap: 0;
+}
+
+.subscribe-box input {
+  padding: 10px;
+  background-color: #d9d9d9;
+  width: 187px;
+  height: 53px;
+  border: none;
+  outline: none;
+  font-size: 15px;
+}
+
+.subscribe-box button {
+  width: 115px;
+  height: 53px;
+  border: none;
+  background: #f7f7f7;
+  color: #000;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.subscribe-box button:hover {
+  background: #c1aaaa;
+}
+/* Payment Box */
+.payment-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0;
+  margin-bottom: 60px;
+}
+.payment-box img {
+  width: 60px;
+  height: auto;
+  background: #111;
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+
+/* ----- Bản quyền ----- */
+.footer .copyright {
+  font-size: 14px;
+  color: #999;
+  margin-top: 10px;
+}
