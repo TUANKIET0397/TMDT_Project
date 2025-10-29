@@ -1,0 +1,430 @@
+/* --- Menu --- */
+/* Reset va font chung */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Nunito Sans", sans-serif;
+  background-color: #fff;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 80px;
+  background-color: #fff;
+  border-bottom: 1px solid #e6e6e6;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* Logo */
+.logo {
+  font-weight: 700;
+  font-size: 22px;
+  text-transform: lowercase;
+  letter-spacing: 1px;
+}
+
+/* --- Menu --- */
+.nav-links {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.nav-links li a {
+  text-decoration: none;
+  color: #bcbcbc;
+  font-size: 14px;
+  text-transform: lowercase;
+  transition: color 0.3s ease;
+}
+
+.nav-links li a:hover {
+  color: #000;
+}
+
+/* --- phan mo rong cua all products (mui ten di xuong) --- */
+.nav-links .dropdown select {
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: #bcbcbc;
+  font-family: inherit;
+  cursor: pointer;
+  text-transform: lowercase;
+  outline: none;
+  padding: 4px 8px;
+}
+
+.nav-links .dropdown {
+  position: relative;
+}
+
+.nav-links .dropdown select:hover {
+  color: #000;
+}
+
+/* --- Icons --- */
+.icons {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 18px;
+  color: #bcbcbc;
+}
+
+.icons i {
+  cursor: pointer;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.icons i:hover {
+  transform: scale(1.15);
+  color: #000;
+}
+
+section {
+  padding: 5px 0px 24px;
+}
+
+section h2 {
+  font-size: 28px;
+  font-weight: 400;
+  margin-bottom: 10px;
+  color: #111;
+}
+
+section p {
+  font-size: 14px;
+  color: #000;
+  line-height: 1.6;
+  font-weight: 300;
+  font-size: 15px;
+}
+
+.hero {
+  text-align: left;
+  margin-top: 36px;
+}
+
+.hero h2 {
+  font-size: 36px;
+  font-weight: 500;
+  color: #111;
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+  padding: 0 80px;
+}
+
+.hero p {
+  padding: 0 80px;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-left: 35px;
+}
+
+.filters p {
+  font-size: 14px;
+  color: #666;
+  margin-left: auto;
+}
+
+.filters select {
+  border: none;
+  margin: 10px;
+  padding: 5px 10px;
+  font-weight: 300;
+  font-size: 14px;
+  color: #333;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+/* Best seller */
+.best-container {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px 0;
+}
+
+/*moi san pham */
+.best-item {
+  flex: 0 0 375px;
+  max-width: 380px;
+  background: #fff;
+  border: #000 0.5px solid;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  flex-direction: column;
+}
+.best-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* anh*/
+.image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f7f7f7;
+  border-bottom: 1px solid #eee;
+  overflow: hidden;
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.4s ease;
+}
+.image-wrapper:hover img {
+  transform: scale(1.05);
+}
+
+/* nhan new */
+.new-label {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  color: #00b050;
+  font-size: 13px;
+  font-weight: 600;
+  border-bottom: 2px solid #00b050;
+}
+
+/*ten san pham*/
+.Name-price {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  color: #000000;
+  font-family: "Nunito Sans", sans-serif;
+  font-size: 24px;
+  text-transform: uppercase;
+  font-style: semi-bold;
+  padding: 0 10px;
+  margin-top: 3px;
+  box-sizing: border-box;
+}
+.Name-price .price {
+  font-size: 20px;
+  font-weight: 500;
+  color: #000000;
+}
+
+/* thong tin duoi anh */
+.info {
+  padding: 3px 12px ;
+  background: #fff;
+  font-family: "Nunito Sans", sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.info .desc {
+  font-size: 16px;
+  color: #555;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+
+/* gia va nut mua */
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Footer */
+footer {
+  background: #ffffff;
+  color: white;
+  padding: 60px 5px 0 5px;
+}
+h3 {
+  font-size: 36px;
+  margin: 7px 0;
+}
+
+.footer-grid {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.footer-grid div {
+width: 33.1%;
+background-color: #171717;
+height: 146px;
+padding: 25px 43px;
+}
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  color: white;
+}
+.bottom-left, .bottom-center, .bottom-right {
+  background-color: #000000;
+  width: 33.1%;
+height: 733px;
+padding: 25px 43px;
+}
+.bottom ul {
+  list-style: none;
+  font-size: 16px;  
+  margin-top: 24px;
+}
+.bottom li {
+  margin-bottom: 13px;
+}
+.bottom a {
+  text-decoration: none;
+  color: #828D8B;
+}
+
+/* Rating Box */
+.rating-box {
+  background: #5f5f5f;
+  padding: 12px;
+  width: 290px;
+  height: 163px;
+  margin-top: 24px;
+}
+
+.stars {
+  font-size: 24px;
+  color: #ffffff;
+}
+
+.rating-box p {
+  margin: 0 0 0 4px;
+  font-size: 16px;
+  color: #ddd;
+}
+
+.social-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.social-buttons button {
+  background: #d9d9d9;
+  color: rgb(0, 0, 0);
+  cursor: pointer;
+  width: 109px;
+  height: 42px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.3s;
+}
+
+.social-buttons .Twitter {
+  width: 93px;
+  justify-content: center;
+}
+
+.social-buttons button:hover {
+  background: #777;
+}
+/* ----- Đăng ký email ----- */
+.subscribe-box {
+  margin-bottom: 10px;
+}
+
+.subscribe-box p {
+  font-size: 16px;
+  color: #ffffff;
+  margin-top: 25px;
+  margin-bottom: 10px;
+}
+
+.subscribe-box form {
+  display: flex;
+  gap: 0;
+}
+
+.subscribe-box input {
+  padding: 10px;
+  background-color: #d9d9d9;
+  width: 187px;
+  height: 53px;
+  border: none;
+  outline: none;
+  font-size: 15px;
+}
+
+.subscribe-box button {
+  width: 115px;
+  height: 53px;
+  border: none;
+  background: #f7f7f7;
+  color: #000;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.subscribe-box button:hover {
+  background: #c1aaaa;
+}
+/* Payment Box */
+.payment-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0;
+  margin-bottom: 60px;
+}
+.payment-box img {
+  width: 60px;
+  height: auto;
+  background: #111;
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+
+/* ----- Bản quyền ----- */
+.footer .copyright {
+  font-size: 14px;
+  color: #999;
+  margin-top: 10px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  header {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  section {
+    padding: 100px 40px 40px;
+  }
+  .footer-grid div {
+    width: 100%;
+  }
+}
