@@ -780,41 +780,127 @@ section p {
 
 /* Channels */
 .channels {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   background: #000;
   color: #fff;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
   padding: 60px 80px;
+  gap: 40px;
+  font-family: "Nunito Sans", sans-serif;
 }
+
+/* --- LEFT SIDE --- */
 .left {
-  flex: 1;
+  flex: 0 0 320px;
 }
-.videos {
+
+.left h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color : #fff;
+}
+
+.left .sub {
+  font-style: italic;
+  color: #ccc;
+  margin-bottom: 25px;
+  font-size: 15px;
+}
+
+/* SOCIAL BUTTONS */
+.social-btn {
   display: flex;
-  gap: 15px;
-  flex: 2;
-  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 20px;
+  margin-bottom: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #fff;
+  color: #000;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
 }
-.videos img {
-  width: 200px;
-  border-radius: 10px;
+
+.social-btn i {
+  font-size: 18px;
 }
+
+.social-btn:hover {
+  background: #f2f2f2;
+}
+
+/* --- VIDEOS --- */
+.videos {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 30px;
+}
+
+.video-card {
+  width: 280px;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+}
+
+.video-thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9/13;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.video-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Play button */
 .play {
   position: absolute;
-  color: white;
-  font-size: 32px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 40px;
+  color: #000;
+  background: #fff;
+  border-radius: 50%;
+  width: 65px;
+  height: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.9;
 }
-.insta,
-.tiktok {
-  background: white;
-  border: none;
-  padding: 10px 20px;
-  margin-top: 20px;
-  border-radius: 6px;
-  cursor: pointer;
-  display: block;
+
+/* Video duration */
+.duration {
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  font-size: 12px;
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+
+/* Caption immediately under the image */
+.cap-vid {
+  font-size: 14px;
+  color: #ccc;
+  line-height: 1.4;
+  margin-top: 6px;
 }
 
 /* Footer */
