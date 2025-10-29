@@ -295,19 +295,20 @@ a {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(auto-fit, minmax(442px, 1fr));
+    gap: 0;
 }
 
 .about__inner-item {
     border-top: 1px;
-    border-bottom: 1px;
     border-right: 1px;
     border-style: solid;
     border-color: #000;
 }
 
-.about__inner-item:first-child {
+.about__inner-item:nth-of-type(1),
+.about__inner-item:nth-of-type(5),
+.about__inner-item:nth-of-type(9) {
     border-left: 1px solid #000;
-    width: 373px;
 }
 
 .about__heading {
@@ -318,8 +319,8 @@ a {
 }
 
 .about__info-item {
-    display: flex;
-    justify-content: space-between;
+    /* display: flex;
+    justify-content: space-between; */
     margin-left: 12px;
     width: 349px;
 }
@@ -330,15 +331,6 @@ a {
     font-weight: 300;
     line-height: 1.35;
 }
-
-/* .about__info-label {
-    position: relative;
-} */
-
-/* .about__info-label::after {
-    position: absolute;
-    content: "............................";
-} */
 
 .about__desc-edit {
     margin: 51px 17px 0 12px;
@@ -465,33 +457,43 @@ a {
 }
 
 .about__inner-item:nth-child(4) {
-    background-image: url(../img/IMG_E5339.JPG);
+    background-image: url(../img/brand1.png);
     background-size: cover;
     background-repeat: no-repeat;
 }
 
 .about__inner-bottom {
     display: flex;
-}
-
-.about__item-bottom {
-    /* display: flex; */
-    flex-direction: column;
-    flex: 1;
+    /* border: 1px solid #000; */
 }
 
 .about__item-bottom-img {
     position: relative;
-    border: 1px solid #000;
-    border-top: transparent;
+    /* border: 1px solid #000;
+    border-top: transparent; */
 }
 
 .about__item-bottom-img-main {
-    background-image: url(../img/product-other1.png);
     background-size: cover;
     background-repeat: no-repeat;
     width: 371px;
     height: 484px;
+}
+
+.img-1 {
+    background-image: url(../img/product-other1.png);
+}
+
+.img-2 {
+    background-image: url(../img/product-other2.png);
+}
+
+.img-3 {
+    background-image: url(../img/product-other3.png);
+}
+
+.img-4 {
+    background-image: url(../img/product-other4.png);
 }
 
 .about__item-bottom-list {
@@ -519,8 +521,8 @@ a {
 }
 
 .about__item-bottom-aside {
-    border: 1px solid #000;
-    border-top: transparent;
+    border-bottom: 1px solid #000;
+    border-top: 1px solid #000;
 }
 
 .about__item-bottom-label {
