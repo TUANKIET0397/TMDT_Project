@@ -225,7 +225,7 @@
           <p class="desc">Type II Trucker Jacket 'Pioneer Jacket' - Raw Selvedge Denim</p>
           <div class="bottom">
             <p class="price">260.00$</p>
-            <button class="buy-btn">Buy</button>
+            <button onclick="addToCart({name: 'Leather Jacket', price: 89.99, img: './home_assets/shirt3.png'})" class="buy-btn">Buy</button>
           </div>
         </div>
       </div>
@@ -884,7 +884,23 @@
         </div>
       </footer>
 
-  <script src="script.js"></script>
+
+
+      <!-- CART SIDEBAR -->
+<div class="cart-overlay"></div>
+
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header">
+    <h3>Your Cart</h3>
+    <button class="close-cart" id="closeCart">&times;</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-footer">
+    <p>Total: <span id="cartTotal">$0.00</span></p>
+    <button class="checkout-btn">Checkout</button>
+  </div>
+</div>
+  <script src="home.js"></script>
 </body>
 
 </html>
