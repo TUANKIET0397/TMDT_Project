@@ -47,7 +47,7 @@
 
     <div class="icons">
       <i class="fas fa-search"></i>
-      <i class="fas fa-user"></i>
+      <i class="fas fa-user" id="user-icon"></i>
       <i class="fas fa-shopping-cart"></i>
     </div>
   </header>
@@ -567,6 +567,11 @@
 
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
   <script src="script.js"></script>
+  <script>
+  document.getElementById("user-icon").addEventListener("click", function() {
+    window.location.href = "profile.html"; 
+  });
+</script>
 </body>
 
 </html>

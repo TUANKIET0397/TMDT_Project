@@ -254,11 +254,135 @@ section p {
   align-items: center;
 }
 
+
+
+
+
+/*profile*/
+.profile{
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.container-profile {
+  background: #f5f5f5;
+  border-radius: 20px;
+  padding: 24px;
+  width: 1200px;
+  box-shadow: 2 4px 12px rgba(0,0,0,0.1);
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.avatar {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  background: #d9d9d9;
+  margin-right: 15px;
+  object-fit: contain;
+}
+
+.info-user {
+  flex-grow: 1;
+}
+
+.info-user h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.info-user p {
+  margin: 3px 0 0;
+  color: #777;
+  font-size: 15px;
+}
+
+.edit-btn {
+  color: #0078d4;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 35px;
+  padding: 0 74px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px;
+}
+
+.profile input, select {
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.profile input:focus, select:focus {
+  border-color: #0078d4;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0,120,212,0.2);
+}
+
+/* Buttons */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  transition: 0.2s;
+}
+
+.btn.cancel {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.btn.cancel:hover {
+  background-color: #c9c9c9;
+}
+
+.btn.save {
+  background-color: #0078d4;
+  color: #fff;
+}
+
+.btn.save:hover {
+  background-color: #005ea6;
+}
+
+
+
+
+
 /* Footer */
 footer {
   background: #ffffff;
   color: white;
-  padding: 60px 5px 0 5px;
+  padding: 45px 5px 0 5px;
 }
 h3 {
   font-size: 36px;
@@ -336,6 +460,7 @@ padding: 25px 43px;
   font-size: 16px;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   transition: background 0.3s;
 }
