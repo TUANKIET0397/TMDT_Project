@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
+    <title>Register Page</title>
     <!-- Reset css -->
     <link rel="stylesheet" href="./assets/css/reset.css">
     <!-- font Embed -->
@@ -15,7 +15,7 @@
         href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
         rel="stylesheet">
      <!-- Style css -->
-    <link rel="stylesheet" href="./assets/css/Login.css">
+    <link rel="stylesheet" href="./assets/css/Register.css">
 
 </head>
 <body>
@@ -64,31 +64,40 @@
   </header>
 
     <!-- Login Form -->
-    <div class="login_container">
-        <div class="login_box">
-            <h1 class="login_title">Login</h1>
+    <div class="rgt_container">
+        <div class="rgt_box">
+            <h1 class="rgt_title">Register</h1>
             <form>
-                <div class="login_info">
-                    <input type="text" id="username" name="username" placeholder="User name" autocomplete="off">
+                <div class="rgt_info">
+                    <input type="text" id="firstname" name="firstname" placeholder="First name" autocomplete="off" spellcheck="false">
+                    <input type="text" id="lastname" name="lastname" placeholder="Last name" autocomplete="off" spellcheck="false">
+                </div>
+                <div class="rgt_info">
+                    <select id="Gender">
+                        <option value="" selected>Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <input type="date" id="birthday" name="birthday">
                 </div>
 
-                <div class="login_info">
-                        <input type="password" id="password" name="password" placeholder="Password" autocomplete="new-password">
+                <div class="rgt_info">
+                    <input type="text" id="address" name="address" placeholder="Address" autocomplete="off" spellcheck="false">
                 </div>
 
-                <div class="login_options">
-                    <label class="remember-me">
-                        <input type="checkbox">
-                        Remember me
-                    </label>
-                    <a href="Forget.html" class="forget-password">Forget password</a>
+                <div class="rgt_info">
+                    <input type="email" id="email" name="email" placeholder="Email" autocomplete="off" spellcheck="false">
                 </div>
 
-                <button type="submit" class="login-button">Login</button>
-
-                <div class="register-link">
-                    Don't have an account? <a href="Register.html" class="switch">Registers</a>
+                <div class="rgt_info">
+                    <input type="password" id="password" name="password" placeholder="Password" autocomplete="new-password">
                 </div>
+                <div class="rgt_info">
+                    <input type="password" id="repassword" name="repassword" placeholder="Rewrite password" autocomplete="new-password">
+                </div>
+
+                <button type="submit" class="rgt-button">Register</button>
             </form>
         </div>
     </div>

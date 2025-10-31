@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forget Password Page</title>
+    <!-- Reset css -->
+    <link rel="stylesheet" href="./assets/css/reset.css">
+    <!-- font Embed -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
+        rel="stylesheet">
+     <!-- Style css -->
+    <link rel="stylesheet" href="./assets/css/Forget.css">
+
+</head>
+<body>
+
+    <div class="bg-animation" aria-hidden="true">
+        <div class="color-blob blob1"></div>
+        <div class="color-blob blob2"></div>
+        <div class="color-blob blob3"></div>
+        <div class="color-blob blob4"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+    <div class="logo">shoppmall</div>
+
+    <nav>
+      <ul class="nav-links">
+        <li class="dropdown">
+          <select id="product-select">
+            <option selected>all products</option>
+            <option>t-shirts</option>
+            <option>shirts</option>
+            <option>knitwear</option>
+            <option>sweatshirts</option>
+            <option>pants</option>
+            <option>outerwear</option>
+            <option>shoes</option>
+          </select>
+        </li>
+        <li><a href="./navigation/t_shirts.html">t-shirts</a></li>
+        <li><a href="./navigation/shirts.html">shirts</a></li>
+        <li><a href="./navigation/knitwear.html">knitwear</a></li>
+        <li><a href="./navigation/sweatshirts.html">sweatshirts</a></li>
+        <li><a href="./navigation/pants.html">pants</a></li>
+        <li><a href="./navigation/outerwear.html">outerwear</a></li>
+        <li><a href="./navigation/shoes.html">shoes</a></li>
+        <li><a href="./navigation/About.html">about us</a></li>
+      </ul>
+    </nav>
+
+    <div class="icons">
+      <a href="#"><i class="fas fa-search"></i></a>
+      <a href="Login.html"><i class="fas fa-user"></i></a>
+      <a href="#"><i class="fas fa-shopping-cart"></i></a>
+    </div>
+  </header>
+
+    <!-- Login Form -->
+    <div class="fgpass_container">
+        <div class="fgpass_box">
+            <h1 class="fgpass_title">Forget password</h1>
+            <form class="form1">
+                <div class="fgpass_info">
+                    <input type="email" id="email" name="email" placeholder="Email" autocomplete="off">
+                </div>
+                <button type="submit" class="fgpass-button">Send Code</button>
+            </form>
+            <form class="form2">
+                <div class="fgpass_info">
+                    <input type="number" id="Code" name="code" placeholder="ID Code" autocomplete="off">
+                </div>
+                <button type="submit" class="fgpass-button">Send Code</button>
+            </form>
+            <form class="form3">
+                <div class="fgpass_info">
+                    <input type="password" id="password" name="password" placeholder="New password" autocomplete="new-password">
+                     <input type="password" id="repassword" name="repassword" placeholder="Rewrite password" autocomplete="new-password">
+                </div>
+                <button type="submit" class="fgpass-button">Change</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const form1 = document.querySelector('.form1');
+        const form2 = document.querySelector('.form2');
+        const form3 = document.querySelector('.form3');
+        const fgpassBox = document.querySelector('.fgpass_box');
+
+        form2.style.display = 'none';
+        form3.style.display = 'none';
+
+        // Form 1
+        form1.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            
+            if (email) {
+                form1.style.display = 'none';
+                form2.style.display = 'block';
+            } else {
+                alert('Please enter your email');
+            }
+        });
+
+        // Form 2
+        form2.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const code = document.getElementById('Code').value;
+            
+            if (code) {
+                form2.style.display = 'none';
+                form3.style.display = 'block';
+                fgpassBox.classList.add('form3-active');
+            } else {
+                alert('Please enter verification code');
+            }
+        });
+
+        // Form 3
+        form3.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            const repassword = document.getElementById('repassword').value;
+            
+            if (password && repassword) {
+                if (password === repassword) {
+                    alert('Password changed successfully!');
+                    window.location.href = 'Login.html';
+                } else {
+                    alert('Passwords do not match!');
+                }
+            } else {
+                alert('Please fill in all password fields');
+            }
+        });
+    </script>
+
+</body>
+</html>
