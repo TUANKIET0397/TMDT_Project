@@ -78,17 +78,27 @@ header {
   align-items: center;
   gap: 20px;
   font-size: 18px;
-  color: #bcbcbc;
 }
 
-.icons i {
+.icons a {
+  color: #bcbcbc;               
   cursor: pointer;
+  text-decoration: none;       
   transition: transform 0.3s ease, color 0.3s ease;
 }
 
-.icons i:hover {
+.icons a:link,
+.icons a:visited {
+  color: #bcbcbc;
+}
+
+.icons a:hover {
   transform: scale(1.15);
-  color: #000;
+  color: #000;                  
+}
+
+.icons a:active {
+  color: #555;                  
 }
 
 section {
@@ -780,41 +790,237 @@ section p {
 
 /* Channels */
 .channels {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   background: #000;
   color: #fff;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
   padding: 60px 80px;
+  gap: 40px;
+  font-family: "Nunito Sans", sans-serif;
 }
+
+/* --- LEFT SIDE --- */
 .left {
-  flex: 1;
+  flex: 0 0 320px;
 }
-.videos {
+
+.left h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color : #fff;
+}
+
+.left .sub {
+  font-style: italic;
+  color: #ccc;
+  margin-bottom: 25px;
+  font-size: 15px;
+}
+
+/* SOCIAL BUTTONS */
+.social-btn {
   display: flex;
-  gap: 15px;
-  flex: 2;
-  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 20px;
+  margin-bottom: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #fff;
+  color: #000;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
 }
-.videos img {
-  width: 200px;
-  border-radius: 10px;
+
+.social-btn i {
+  font-size: 18px;
 }
+
+.social-btn:hover {
+  background: #f2f2f2;
+}
+
+/* --- VIDEOS --- */
+.videos {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 30px;
+}
+
+.video-card {
+  width: 280px;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+}
+
+.video-thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9/13;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.video-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Play button */
 .play {
   position: absolute;
-  color: white;
-  font-size: 32px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 40px;
+  color: #000;
+  background: #fff;
+  border-radius: 50%;
+  width: 65px;
+  height: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.9;
 }
-.insta,
-.tiktok {
-  background: white;
-  border: none;
-  padding: 10px 20px;
-  margin-top: 20px;
-  border-radius: 6px;
-  cursor: pointer;
+
+/* Video duration */
+.duration {
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  font-size: 12px;
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+
+/* Caption immediately under the image */
+.cap-vid {
+  font-size: 14px;
+  color: #ccc;
+  line-height: 1.4;
+  margin-top: 6px;
+}
+
+
+
+/* === CART SIDEBAR === */
+.cart-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  z-index: 999;
+}
+
+.cart-sidebar {
+  position: fixed;
+  right: -400px;
+  top: 0;
+  width: 360px;
+  height: 100vh;
+  background: #fff;
+  box-shadow: -2px 0 8px rgba(0,0,0,0.2);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 1000;
+  transition: right 0.3s ease;
+}
+
+.cart-sidebar.active {
+  right: 0;
+}
+
+.cart-overlay.active {
   display: block;
+}
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cart-items {
+  flex: 1;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.cart-item img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.cart-item-details {
+  flex: 1;
+}
+
+.cart-item-details h4 {
+  font-size: 14px;
+  margin: 0 0 5px;
+}
+
+.cart-item-details p {
+  font-size: 13px;
+  color: #666;
+}
+
+.quantity {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.quantity button {
+  border: none;
+  background: #eee;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+}
+
+.cart-footer {
+  border-top: 1px solid #ddd;
+  padding-top: 10px;
+}
+
+.checkout-btn {
+  width: 100%;
+  background: #111;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.checkout-btn:hover {
+  background: #333;
 }
 
 /* Footer */
