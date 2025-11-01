@@ -87,12 +87,24 @@ header {
   transition: transform 0.3s ease, color 0.3s ease;
 }
 
+.icons i {
+  color: #bcbcbc;               
+  cursor: pointer;
+  text-decoration: none;       
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
 .icons a:link,
 .icons a:visited {
   color: #bcbcbc;
 }
 
 .icons a:hover {
+  transform: scale(1.15);
+  color: #000;                  
+}
+
+.icons i:hover {
   transform: scale(1.15);
   color: #000;                  
 }
