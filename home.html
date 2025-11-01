@@ -47,7 +47,7 @@
     <div class="icons">
       <a href="#"><i class="fas fa-search"></i></a>
       <a href="Login.html"><i class="fas fa-user"></i></a>
-      <a href="#"><i class="fas fa-shopping-cart"></i></a>
+      <i class="fas fa-shopping-cart"></i>
     </div>
   </header>
 
@@ -225,7 +225,7 @@
           <p class="desc">Type II Trucker Jacket 'Pioneer Jacket' - Raw Selvedge Denim</p>
           <div class="bottom">
             <p class="price">260.00$</p>
-            <button onclick="addToCart({name: 'Leather Jacket', price: 89.99, img: './home_assets/shirt3.png'})" class="buy-btn">Buy</button>
+            <button onclick="addToCart({name: 'Leather Jacket', price: 260.00, img: './home_assets/shirt3.png'})" class="buy-btn">Buy</button>
           </div>
         </div>
       </div>
@@ -241,7 +241,7 @@
           <p class="desc">Type II Trucker Jacket “Heritage Edition” - Indigo Denim</p>
           <div class="bottom">
             <p class="price">275.00$</p>
-            <button class="buy-btn">Buy</button>
+            <button  onclick="addToCart({name: 'Rock Jean Jacket', price: 275.00, img: './home_assets/jacket1.png'})" class="buy-btn">Buy</button>
           </div>
         </div>
       </div>
@@ -888,10 +888,10 @@
   <script src="script.js"></script>
 
 
-      <!-- CART SIDEBAR -->
+<!-- CART DRAWER -->
 <div class="cart-overlay"></div>
 
-<div class="cart-sidebar" id="cartSidebar">
+<div class="cart-drawer" id="cartDrawer">
   <div class="cart-header">
     <h3>Your Cart</h3>
     <button class="close-cart" id="closeCart">&times;</button>

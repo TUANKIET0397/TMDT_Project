@@ -10,9 +10,9 @@ window.addEventListener('scroll', () => {
 });
 
 
-// === CART FUNCTIONALITY ===
+// === CART SYSTEM ===
 const cartIcon = document.querySelector('.fa-shopping-cart');
-const cartSidebar = document.getElementById('cartSidebar');
+const cartDrawer = document.getElementById('cartDrawer');
 const cartOverlay = document.querySelector('.cart-overlay');
 const closeCart = document.getElementById('closeCart');
 const cartItemsContainer = document.getElementById('cartItems');
@@ -22,34 +22,39 @@ let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
 // === OPEN / CLOSE CART ===
 cartIcon.addEventListener('click', () => {
-  cartSidebar.classList.add('active');
-  cartOverlay.classList.add('active');
+  cartDrawer.classList.toggle('active');
+  cartOverlay.classList.toggle('active');
   renderCart();
 });
 
 closeCart.addEventListener('click', () => {
-  cartSidebar.classList.remove('active');
+  cartDrawer.classList.remove('active');
   cartOverlay.classList.remove('active');
 });
 
 cartOverlay.addEventListener('click', () => {
-  cartSidebar.classList.remove('active');
+  cartDrawer.classList.remove('active');
   cartOverlay.classList.remove('active');
 });
 
-// === ADD TO CART ===
+// === ADD TO CART FUNCTION ===
 function addToCart(product) {
-  const existing = cart.find(item => item.name === product.name);
-  if (existing) {
-    existing.quantity++;
+  event.preventDefault();
+
+  const found = cart.find(item => item.name === product.name);
+  if (found) {
+    found.quantity++;
   } else {
     cart.push({ ...product, quantity: 1 });
   }
   saveCart();
   renderCart();
+  // Hiển thị giỏ hàng ngay
+  cartDrawer.classList.add('active');
+  cartOverlay.classList.add('active');
 }
 
-// === SAVE TO LOCALSTORAGE ===
+// === SAVE CART TO LOCAL STORAGE ===
 function saveCart() {
   localStorage.setItem('cart', JSON.stringify(cart));
 }
@@ -60,9 +65,9 @@ function renderCart() {
   let total = 0;
 
   cart.forEach((item, index) => {
-    const itemDiv = document.createElement('div');
-    itemDiv.classList.add('cart-item');
-    itemDiv.innerHTML = `
+    const div = document.createElement('div');
+    div.classList.add('cart-item');
+    div.innerHTML = `
       <img src="${item.img}" alt="${item.name}">
       <div class="cart-item-details">
         <h4>${item.name}</h4>
@@ -74,17 +79,20 @@ function renderCart() {
         </div>
       </div>
     `;
-    cartItemsContainer.appendChild(itemDiv);
+    cartItemsContainer.appendChild(div);
     total += item.price * item.quantity;
   });
 
   cartTotal.textContent = `$${total.toFixed(2)}`;
 }
 
-// === CHANGE QUANTITY ===
+// CHANGE QTY
 function changeQty(index, delta) {
   cart[index].quantity += delta;
   if (cart[index].quantity <= 0) cart.splice(index, 1);
   saveCart();
   renderCart();
 }
+
+// khoi dong
+renderCart();
