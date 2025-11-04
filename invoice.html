@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add - Product</title>
+    <!-- Reset css -->
+    <link rel="stylesheet" href="./assets/css/reset.css">
+    <!-- font Embed -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
+        rel="stylesheet">
+    <!-- Style checkout -->
+    <link rel="stylesheet" href="./assets/css/addProducts.css">
+</head>
+
+<body>
+    <div class="Listproduct_container">
+        <aside class="Listproduct_sidebar">
+            <div class="sidebar_content">
+                <div class="Listproduct_logo">Shoppmall</div>
+                <div class="sidebar_search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" class="sidebar_search-input" placeholder=" Search for...">
+                </div>
+
+                <nav class="menu">
+                    <div class="menu-item dashboard-btn">
+                        <div class="item_container">
+                            <i class="fa-solid fa-house"></i>
+                            <div class="item_title">Dashboard</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right dashboard-icon"></i>
+                    </div>
+                    <div class="dashboard_menu">
+                        <div class="dashboard_item">
+                            Reports
+                        </div>
+                        <div class="dashboard_item dashboard_item--active">
+                            Products
+                        </div>
+                        <div class="dashboard_item">
+                            Invoices
+                        </div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item_container">
+                            <i class="fa-solid fa-comment"></i>
+                            <div class="item_title">Chat</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right"></i>
+
+                    </div>
+                    <div class="menu-item">
+                        <div class="item_container">
+                            <i class="fa-solid fa-user"></i>
+                            <div class="item_title">Users</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </div>
+                </nav>
+            </div>
+
+            <div class="user-section">
+                <div class="user-info">
+                    <div class="user-avatar"></div>
+                    <div>
+                        <div class="user-name">Nemo</div>
+                        <div class="user_sub">
+                            <div class="user-subtitle">Account settings</div>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </aside>
+        <div class="main-content">
+
+        </div>
+    </div>
+    <script>
+        const dashboardBtn = document.querySelector('.dashboard-btn');
+        const dashboardMenu = document.querySelector('.dashboard_menu');
+        const dashboardIcon = document.querySelector('.dashboard-icon');
+        const menuItems = document.querySelectorAll('.menu-item');
+
+        // Ẩn menu
+        dashboardMenu.style.maxHeight = '0';
+        dashboardMenu.style.opacity = '0';
+        dashboardMenu.style.overflow = 'hidden';
+        dashboardMenu.style.transition = 'max-height 0.5s ease, opacity 0.5s ease';
+
+        // Biến theo dõi trạng thái menu
+        let isMenuOpen = false;
+
+        dashboardBtn.addEventListener('click', function () {
+            isMenuOpen = !isMenuOpen;
+
+            if (isMenuOpen) {
+                dashboardMenu.style.maxHeight = dashboardMenu.scrollHeight + 'px';
+                dashboardMenu.style.opacity = '1';
+                dashboardIcon.style.transform = 'rotate(90deg)';
+                dashboardIcon.style.transition = 'transform 0.3s ease';
+            } else {
+                dashboardMenu.style.maxHeight = '0';
+                dashboardMenu.style.opacity = '0';
+                dashboardIcon.style.transform = 'rotate(0deg)';
+            }
+        });
+
+        // Xử lý active menu item
+        menuItems.forEach(item => {
+            const container = item.querySelector('.item_container');
+            if (!container) return;
+
+            item.addEventListener('click', function (e) {
+                e.stopPropagation();
+
+                const isActive = container.classList.contains('menu-item--active');
+
+                menuItems.forEach(i => {
+                    const c = i.querySelector('.item_container');
+                    if (c) c.classList.remove('menu-item--active');
+                });
+
+                if (!isActive) container.classList.add('menu-item--active');
+            });
+        });
+
+    </script>
+</body>
+
+</html>
