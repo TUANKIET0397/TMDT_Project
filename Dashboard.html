@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shoppmall Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./assets/css/Dashboard.css" />
+  </head>
+
+  <body>
+    <div class="Listproduct_container">
+      <aside class="Listproduct_sidebar">
+        <div class="sidebar_content">
+          <div class="Listproduct_logo">Shoppmall</div>
+
+          <div class="sidebar_search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input
+              type="text"
+              class="sidebar_search-input"
+              placeholder=" Search for..."
+            />
+          </div>
+
+          <nav class="menu">
+            <div class="menu-item dashboard-btn">
+              <div class="item_container">
+                <i class="fa-solid fa-house"></i>
+                <div class="item_title">Dashboard</div>
+              </div>
+              <i class="fa-solid fa-chevron-right dashboard-icon"></i>
+            </div>
+
+            <div class="dashboard_menu">
+              <div class="dashboard_item dashboard_item--active">Reports</div>
+              <div class="dashboard_item">Products</div>
+              <div class="dashboard_item">Invoices</div>
+            </div>
+
+            <div class="menu-item">
+              <div class="item_container">
+                <i class="fa-solid fa-comment"></i>
+                <div class="item_title">Chat</div>
+              </div>
+              <i class="fa-solid fa-chevron-right"></i>
+            </div>
+
+            <div class="menu-item">
+              <div class="item_container">
+                <i class="fa-solid fa-user"></i>
+                <div class="item_title">Users</div>
+              </div>
+              <i class="fa-solid fa-chevron-right"></i>
+            </div>
+          </nav>
+        </div>
+
+        <div class="user-section">
+          <div class="user-info">
+            <div class="user-avatar"></div>
+            <div>
+              <div class="user-name">Nemo</div>
+              <div class="user_sub">
+                <div class="user-subtitle">Account settings</div>
+                <i class="fa-solid fa-chevron-right"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN DASHBOARD -->
+      <main class="main">
+        <div class="topbar">
+          <div class="topbar-left">
+            <h1>Welcome back, Thuan</h1>
+            <p>All your data have recorded in dashboard</p>
+          </div>
+
+          <button class="export-btn">
+            Export data <i class="fa-solid fa-download"></i>
+          </button>
+        </div>
+
+        <!-- Stats cards -->
+        <div class="stats">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <i class="fa-solid fa-eye"></i>
+                <span>Pageviews</span>
+              </div>
+              <i class="fa-solid fa-ellipsis"></i>
+            </div>
+
+            <div class="card-bottom">
+              <div class="card-value">50.8K</div>
+              <div class="card-growth positive">
+                <span>28.4%</span>
+                <i class="fa-solid fa-arrow-trend-up"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <i class="fa-solid fa-user"></i>
+                <span>Monthly users</span>
+              </div>
+              <i class="fa-solid fa-ellipsis"></i>
+            </div>
+
+            <div class="card-bottom">
+              <div class="card-value">23.6K</div>
+              <div class="card-growth negative">
+                <span>12.6%</span>
+                <i class="fa-solid fa-arrow-trend-down"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <i class="fa-solid fa-user-plus"></i>
+                <span>New sign ups</span>
+              </div>
+              <i class="fa-solid fa-ellipsis"></i>
+            </div>
+
+            <div class="card-bottom">
+              <div class="card-value">756</div>
+              <div class="card-growth positive">
+                <span>3.1%</span>
+                <i class="fa-solid fa-arrow-trend-up"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <i class="fa-solid fa-file-invoice"></i>
+                <span>Total invoices</span>
+              </div>
+              <i class="fa-solid fa-ellipsis"></i>
+            </div>
+
+            <div class="card-bottom">
+              <div class="card-value">2.3K</div>
+              <div class="card-growth positive">
+                <span>11.3%</span>
+                <i class="fa-solid fa-arrow-trend-up"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts">
+          <div class="chart-large">
+            <h3>Total revenue</h3>
+            <canvas id="revenueChart"></canvas>
+          </div>
+
+          <div class="chart-side">
+            <div class="chart-small">
+              <h3>Clothes category</h3>
+              <canvas id="clothesChart"></canvas>
+            </div>
+            <div class="chart-small">
+              <h3>Product revenue</h3>
+              <canvas id="productChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // Sidebar dropdown (Dashboard)
+      const dashboardBtn = document.querySelector(".dashboard-btn");
+      const dashboardMenu = document.querySelector(".dashboard_menu");
+      const dashboardIcon = document.querySelector(".dashboard-icon");
+      const menuItems = document.querySelectorAll(".menu-item");
+
+      dashboardMenu.style.maxHeight = "0";
+      dashboardMenu.style.opacity = "0";
+      dashboardMenu.style.overflow = "hidden";
+      dashboardMenu.style.transition =
+        "max-height 0.5s ease, opacity 0.5s ease";
+
+      let isMenuOpen = false;
+      dashboardBtn.addEventListener("click", function () {
+        isMenuOpen = !isMenuOpen;
+        if (isMenuOpen) {
+          dashboardMenu.style.maxHeight = dashboardMenu.scrollHeight + "px";
+          dashboardMenu.style.opacity = "1";
+          dashboardIcon.style.transform = "rotate(90deg)";
+          dashboardIcon.style.transition = "transform 0.3s ease";
+        } else {
+          dashboardMenu.style.maxHeight = "0";
+          dashboardMenu.style.opacity = "0";
+          dashboardIcon.style.transform = "rotate(0deg)";
+        }
+      });
+
+      // Active menu item
+      menuItems.forEach((item) => {
+        const container = item.querySelector(".item_container");
+        if (!container) return;
+        item.addEventListener("click", function (e) {
+          e.stopPropagation();
+          const isActive = container.classList.contains("menu-item--active");
+          menuItems.forEach((i) => {
+            const c = i.querySelector(".item_container");
+            if (c) c.classList.remove("menu-item--active");
+          });
+          if (!isActive) container.classList.add("menu-item--active");
+        });
+      });
+
+      // === Chart.js setup ===
+      const revenueCtx = document.getElementById("revenueChart");
+      new Chart(revenueCtx, {
+        type: "line",
+        data: {
+          labels: [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+          ],
+          datasets: [
+            {
+              label: "Revenue",
+              data: [
+                0, 5000, 12000, 12500, 15000, 20000, 25000, 27000, 31000, 35000,
+                38000, 40000,
+              ],
+              borderColor: "#805ad5",
+              backgroundColor: "rgba(128,90,213,0.3)",
+              tension: 0.4,
+              fill: true,
+            },
+          ],
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: "#a0aec0" }, grid: { color: "#2d3748" } },
+            y: { ticks: { color: "#a0aec0" }, grid: { color: "#2d3748" } },
+          },
+        },
+      });
+
+      const clothesCtx = document.getElementById("clothesChart");
+      new Chart(clothesCtx, {
+        type: "bar",
+        data: {
+          labels: [
+            "T-shirt",
+            "Shirt",
+            "Shoes",
+            "Knitwear",
+            "Pants",
+            "Socks",
+            "Shorts",
+            "Outerwear",
+          ],
+          datasets: [
+            {
+              label: "Men",
+              data: [350, 500, 280, 430, 210, 150, 240, 330],
+              backgroundColor: "#805ad5",
+            },
+            {
+              label: "Women",
+              data: [250, 400, 220, 310, 260, 180, 200, 280],
+              backgroundColor: "#63b3ed",
+            },
+          ],
+        },
+        options: {
+          plugins: { legend: { labels: { color: "#a0aec0" } } },
+          scales: {
+            x: { ticks: { color: "#a0aec0" }, grid: { color: "#2d3748" } },
+            y: { ticks: { color: "#a0aec0" }, grid: { color: "#2d3748" } },
+          },
+        },
+      });
+
+      const productCtx = document.getElementById("productChart");
+      new Chart(productCtx, {
+        type: "line",
+        data: {
+          labels: [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+          ],
+          datasets: [
+            {
+              label: "Outerwear",
+              data: [80, 120, 160, 150, 180, 220, 300, 270, 310, 250, 200, 220],
+              borderColor: "#63b3ed",
+              backgroundColor: "rgba(99,179,237,0.2)",
+              tension: 0.4,
+              fill: true,
+            },
+          ],
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: "#a0aec0" }, grid: { color: "#2d3748" } },
+            y: { ticks: { color: "#a0aec0" }, grid: { color: "#2d3748" } },
+          },
+        },
+      });
+    </script>
+  </body>
+</html>
