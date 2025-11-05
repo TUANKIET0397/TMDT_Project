@@ -1,4 +1,3 @@
-
 * {
     box-sizing: border-box;
     margin: 0;
@@ -15,12 +14,11 @@ html {
 }
 
 body {
-  font-family: "Nunito Sans", sans-serif;
-  background-color: #081028;
-  height: 100%;
-  overflow: hidden;
+    font-family: "Nunito Sans", sans-serif;
+    background-color: #081028;
+    height: 100%;
+    overflow: hidden;
 }
-
 
 .Listproduct_container {
     display: flex;
@@ -48,12 +46,12 @@ body {
 }
 
 .sidebar_search-box {
-    background: #0B1739;
-    border: 1px solid #343B4F;
+    background: #0b1739;
+    border: 1px solid #343b4f;
     border-radius: 6px;
     padding: 12px;
     margin-bottom: 30px;
-    color: #AEB9E1;
+    color: #aeb9e1;
     font-size: 1.4rem;
     width: 244px;
     height: 42px;
@@ -66,12 +64,12 @@ body {
     border: none;
     outline: none;
     padding-left: 6px;
-    color: #AEB9E1;
+    color: #aeb9e1;
     font-size: 1.4rem;
 }
 
 .sidebar_search-input::placeholder {
-    color: #AEB9E1;
+    color: #aeb9e1;
 }
 
 .menu {
@@ -81,7 +79,7 @@ body {
 .menu-item {
     height: 42px;
     width: 244px;
-    color: #AEB9E1;
+    color: #aeb9e1;
     cursor: pointer;
     font-size: 1.4rem;
     display: flex;
@@ -96,9 +94,8 @@ body {
 
 .menu-item i {
     margin-right: 12px;
-    padding-left: 8px
+    padding-left: 8px;
 }
-
 
 .menu-item:hover {
     background-color: #152043;
@@ -106,11 +103,10 @@ body {
 }
 
 .menu-item--active {
-    color: #CB3CFF;
+    color: #cb3cff;
 }
 
-
-.dashboard_menu{
+.dashboard_menu {
     display: block;
     overflow: hidden;
     transition: max-height 0.5s ease, opacity 0.5s ease;
@@ -120,10 +116,10 @@ body {
     transition: transform 0.3s ease;
 }
 
-.dashboard_item{
+.dashboard_item {
     height: 42px;
     width: 244px;
-    color: #AEB9E1;
+    color: #aeb9e1;
     cursor: pointer;
     font-size: 1.4rem;
     padding-left: 38px;
@@ -133,7 +129,7 @@ body {
 }
 
 .dashboard_item--active {
-    border-left: 6px solid #CB3CFF;
+    border-left: 6px solid #cb3cff;
     border-radius: 5px;
     background-color: #152043;
 }
@@ -169,7 +165,7 @@ body {
 .user_sub {
     display: flex;
     font-size: 1.2rem;
-    color: #AEB9E1;
+    color: #aeb9e1;
     gap: 100px;
 }
 
@@ -201,30 +197,30 @@ body {
     border-radius: 6px;
     padding: 12px;
     font-size: 1.4rem;
-    background: #0B1739;
-    color: #AEB9E1;
+    background: #0b1739;
+    color: #aeb9e1;
 }
 
-.header_search-input{
+.header_search-input {
     background-color: transparent;
     border: none;
     outline: none;
     padding-left: 6px;
-    color: #AEB9E1;
+    color: #aeb9e1;
     font-size: 1.4rem;
 }
 
 .header_search-input::placeholder {
-    color: #AEB9E1;
+    color: #aeb9e1;
 }
 
-.filer_box{
-    background: #0B1739;
-    border: 1px solid #343B4F;
+.filer_box {
+    background: #0b1739;
+    border: 1px solid #343b4f;
     border-radius: 6px;
     height: 42px;
     width: 119px;
-    color: #AEB9E1;
+    color: #aeb9e1;
     display: flex;
     gap: 4px;
     justify-content: center;
@@ -238,10 +234,10 @@ body {
 }
 
 #filter {
-    background: #0B1739;
-    border: 1px solid #343B4F;
+    background: #0b1739;
+    border: 1px solid #343b4f;
     border-radius: 6px;
-    color: #AEB9E1;
+    color: #aeb9e1;
     height: 40px;
     font-size: 1.4rem;
     border: none;
@@ -249,12 +245,11 @@ body {
     cursor: pointer;
 }
 
-
-.add_page{
-    background: #0B1739;
-    border: 1px solid #343B4F;
+.add_page {
+    background: #0b1739;
+    border: 1px solid #343b4f;
     border-radius: 6px;
-    color: #AEB9E1;
+    color: #aeb9e1;
     height: 42px;
     width: 61px;
     font-size: 1.4rem;
@@ -285,7 +280,7 @@ body {
 
 .product-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .product-image {
@@ -306,7 +301,7 @@ body {
 
 .product-info {
     padding: 12px;
-    background: #928B8B;
+    background: #928b8b;
     color: #000;
 }
 
