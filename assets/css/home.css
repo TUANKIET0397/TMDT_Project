@@ -340,22 +340,22 @@ section p {
 
 /*anh mac dinh */
 .tshirt {
-  background-image: url("./home_assets/t-shirt.png");
+  background-image: url("../../home_assets/t-shirt.png");
 }
 .shirt {
-  background-image: url("./home_assets/shirt.png");
+  background-image: url("../../home_assets/shirt.png");
 }
 .sweatshirt {
-  background-image: url("./home_assets/swearshirt.png");
+  background-image: url("../../home_assets/swearshirt.png");
 }
 .socks {
-  background-image: url("./home_assets/socks.png");
+  background-image: url("../../home_assets/socks.png");
 }
 .outerwear {
-  background-image: url("./home_assets/outerswear.png");
+  background-image: url("../../home_assets/outerswear.png");
 }
 .shoes {
-  background-image: url("./home_assets/shoes.png");
+  background-image: url("../../home_assets/shoes.png");
 }
 
 /* --- hien thi--- */
@@ -383,16 +383,16 @@ section p {
 @keyframes flickerTshirt {
   0%,
   100% {
-    background-image: url("./home_assets/t-shirt1.png");
+    background-image: url("../../home_assets/t-shirt1.png");
   }
   25% {
-    background-image: url("./home_assets/t-shirt2.png");
+    background-image: url("../../home_assets/t-shirt2.png");
   }
   50% {
-    background-image: url("./home_assets/t-shirt3.png");
+    background-image: url("../../home_assets/t-shirt3.png");
   }
   75% {
-    background-image: url("./home_assets/t-shirt4.png");
+    background-image: url("../../home_assets/t-shirt4.png");
   }
 }
 .tshirt:hover {
@@ -403,16 +403,16 @@ section p {
 @keyframes flickerShirt {
   0%,
   100% {
-    background-image: url("./home_assets/shirt1.png");
+    background-image: url("../../home_assets/shirt1.png");
   }
   25% {
-    background-image: url("./home_assets/shirt2.png");
+    background-image: url("../../home_assets/shirt2.png");
   }
   50% {
-    background-image: url("./home_assets/shirt3.png");
+    background-image: url("../../home_assets/shirt3.png");
   }
   75% {
-    background-image: url("./home_assets/shirt4.png");
+    background-image: url("../../home_assets/shirt4.png");
   }
 }
 .shirt:hover {
@@ -925,7 +925,101 @@ section p {
   margin-top: 6px;
 }
 
+/* Footer */
+footer {
+  background: #ffffff;
+  color: white;
+  padding: 45px 5px 0 5px;
+}
+h3 {
+  font-size: 36px;
+  margin: 7px 0;
+}
 
+.footer-grid {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.footer-grid div {
+width: 33.1%;
+background-color: #171717;
+height: 146px;
+padding: 25px 43px;
+}
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  color: white;
+}
+.bottom-left, .bottom-center, .bottom-right {
+  background-color: #000000;
+  width: 33.1%;
+height: 733px;
+padding: 25px 43px;
+}
+.bottom ul {
+  list-style: none;
+  font-size: 16px;  
+  margin-top: 24px;
+}
+.bottom li {
+  margin-bottom: 13px;
+}
+.bottom a {
+  text-decoration: none;
+  color: #828D8B;
+}
+
+/* Rating Box */
+.rating-box {
+  background: #5f5f5f;
+  padding: 12px;
+  width: 290px;
+  height: 163px;
+  margin-top: 24px;
+}
+
+.stars {
+  font-size: 24px;
+  color: #ffffff;
+}
+
+.rating-box p {
+  margin: 0 0 0 4px;
+  font-size: 16px;
+  color: #ddd;
+}
+
+.social-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.social-buttons button {
+  background: #d9d9d9;
+  color: rgb(0, 0, 0);
+  cursor: pointer;
+  width: 109px;
+  height: 42px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background 0.3s;
+}
+
+.social-buttons .Twitter {
+  width: 93px;
+  justify-content: center;
+}
+
+.social-buttons button:hover {
+  background: #777;
+}
 
 
 /* ----- Đăng ký email ----- */
