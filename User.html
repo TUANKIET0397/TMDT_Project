@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <!-- Reset css -->
+    <link rel="stylesheet" href="./assets/css/reset.css">
+    <!-- font Embed -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
+        rel="stylesheet">
+     <!-- Style css -->
+    <link rel="stylesheet" href="./assets/css/User.css">
+
+</head>
+<body>
+    <div class="Listproduct_container">
+        <!-- Sidebar -->
+        <aside class="Listproduct_sidebar">
+            <div class="sidebar_content">
+                <div class="Listproduct_logo">Shoppmall</div>
+                <div class="sidebar_search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" class="sidebar_search-input" placeholder=" Search for...">
+                </div>
+                
+                <nav class="menu">
+                    <div class="menu-item dashboard-btn">
+                        <div class="item_container">
+                            <i class="fa-solid fa-house"></i>
+                            <div class="item_title">Dashboard</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right dashboard-icon"></i>
+                    </div>
+                    <div class="dashboard_menu">
+                        <div class="dashboard_item">
+                            Reports
+                        </div>
+                        <div class="dashboard_item">
+                            Products
+                        </div><div class="dashboard_item">
+                            Invoices
+                        </div>
+                    </div>                
+                    <div class="menu-item">
+                        <div class="item_container">
+                            <i class="fa-solid fa-comment"></i>
+                            <div class="item_title">Chat</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right"></i>
+
+                    </div>
+                    <div class="menu-item">
+                        <div class="item_container">
+                            <i class="fa-solid fa-user"></i>
+                            <div class="item_title">Users</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </div>
+                </nav>
+            </div>
+
+            <div class="user-section">
+                <div class="user-info">
+                    <div class="user-avatar"></div>
+                    <div>
+                        <div class="user-name">Nemo</div>
+                        <div class="user_sub">
+                            <div class="user-subtitle">Account settings</div>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+  <div class="user-header">
+    <h2>User information</h2>
+    <div class="search-box">
+      <i class="fa fa-search"></i>
+      <input type="text" placeholder="Search User">
+    </div>
+  </div>
+
+  <div class="user-table">
+    <div class="table-header">
+      <div class="col-id"><i class="fa-solid fa-minus"></i> ID</div>
+      <div class="col-client"><i class="fa-solid fa-user"></i> Client</div>
+      <div class="col-phone"><i class="fa-solid fa-phone"></i> Phone number</div>
+      <div class="col-invoice"><i class="fa-solid fa-file-invoice"></i> Invoice</div>
+      <div class="col-country"><i class="fa-solid fa-location-dot"></i> Country</div>
+      <div class="col-total">Total</div>
+      <div class="col-setting">Setting</div>
+    </div>
+
+    <div class="table-row">
+      <div class="col-id"><input type="checkbox" > #1532</div>
+      <div class="col-client">
+        <p class="name">John Carter</p>
+        <p class="email">hello@johncarter.com</p>
+      </div>
+      <div class="col-phone">(208) 555-0112</div>
+      <div class="col-invoice">12531</div>
+      <div class="col-country">District 7</div>
+      <div class="col-total">$ 1,099.24</div>
+      <div class="col-setting">
+        <i class="fa-solid fa-trash"></i>
+        <span class="tooltip">Xóa tài khoản</span>
+      </div>
+    </div>
+
+    <div class="table-row">
+      <div class="col-id"><input type="checkbox"> #1531</div>
+      <div class="col-client">
+        <p class="name">Sophie Moore</p>
+        <p class="email">contact@sophiemoore.com</p>
+      </div>
+      <div class="col-phone">(252) 555-0126</div>
+      <div class="col-invoice">12531</div>
+      <div class="col-country">District 1</div>
+      <div class="col-total">$ 5,870.32</div>
+      <div class="col-setting"><i class="fa-solid fa-trash"></i><span class="tooltip">Xóa tài khoản</span></div>
+    </div>
+
+    <div class="table-row">
+      <div class="col-id"><input type="checkbox" > #1530</div>
+      <div class="col-client">
+        <p class="name">Matt Cannon</p>
+        <p class="email">info@mattcannon.com</p>
+      </div>
+      <div class="col-phone">(319) 555-0115</div>
+      <div class="col-invoice">12531</div>
+      <div class="col-country">Bình Thạnh</div>
+      <div class="col-total">$ 13,899.48</div>
+      <div class="col-setting"><i class="fa-solid fa-trash"></i><span class="tooltip">Xóa tài khoản</span></div>
+    </div>
+
+    <div class="table-row">
+      <div class="col-id"><input type="checkbox"> #1529</div>
+      <div class="col-client">
+        <p class="name">Graham Hills</p>
+        <p class="email">hi@grahamhills.com</p>
+      </div>
+      <div class="col-phone">(803) 555-0111</div>
+      <div class="col-invoice">12531</div>
+      <div class="col-country">Gò Vấp</div>
+      <div class="col-total">$ 1,569.12</div>
+      <div class="col-setting"><i class="fa-solid fa-trash"></i><span class="tooltip">Xóa tài khoản</span></div>
+    </div>
+
+    <div class="table-row">
+      <div class="col-id"><input type="checkbox" > #1528</div>
+      <div class="col-client">
+        <p class="name">Sandy Houston</p>
+        <p class="email">contact@sandyhouston.com</p>
+      </div>
+      <div class="col-phone">(270) 555-0117</div>
+      <div class="col-invoice">12531</div>
+      <div class="col-country">Tân Bình</div>
+      <div class="col-total">$ 899.16</div>
+      <div class="col-setting"><i class="fa-solid fa-trash"></i><span class="tooltip">Xóa tài khoản</span></div>
+    </div>
+
+    <div class="table-row">
+      <div class="col-id"><input type="checkbox"> #1527</div>
+      <div class="col-client">
+        <p class="name">Andy Smith</p>
+        <p class="email">hello@andysmith.com</p>
+      </div>
+      <div class="col-phone">(217) 555-0113</div>
+      <div class="col-invoice">12531</div>
+      <div class="col-country">District 4</div>
+      <div class="col-total">$ 2,449.64</div>
+      <div class="col-setting"><i class="fa-solid fa-trash"></i><span class="tooltip">Xóa tài khoản</span></div>
+    </div>
+  </div>
+        </main> 
+    </div>  
+
+
+    <script>
+        const dashboardBtn = document.querySelector('.dashboard-btn');
+        const dashboardMenu = document.querySelector('.dashboard_menu');
+        const dashboardIcon = document.querySelector('.dashboard-icon');
+        const menuItems = document.querySelectorAll('.menu-item');
+
+        // Ẩn menu
+        dashboardMenu.style.maxHeight = '0';
+        dashboardMenu.style.opacity = '0';
+        dashboardMenu.style.overflow = 'hidden';
+        dashboardMenu.style.transition = 'max-height 0.5s ease, opacity 0.5s ease';
+
+        // Biến theo dõi trạng thái menu
+        let isMenuOpen = false;
+
+        dashboardBtn.addEventListener('click', function() {
+        isMenuOpen = !isMenuOpen;
+        
+        if (isMenuOpen) {
+            dashboardMenu.style.maxHeight = dashboardMenu.scrollHeight + 'px';
+            dashboardMenu.style.opacity = '1';
+            dashboardIcon.style.transform = 'rotate(90deg)';
+            dashboardIcon.style.transition = 'transform 0.3s ease';
+        } else {
+            dashboardMenu.style.maxHeight = '0';
+            dashboardMenu.style.opacity = '0';
+            dashboardIcon.style.transform = 'rotate(0deg)';
+        }
+        });
+        
+        // Xử lý active menu item
+        menuItems.forEach(item => {
+            const container = item.querySelector('.item_container');
+            if (!container) return;
+
+            item.addEventListener('click', function(e) {
+                e.stopPropagation();
+
+                const isActive = container.classList.contains('menu-item--active');
+
+                menuItems.forEach(i => {
+                const c = i.querySelector('.item_container');
+                if (c) c.classList.remove('menu-item--active');
+                });
+
+                if (!isActive) container.classList.add('menu-item--active');
+            });
+            });
+
+    </script>
+</body> 
+</html> 
