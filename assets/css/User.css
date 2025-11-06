@@ -269,11 +269,11 @@ body {
 }
 
 .table-row:nth-child(odd) {
-  background-color: #0d1530; /* màu xanh đậm */
+  background-color: #0d1530;
 }
 
 .table-row:nth-child(even) {
-  background-color: #081024; /* màu đen/xanh rất đậm */
+  background-color: #081024; 
 }
 
 .name {
