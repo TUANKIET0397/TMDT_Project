@@ -15,6 +15,26 @@ body {
 }
 
 /* Common */
+.clamp-text {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--line-content);
+    overflow: hidden;
+    width: 180px;
+}
+
+.clamp-text-other {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--line-content);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    word-break: break-word;
+    width: 145px;
+    text-align: center;
+}
+
 .Listproduct_container {
     display: flex;
     min-height: 100vh;
@@ -184,7 +204,8 @@ a {
 }
 
 .section__status {
-    padding: 50px 30px 0;
+    padding: 50px 0 0;
+    border-radius: 10px;
     background: #0b1739;
 }
 
@@ -192,6 +213,7 @@ a {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 30px;
 }
 
 .section__heading {
@@ -271,10 +293,30 @@ a {
 }
 
 /* label - heading*/
+.section__inner-label--other,
 .section__inner-label {
     display: grid;
+    align-items: center;
     grid-template-columns: 130px 1fr 145px 135px 140px 140px 1fr 80px;
-    padding: 30px 0 24px 0;
+}
+.section__inner-label {
+    grid-auto-rows: 93px;
+}
+.section__inner-label--other {
+    padding: 30px 30px 24px;
+}
+
+.section__inner-label {
+    padding-right: 30px;
+    padding-left: 20px;
+}
+
+.section__inner-label:nth-child(odd) {
+    background: #0e1c43b9;
+}
+
+.section__inner-label:hover {
+    background: #0911289c;
 }
 
 .section-item:nth-of-type(1) {
@@ -312,4 +354,196 @@ a {
     color: #fff;
     font-size: 1rem;
     font-weight: 600;
+}
+
+/* Add status products */
+.section-checkbox {
+    /* visibility: hidden; */
+    opacity: 0;
+}
+
+.section-checkmark {
+    position: relative;
+    padding-top: 1px;
+    font-weight: 500;
+}
+.section-checkmark::before {
+    position: absolute;
+    top: 2px;
+    left: -17px;
+    content: "";
+    width: 12px;
+    height: 12px;
+    outline: 1px solid #7e89ac;
+    border-radius: 3px;
+    background: transparent;
+}
+
+.section-checkmark::after {
+    position: absolute;
+    top: 2px;
+    left: -17px;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    content: url(../icons/Check.svg);
+    width: 12px;
+    height: 12px;
+    border-radius: 2.5px;
+    font-size: 13px;
+    background: #cb3cff;
+    outline: 1px solid #cb3cff;
+}
+
+.section__custom-checkbox {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.section__custom-checkbox input:checked + .section-checkmark::after {
+    display: flex;
+}
+
+.section__info-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.section__info-name,
+.section__info-mail {
+    font-weight: 500;
+}
+
+.section__info-mail {
+    color: #a6b1d8;
+}
+
+.section-item__date,
+.section-item__location,
+.section-item__total,
+.section-item__total {
+    padding-right: 5px;
+}
+
+/* Status - red - yellow - green */
+.section-item__status--green {
+    position: relative;
+    display: block;
+    margin-left: -5px;
+    width: 60px;
+    height: 18px;
+    border: 1px solid #085244;
+    border-radius: 3px;
+    background: #09363b;
+}
+
+.section-item__status--green::before {
+    position: absolute;
+    top: 4px;
+    left: 12px;
+    content: "Delivered";
+    font-size: 1rem;
+    font-weight: 500;
+    color: #14ca74;
+}
+
+.section-item__status--green::after {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    content: "";
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #14ca74;
+}
+
+.section-item__status--red {
+    position: relative;
+    display: block;
+    margin-left: -5px;
+    width: 60px;
+    height: 18px;
+    border: 1px solid #632f49;
+    border-radius: 3px;
+    background: #3c2442;
+}
+
+.section-item__status--red::before {
+    position: absolute;
+    top: 4px;
+    left: 12px;
+    content: "Canceled";
+    font-size: 1rem;
+    font-weight: 500;
+    color: #ff5a65;
+}
+
+.section-item__status--red::after {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    content: "";
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #ff5a65;
+}
+
+.section-item__status--yellow {
+    position: relative;
+    display: block;
+    margin-left: -5px;
+    width: 60px;
+    height: 18px;
+    border: 1px solid #634d2c;
+    border-radius: 3px;
+    background: #3c3532;
+}
+
+.section-item__status--yellow::before {
+    position: absolute;
+    top: 4px;
+    left: 13px;
+    content: "Prepare";
+    font-size: 1rem;
+    font-weight: 500;
+    color: #eda927;
+}
+
+.section-item__status--yellow::after {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    content: "";
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #eda927;
+}
+
+.section-item__date,
+.section-item__location,
+.section-item__total {
+    font-weight: 500;
+}
+
+.section-item__wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    padding: 7px 0;
+}
+
+.section-icon__trash i {
+    font-size: 20px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.section-icon__trash:hover {
+    opacity: 0.9;
+    cursor: pointer;
+    transform: scale(1.2);
 }
