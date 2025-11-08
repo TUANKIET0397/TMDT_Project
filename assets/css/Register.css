@@ -174,7 +174,7 @@ header {
     border-radius: 20px;
     padding: 50px 60px;
     width: 1000px;
-    height: 720px;
+    height: 635px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
@@ -184,17 +184,17 @@ header {
     color: #8A38F5;
     font-size: 4rem;
     font-weight: 700;
-    margin: -24px 0 12px 0;
+    margin: -30px 0 12px 0;
 }
 
 .rgt_info {
     display: flex;
-    margin-bottom: 12px;
+    margin-bottom: 6px;
 }
 
 .rgt_info input {
     width: 938px;
-    height: 72px;
+    height: 64px;
     padding: 12px 0;
     border: none;
     border-bottom: 2px solid #666;
@@ -213,7 +213,7 @@ header {
 
 #Gender{
     width: 50%;
-    height: 70px;
+    height: 64px;
     padding: 12px 0;
     border: none;
     border-bottom: 2px solid #666;
