@@ -305,7 +305,7 @@ a {
     grid-template-columns: repeat(auto-fit, minmax(219px, 1fr));
     row-gap: 1px;
     column-gap: 1px;
-    width: 440px;
+    width: 439px;
     background: #d9d9d9;
 }
 
@@ -317,7 +317,7 @@ a {
     border: 1px solid #999898;
 }
 
-.add-card__item::before {
+/* .add-card__item::before {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -325,9 +325,9 @@ a {
     content: "";
     width: calc(440px / 6);
     background: #cfcfd0;
-}
+} */
 
-.add-card__item::after {
+/* .add-card__item::after {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -335,7 +335,7 @@ a {
     content: "";
     width: calc(440px / 6);
     background: #cfcfd0;
-}
+} */
 
 .add-card__plus {
     position: absolute;
