@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shoppmall - all_products</title>
+  <link rel="stylesheet" href="../assets/css/all_products.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700&display=swap"
+    rel="stylesheet" />
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <!-- HEADER -->
+  <header>
+    <div class="logo">shoppmall</div>
+
+    <nav>
+      <ul class="nav-links">
+        <li class="dropdown">
+          <select id="product-select">
+            <option selected><a href>all products</a></option>
+            <option>t-shirts</option>
+            <option>shirts</option>
+            <option>knitwear</option>
+            <option>sweatshirts</option>
+            <option>pants</option>
+            <option>outerwear</option>
+            <option>shoes</option>
+          </select>
+        </li>
+        <li><a href="t_shirts.html">t-shirts</a></li>
+        <li><a href="shirts.html">shirts</a></li>
+        <li><a href="knitwear.html">knitwear</a></li>
+        <li><a href="sweatshirts.html">sweatshirts</a></li>
+        <li><a href="pants.html">pants</a></li>
+        <li><a href="outerwear.html">outerwear</a></li>
+        <li><a href="shoes.html">shoes</a></li>
+        <li><a href="../About.html">about us</a></li>
+      </ul>
+    </nav>
+
+    <div class="icons">
+      <i class="fas fa-search"></i>
+      <i class="fas fa-user" id="user-icon"></i>
+      <i class="fas fa-shopping-cart"></i>
+    </div>
+  </header>
+
+  <!-- HERO SLIDER -->
+  <section class="hero">
+    <h2>Best-seller</h2>
+    <p>
+      Discover our meticulous curation of the finest pieces from <br /> the
+      men's
+      wardrobe around the world.
+    </p>
+
+    <div class="filters">
+      <select>
+        <option>Prices</option>
+      </select>
+      <select>
+        <option>Category</option>
+      </select>
+      <select>
+        <option>Size</option>
+      </select>
+      <p>250 products</p>
+  </section>
+
+  <section class="best-seller">
+    <div class="best-container" id="product-list">
+      <!-- Sản phẩm sẽ được thêm vào đây bởi JavaScript -->
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <h3>Fair pricing</h3>
+        <p>
+          We offer a meticulous selection of high-quality clothing and
+          accessories at the best prices.
+        </p>
+      </div>
+      <div>
+        <h3>Fast delivery</h3>
+        <p>
+          Dispatch within 24 business hours. Swift and reliable delivery to
+          your doorstep.
+        </p>
+      </div>
+      <div>
+        <h3>Return and exchange</h3>
+        <p>You have up to 14 days to return your products to us.</p>
+      </div>
+    </div>
+    <div class="bottom">
+      <div class="bottom-left">
+        <ul>
+          <li><a href="#">ABOUT US</a></li>
+          <li><a href="#">Web Design</a></li>
+          <li><a href="#">Dog Trainer</a></li>
+          <li><a href="#">Medical Assistant</a></li>
+          <li><a href="#">Medical Assistant</a></li>
+          <li><a href="#">Medical Assistant</a></li>
+          <li><a href="#">Dog Trainer</a></li>
+          <li><a href="#">Nursing Assistant</a></li>
+          <li><a href="#">President of Sales</a></li>
+          <li><a href="#">President of Sales</a></li>
+          <li><a href="#">Nursing Assistant</a></li>
+          <li><a href="#">Medical Assistant</a></li>
+          <li><a href="#">Marketing Coordinator</a></li>
+          <li><a href="#">Nursing Assistant</a></li>
+          <li><a href="#">Nursing Assistant</a></li>
+          <li><a href="#">President of Sales</a></li>
+        </ul>
+      </div>
+      <div class="bottom-center">
+        <ul>
+          <li><a href="#">Initiate a Return</a></li>
+          <li><a href="#">Help & Questions</a></li>
+          <li><a href="#">Join Us</a></li>
+          <li><a href="#">Terms and Conditions</a></li>
+          <li><a href="#">Legal Mentions</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+      <div class="bottom-right">
+        <div class="rating-box">
+          <div class="stars">
+            ★★★★★
+          </div>
+          <p><strong>4.9</strong> out of 5 stars</p>
+          <p>Based on <strong>808 customer </strong>reviews</p>
+
+          <div class="social-buttons">
+            <button><i class="fa-brands fa-google"></i> Google</button>
+            <button class="Twitter"><i class="fa-brands fa-x-twitter"></i> Twitter</button>
+          </div>
+        </div>
+
+        <!-- Khối đăng ký email -->
+        <div class="subscribe-box">
+          <p><strong>10% off your first order</strong></p>
+          <form>
+            <input type="email" placeholder="Email" required />
+            <button type="submit">SUBSCRIBE</button>
+          </form>
+        </div>
+
+        <!-- Logo thanh toán -->
+        <div class="payment-box">
+          <img src="./home_assets/amex.png" alt="Amex" />
+          <img src="./home_assets/applepay.png" alt="Apple Pay" />
+          <img src="./home_assets/mastercard.png" alt="MasterCard" />
+          <img src="./home_assets/paypal.png" alt="PayPal" />
+          <img src="./home_assets/shop.png" alt="Shop Pay" />
+          <img src="./home_assets/visa.png" alt="Visa" />
+        </div>
+        <p class="copyright">© 2025 shoppmall. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const products = [
+        {
+          name: "ROCK JEAN",
+          price: "260.00$",
+          image: "./home_assets/item1.png",
+          desc: "Type II Trucker Jacket 'Pioneer Jacket' - Raw Selvedge Denim",
+          label: "NEW"
+        },
+        {
+          name: "URBAN HOODIE",
+          price: "120.00$",
+          image: "./home_assets/item2.png",
+          desc: "Cozy urban-style hoodie with minimal design",
+          label: "SALE"
+        },
+        {
+          name: "VINTAGE LEATHER",
+          price: "350.00$",
+          image: "./home_assets/item3.png",
+          desc: "Handmade vintage brown leather jacket",
+          label: "HOT"
+        }
+      ];
+
+      const productList = document.getElementById("product-list");
+
+      products.forEach(p => {
+        const item = document.createElement("div");
+        item.className = "best-item";
+        item.innerHTML = `
+          <div class="image-wrapper">      
+            <img src="${p.image}" alt="${p.name}">
+            <span class="new-label">${p.label}</span>
+          </div>   
+          <div class="Name-price">
+            <h4>${p.name}</h4> 
+            <div class="price">${p.price}</div> 
+          </div>
+          <div class="info">
+            <p class="desc">${p.desc}</p>
+            <div class="bottom"></div>
+          </div>
+        `;
+        productList.appendChild(item);
+      });
+    });
+  </script>
+  <script>
+    document.getElementById("user-icon").addEventListener("click", function () {
+      window.location.href = "profile.html";
+    });
+  </script>
+</body>
+
+</html>

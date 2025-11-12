@@ -1,0 +1,33 @@
+{
+    "name": "tmdt_project",
+    "version": "1.0.0",
+    "main": "src/index.js",
+    "scripts": {
+        "start": "nodemon --inspect src/index.js",
+        "watch": "sass --watch src/resources/scss/:src/public/css/",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/TUANKIET0397/TMDT_Prpject.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/TUANKIET0397/TMDT_Prpject/issues"
+    },
+    "homepage": "https://github.com/TUANKIET0397/TMDT_Prpject#readme",
+    "description": "",
+    "dependencies": {
+        "dotenv": "^17.2.3",
+        "express": "^5.1.0",
+        "express-handlebars": "^8.0.3",
+        "mysql2": "^3.15.3"
+    },
+    "devDependencies": {
+        "morgan": "^1.10.1",
+        "nodemon": "^3.1.11",
+        "sass": "^1.94.0"
+    }
+}

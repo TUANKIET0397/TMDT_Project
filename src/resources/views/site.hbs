@@ -1,0 +1,8 @@
+{{! Home page }}
+
+<h1>Danh sách Users</h1>
+<ul>
+    {{#each users}}
+        <li>{{this.FirstName}} - {{this.LastName}} - {{this.PhoneNumber}}</li>
+    {{/each}}
+</ul>
