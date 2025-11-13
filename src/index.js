@@ -19,6 +19,7 @@ app.use(express.json()) // xử lý dữ liệu json
 
 // xử lý dạng file tĩnh - start form public
 app.use(express.static(path.join(__dirname, "public")))
+app.use("/img", express.static(path.join(__dirname, "img")))
 
 // HTTP logger
 app.use(morgan("combined"))
