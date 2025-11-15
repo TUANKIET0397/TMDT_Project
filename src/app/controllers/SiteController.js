@@ -4,7 +4,7 @@ const Site = require("../models/Site")
 class SiteController {
     async index(req, res, next) {
         try {
-            const users = await Site.all() // lấy dữ liệu từ bảng users
+            const users = await Site.all() // kết hợp hai mảng dữ liệu
             res.render("site", { users }) // truyền dữ liệu vào view
         } catch (err) {
             next(err)

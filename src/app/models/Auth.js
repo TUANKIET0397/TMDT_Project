@@ -1,6 +1,6 @@
 // src/app/models/ProductSite.js
 const db = require("../../config/db")
 
-class AuthtSite {}
+class AuthSite {}
 
-module.exports = AuthtSite
+module.exports = AuthSite
