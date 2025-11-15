@@ -1,22 +1,36 @@
-/* --- Menu --- */
-/* Reset va font chung */
+// Global Styles
 * {
-    margin: 0;
-    padding: 0;
     box-sizing: border-box;
 }
 
-body {
-    font-family: "Nunito Sans", sans-serif;
-    background-color: #fff;
+:root {
 }
 
-// commom styles
-// .main-wrapper {
-//     max-width: 1512px;
-//     margin: 0 auto;
-//     // padding: 0 11px;
-// }
+html {
+    font-size: 62.5%;
+}
+
+body {
+    font-size: 1.6rem;
+    font-family: "Nunito Sans", sans-serif;
+}
+
+/* Common */
+.underline {
+    text-decoration: underline;
+    /* border-bottom: 1px solid #000; */
+}
+
+a {
+    text-decoration: none;
+}
+
+.header__checkout-container {
+    width: 1250px;
+    max-width: calc(100% - 138px);
+    margin: 0 auto;
+}
+
 .container {
     width: 1512px;
     max-width: calc(100% - 11px);

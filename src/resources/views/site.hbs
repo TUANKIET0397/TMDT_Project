@@ -1,9 +1,271 @@
 {{! Home page }}
 
-<h1>Danh sách Users</h1>
-<ul>
+<!-- HERO SLIDER -->
+<section class="hero">
+    <h2>New arrivals</h2>
+    <p>
+        Discover our meticulous curation of the finest pieces from the men's
+        wardrobe around the world.
+    </p>
 
-    {{#each users}}
-        <li>{{this.FirstName}} --- {{this.Descriptions}}</li>
-    {{/each}}
-</ul>
+    <div class="filters">
+        <select>
+            <option>Prices</option>
+            {{#if minPrice}}
+                <option>${{minPrice}} - ${{maxPrice}}</option>
+            {{/if}}
+        </select>
+        <select>
+            <option>Category</option>
+            {{#each categories}}
+                <option value="{{this.ID}}">{{this.TypeName}}
+                    ({{this.ProductCount}})</option>
+            {{/each}}
+        </select>
+        <select>
+            <option>Size</option>
+            {{#each sizes}}
+                <option value="{{this.ID}}">{{this.SizeName}}</option>
+            {{/each}}
+        </select>
+        <p>{{totalProducts}} products</p>
+    </div>
+
+    <div class="slider">
+        <div class="slide-track">
+            {{#each sliderImages}}
+                <div class="slide">
+                    <img
+                        src="./home_assets/{{this.ImgPath}}"
+                        alt="{{this.Title}}"
+                    />
+                    <div class="caption">
+                        <h3>{{this.Title}}</h3>
+                        <p>{{this.Description}}</p>
+                    </div>
+                </div>
+            {{/each}}
+
+            {{! Lặp lại để chạy vô tận }}
+            {{#each sliderImages}}
+                <div class="slide">
+                    <img
+                        src="./home_assets/{{this.ImgPath}}"
+                        alt="{{this.Title}}"
+                    />
+                    <div class="caption">
+                        <h3>{{this.Title}}</h3>
+                        <p>{{this.Description}}</p>
+                    </div>
+                </div>
+            {{/each}}
+        </div>
+    </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="categories">
+    <h2>Our products</h2>
+    <p>
+        A carefully curated collection bringing together the best of each
+        category.
+    </p>
+    <div class="cat-grid">
+        {{#each categories}}
+            <div class="cat-item {{this.TypeName}}">
+                <a href="/products?type={{this.ID}}">
+                    <h3>{{this.TypeName}}</h3>
+                    <p>{{this.ProductCount}} products</p>
+                </a>
+            </div>
+        {{/each}}
+    </div>
+</section>
+
+<section class="chunkky-section">
+    <div class="chunkky-content">
+        <h2>chunkky tee<span class="tm">™</span></h2>
+        <p>The first "made by shoppmall" 300GSM heavyweight t-shirt</p>
+    </div>
+</section>
+
+<!-- CHUNKKY BANNER SECTION -->
+<section class="chunkky-banner">
+    <div class="banner-container">
+        {{#each featuredProducts}}
+            <div class="banner-item">
+                <img
+                    src="/images/{{this.ImgPath}}"
+                    alt="{{this.ProductName}}"
+                />
+                <div class="banner-info">
+                    <div class="left">
+                        <h3>{{this.ProductName}}</h3>
+                        <p class="sizes">{{this.AvailableSizes}}</p>
+                    </div>
+                    <div class="right">
+                        <p class="price">${{this.Price}}</p>
+                    </div>
+                </div>
+            </div>
+        {{/each}}
+    </div>
+</section>
+
+<!-- BEST SELLER -->
+<section class="best-seller">
+    <h2>Best seller</h2>
+    <small>A curated selection of our top-selling products.</small>
+
+    <div class="best-scroll">
+        {{#each bestSellers}}
+            <div class="best-item">
+                <div class="image-wrapper">
+                    <span class="new-label">BEST</span>
+                    <img
+                        src="/images/{{this.ImgPath}}"
+                        alt="{{this.ProductName}}"
+                    />
+                    <div class="overlay-name">{{this.TypeName}}</div>
+                </div>
+                <div class="info">
+                    <p class="desc">{{this.ProductName}}</p>
+                    <div class="bottom">
+                        <p class="price">${{this.Price}}</p>
+                        <button
+                            onclick="addToCart({id: {{this.ID}}, name: '{{this.ProductName}}', price: {{this.Price}}, img: '{{this.ImgPath}}'})"
+                            class="buy-btn"
+                        >Buy</button>
+                    </div>
+                </div>
+            </div>
+        {{/each}}
+    </div>
+</section>
+
+<!-- CHANNELS -->
+<section class="channels">
+    <div class="left">
+        <h2><em>Shoppmall Channels</em></h2>
+        <p class="sub">Iconic pieces, spring stories.</p>
+
+        <button class="social-btn insta">
+            <i class="fab fa-instagram"></i>
+            Follow us on Instagram
+        </button>
+
+        <button class="social-btn tiktok">
+            <i class="fab fa-tiktok"></i>
+            Follow us on TikTok
+        </button>
+    </div>
+
+    <div class="videos">
+        <div class="video-card">
+            <div class="video-thumb">
+                <img src="./home_assets/vid1.png" alt="Channel video 1" />
+                <span class="play">&#9658;</span>
+                <span class="duration">1:23</span>
+            </div>
+            <p class="cap-vid">
+                Dive into the history of the Miyuki-zoku, those suit-clad
+                hoodlums who left their mark on Japan
+            </p>
+        </div>
+
+        <div class="video-card">
+            <div class="video-thumb">
+                <img src="./home_assets/vid2.png" alt="Channel video 2" />
+                <span class="play">&#9658;</span>
+                <span class="duration">1:23</span>
+            </div>
+            <p class="cap-vid">
+                Dive into the history of the Miyuki-zoku, those suit-clad
+                hoodlums who left their mark on Japan
+            </p>
+        </div>
+
+        <div class="video-card">
+            <div class="video-thumb">
+                <img src="./home_assets/vid3.png" alt="Channel video 3" />
+                <span class="play">&#9658;</span>
+                <span class="duration">1:23</span>
+            </div>
+            <p class="cap-vid">
+                Dive into the history of the Miyuki-zoku, those suit-clad
+                hoodlums who left their mark on Japan
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- NEW IN -->
+<section class="best-seller">
+    <h2>New in</h2>
+    <small>Freshly added must-haves.</small>
+
+    <div class="best-scroll">
+        {{#each newProducts}}
+            <div class="best-item">
+                <div class="image-wrapper">
+                    <span class="new-label">{{this.Badge}}</span>
+                    <img
+                        src="/images/{{this.ImgPath}}"
+                        alt="{{this.ProductName}}"
+                    />
+                    <div class="overlay-name">{{this.TypeName}}</div>
+                </div>
+                <div class="info">
+                    <p class="desc">{{this.ProductName}}</p>
+                    <div class="bottom">
+                        <p class="price">${{this.Price}}</p>
+                        <button
+                            onclick="addToCart({id: {{this.ID}}, name: '{{this.ProductName}}', price: {{this.Price}}, img: '{{this.ImgPath}}'})"
+                            class="buy-btn"
+                        >Buy</button>
+                    </div>
+                </div>
+            </div>
+        {{/each}}
+    </div>
+</section>
+
+<!-- CHUNKKY BANNER SECTION 2 -->
+<section class="chunkky-banner">
+    <div class="banner-container">
+        {{#each featuredProducts}}
+            <div class="banner-item">
+                <img
+                    src="/images/{{this.ImgPath}}"
+                    alt="{{this.ProductName}}"
+                />
+                <div class="banner-info">
+                    <div class="left">
+                        <h3>{{this.ProductName}}</h3>
+                        <p class="sizes">{{this.AvailableSizes}}</p>
+                    </div>
+                    <div class="right">
+                        <p class="price">${{this.Price}}</p>
+                    </div>
+                </div>
+            </div>
+        {{/each}}
+    </div>
+</section>
+
+<!-- CART DRAWER -->
+<div class="cart-overlay"></div>
+
+<div class="cart-drawer" id="cartDrawer">
+    <div class="cart-header">
+        <h3>Your Cart</h3>
+        <button class="close-cart" id="closeCart">&times;</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer">
+        <p>Total: <span id="cartTotal">$0.00</span></p>
+        <button class="checkout-btn">Checkout</button>
+    </div>
+</div>
+
+<script src="/js/home.js"></script>

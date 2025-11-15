@@ -10,8 +10,15 @@ const port = process.env.PORT || 3000
 // khi gõ tìm thư mục thì file index.js sẽ được tự động tìm
 const route = require("./routes")
 const db = require("./config/db")
-// connect to db
-db.connect()
+// connect to db - Test database connection
+db.getConnection()
+    .then((connection) => {
+        console.log("✅ Database connected")
+        connection.release()
+    })
+    .catch((err) => {
+        console.error("❌ Database error:", err.message)
+    })
 
 // middleware
 app.use(express.urlencoded({ extended: true })) // xử lý dữ liệu từ form

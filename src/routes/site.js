@@ -7,6 +7,8 @@ const siteController = require("../app/controllers/SiteController")
 router.get("/checkout", siteController.checkout) //lúc làm đổi post
 router.get("/profile", siteController.profile) //lúc làm đổi post
 router.get("/about", siteController.about)
-router.get("/", siteController.index)
+router.get("/", (req, res, next) => {
+    siteController.index(req, res, next)
+})
 
 module.exports = router

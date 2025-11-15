@@ -10,7 +10,6 @@ class ProductController {
         res.render("products/detail")
     }
 
-<<<<<<< HEAD
     async t_shirts(req, res) {
         res.render("products/t_shirts")
     }
@@ -37,7 +36,7 @@ class ProductController {
 
     async knitwear(req, res) {
         res.render("products/knitwear")
-=======
+    }
     // TẠO SẢN PHẨM MỚI
     async create(req, res) {
         try {
@@ -47,15 +46,14 @@ class ProductController {
             return res.status(201).json({
                 status: "success",
                 message: "Thêm sản phẩm thành công!",
-                product: newProduct
+                product: newProduct,
             })
         } catch (error) {
             return res.status(500).json({
                 status: "error",
-                message: error.message
+                message: error.message,
             })
         }
->>>>>>> 130e127b658482e3f9566bf3c176fdb9fa2e6a71
     }
 }
 
