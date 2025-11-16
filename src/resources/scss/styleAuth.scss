@@ -1,0 +1,213 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+}
+
+html {
+    font-size: 62.5%;
+}
+
+body {
+    font-size: 1.6rem;
+    height: 100vh;
+    font-family: "Nunito Sans", sans-serif;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Common */
+.underline {
+    text-decoration: underline;
+    /* border-bottom: 1px solid #000; */
+}
+
+a {
+    text-decoration: none;
+}
+
+.header__checkout-container {
+    width: 1250px;
+    max-width: calc(100% - 138px);
+    margin: 0 auto;
+}
+
+.container {
+    width: 1512px;
+    max-width: calc(100% - 11px);
+    margin: 0 auto;
+}
+
+// Header
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 80px;
+  background-color: rgba(217, 217, 217, 0);
+  border-bottom: 1px solid #e6e6e6;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header__link-logo {
+}
+
+.header__link-logo:hover {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.logo {
+    font-weight: 700;
+    font-size: 22px;
+    text-transform: lowercase;
+    letter-spacing: 1px;
+    color: #000;
+}
+
+/* --- Menu --- */
+.nav-links {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.nav-links li a {
+    color: #bcbcbc;
+    font-size: 14px;
+    text-transform: lowercase;
+    transition: color 0.3s ease;
+}
+
+.nav-links li a:hover {
+    color: #000;
+    text-decoration: none;
+}
+
+/* --- phan mo rong cua all products (mui ten di xuong) --- */
+.nav-links .dropdown select {
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    color: #bcbcbc;
+    font-family: inherit;
+    cursor: pointer;
+    text-transform: lowercase;
+    outline: none;
+    padding: 4px 8px;
+}
+
+.nav-links .dropdown {
+    position: relative;
+}
+
+.nav-links .dropdown select:hover {
+    color: #000;
+}
+
+/* --- Icons --- */
+.icons {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 18px;
+}
+
+.icons a {
+    color: #bcbcbc;
+    cursor: pointer;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.icons i {
+    color: #bcbcbc;
+    cursor: pointer;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.icons a:link,
+.icons a:visited {
+    color: #bcbcbc;
+}
+
+.icons a:hover {
+    transform: scale(1.15);
+    color: #000;
+}
+
+.icons i:hover {
+    transform: scale(1.15);
+    color: #000;
+}
+
+.icons a:active {
+    color: #555;
+}
+
+section {
+    padding: 5px 0px 24px;
+}
+
+section h2 {
+    font-size: 28px;
+    font-weight: 400;
+    margin-bottom: 10px;
+    color: #111;
+}
+
+section p {
+    font-size: 14px;
+    color: #000;
+    line-height: 1.6;
+    font-weight: 300;
+    font-size: 15px;
+}
+
+.hero {
+    text-align: left;
+    margin-top: 36px;
+}
+
+.hero h2 {
+    font-size: 36px;
+    font-weight: 500;
+    color: #111;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+    padding: 0 80px;
+}
+
+.hero p {
+    padding: 0 80px;
+}
+
+.filters {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-left: 35px;
+}
+
+.filters p {
+    font-size: 14px;
+    color: #666;
+    margin-left: auto;
+}
+
+.filters select {
+    border: none;
+    margin: 10px;
+    padding: 5px 10px;
+    font-weight: 300;
+    font-size: 14px;
+    color: #333;
+    background-color: transparent;
+}

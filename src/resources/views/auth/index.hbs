@@ -1,5 +1,41 @@
-{{#contentFor "styles"}}
+{{#contentFor "styleAuth"}}
     <link rel="stylesheet" href="/css/login.css" />
 {{/contentFor}}
 {{! Login }}
-login
+    <div class="bg-animation" aria-hidden="true">
+        <div class="color-blob blob1"></div>
+        <div class="color-blob blob2"></div>
+        <div class="color-blob blob3"></div>
+        <div class="color-blob blob4"></div>
+    </div>
+
+    
+    <!-- Login Form -->
+    <div class="login_container">
+        <div class="login_box">
+            <h1 class="login_title">Login</h1>
+            <form>
+                <div class="login_info">
+                    <input type="text" id="username" name="username" placeholder="User name" autocomplete="off">
+                </div>
+
+                <div class="login_info">
+                        <input type="password" id="password" name="password" placeholder="Password" autocomplete="new-password">
+                </div>
+
+                <div class="login_options">
+                    <label class="remember-me">
+                        <input type="checkbox">
+                        Remember me
+                    </label>
+                    <a href="Forget.html" class="forget-password">Forget password</a>
+                </div>
+
+                <button type="submit" class="login-button">Login</button>
+
+                <div class="register-link">
+                    Don't have an account? <a href="/auth/register" class="switch">Registers</a>
+                </div>
+            </form>
+        </div>
+    </div>

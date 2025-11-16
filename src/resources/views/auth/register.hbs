@@ -1,5 +1,53 @@
-{{#contentFor "styles"}}
+{{#contentFor "styleAuth"}}
     <link rel="stylesheet" href="/css/register.css" />
 {{/contentFor}}
 {{! Register }}
-register
+    <div class="bg-animation" aria-hidden="true">
+        <div class="color-blob blob1"></div>
+        <div class="color-blob blob2"></div>
+        <div class="color-blob blob3"></div>
+        <div class="color-blob blob4"></div>
+    </div>
+    <div class="rgt_container">
+        <div class="rgt_box">
+            <h1 class="rgt_title">Register</h1>
+            <form>
+                <div class="rgt_info">
+                    <input type="text" id="firstname" name="firstname" placeholder="First name" autocomplete="off"
+                        spellcheck="false">
+                    <input type="text" id="lastname" name="lastname" placeholder="Last name" autocomplete="off"
+                        spellcheck="false">
+                </div>
+                <div class="rgt_info">
+                    <select id="Gender">
+                        <option value="" selected>Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <input type="date" id="birthday" name="birthday">
+                </div>
+
+                <div class="rgt_info">
+                    <input type="text" id="address" name="address" placeholder="Address" autocomplete="off"
+                        spellcheck="false">
+                </div>
+
+                <div class="rgt_info">
+                    <input type="email" id="email" name="email" placeholder="Email" autocomplete="off"
+                        spellcheck="false">
+                </div>
+
+                <div class="rgt_info">
+                    <input type="password" id="password" name="password" placeholder="Password"
+                        autocomplete="new-password">
+                </div>
+                <div class="rgt_info">
+                    <input type="password" id="repassword" name="repassword" placeholder="Rewrite password"
+                        autocomplete="new-password">
+                </div>
+
+                <button type="submit" class="rgt-button">Register</button>
+            </form>
+        </div>
+    </div>
