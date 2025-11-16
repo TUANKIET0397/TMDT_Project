@@ -7,20 +7,26 @@
         <!-- Header -->
         <div class="section__inner-heading">
             <h1 class="section__heading">Orders Status</h1>
+            
             <div class="section__headeing-wrap--small">
                 <div class="section__data">
                     <div class="section__data-wrap">
-                        <i class="fa-solid fa-calendar"></i>
+                        <i class="fas fa-glass-whiskey"></i>
                         <div class="section-date">
                             {{#if stats}}
                                 Total:
                                 {{stats.TotalInvoices}}
                                 orders
                             {{/if}}
+                        
                         </div>
                     </div>
                 </div>
+                <div class="section-item section-icon__trash" id="delete-all-btn">
+    <i class="fa-solid fa-trash"></i>
+</div>
             </div>
+            
         </div>
 
         <!-- Header Labels -->
