@@ -440,7 +440,7 @@ a {
 
 .section-item__status--green::before {
     position: absolute;
-    top: 4px;
+    top: 2px;
     left: 12px;
     content: "Delivered";
     font-size: 1rem;
