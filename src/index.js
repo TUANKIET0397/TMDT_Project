@@ -6,11 +6,11 @@ const { engine } = require("express-handlebars")
 const app = express()
 const port = process.env.PORT || 3000
 
-// !!!
-// khi gõ tìm thư mục thì file index.js sẽ được tự động tìm
+// Route và Database
 const route = require("./routes")
 const db = require("./config/db")
-// connect to db - Test database connection
+
+// Test database connection
 db.getConnection()
     .then((connection) => {
         console.log("✅ Database connected")
@@ -20,24 +20,25 @@ db.getConnection()
         console.error("❌ Database error:", err.message)
     })
 
-// middleware
-app.use(express.urlencoded({ extended: true })) // xử lý dữ liệu từ form
-app.use(express.json()) // xử lý dữ liệu json
+// Middleware
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
 
-// xử lý dạng file tĩnh - start form public
+// Static files
 app.use(express.static(path.join(__dirname, "public")))
 app.use("/img", express.static(path.join(__dirname, "img")))
 
 // HTTP logger
 app.use(morgan("combined"))
 
-// Template engine
+// ===== TEMPLATE ENGINE =====
 app.engine(
     ".hbs",
     engine({
         extname: ".hbs",
         allowProtoPropertiesByDefault: true,
         helpers: {
+            // Helper cho content blocks (GIỮ NGUYÊN)
             block: function (name) {
                 this._blocks = this._blocks || {}
                 const val = (this._blocks[name] || []).join("\n")
@@ -48,15 +49,60 @@ app.engine(
                 this._blocks[name] = this._blocks[name] || []
                 this._blocks[name].push(options.fn(this))
             },
+
+            // ===== THÊM CÁC HELPER MỚI =====
+
+            // Format giá tiền: 5870.32 → 5,870.32
+            formatPrice: function (price) {
+                if (!price) return "0.00"
+                return parseFloat(price)
+                    .toFixed(2)
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+            },
+
+            // Format ngày: 2025-11-16 → Nov 16, 2025
+            formatDate: function (date) {
+                if (!date) return ""
+                const d = new Date(date)
+                const months = [
+                    "Jan",
+                    "Feb",
+                    "Mar",
+                    "Apr",
+                    "May",
+                    "Jun",
+                    "Jul",
+                    "Aug",
+                    "Sep",
+                    "Oct",
+                    "Nov",
+                    "Dec",
+                ]
+                return `${
+                    months[d.getMonth()]
+                } ${d.getDate()}, ${d.getFullYear()}`
+            },
+
+            // So sánh: {{#if (eq a b)}}
+            eq: function (a, b) {
+                return a === b
+            },
+
+            // Nhân: {{multiply price quantity}}
+            multiply: function (a, b) {
+                return parseFloat(a || 0) * parseFloat(b || 0)
+            },
         },
     })
 )
+
 app.set("view engine", ".hbs")
 app.set("views", path.join(__dirname, "resources", "views"))
 
-// nạp route vào app
+// Routes
 route(app)
 
+// Start server
 app.listen(port, () => {
     console.log(`App listening on port ${port}`)
 })

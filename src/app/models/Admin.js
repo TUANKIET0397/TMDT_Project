@@ -17,7 +17,7 @@ class AdminSite {
                     CASE 
                         WHEN si.StatusName = 'Delivered' THEN 'green'
                         WHEN si.StatusName = 'Cancelled' THEN 'red'
-                        WHEN si.StatusName = 'Pending' THEN 'yellow'
+                        WHEN si.StatusName = 'Prepare' THEN 'yellow'
                         ELSE 'gray'
                     END as StatusColor,
                     (SELECT SUM(ci.TotalPrice) 
