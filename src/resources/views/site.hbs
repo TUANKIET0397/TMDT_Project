@@ -1,3 +1,6 @@
+{{#contentFor "styles"}}
+    <link rel="stylesheet" href="/css/home.css" />
+{{/contentFor}}
 {{! Home page }}
 
 <!-- HERO SLIDER -->
@@ -35,10 +38,7 @@
         <div class="slide-track">
             {{#each sliderImages}}
                 <div class="slide">
-                    <img
-                        src="./home_assets/{{this.ImgPath}}"
-                        alt="{{this.Title}}"
-                    />
+                    <img src="./img/{{this.ImgPath}}" alt="{{this.Title}}" />
                     <div class="caption">
                         <h3>{{this.Title}}</h3>
                         <p>{{this.Description}}</p>
@@ -49,10 +49,7 @@
             {{! Lặp lại để chạy vô tận }}
             {{#each sliderImages}}
                 <div class="slide">
-                    <img
-                        src="./home_assets/{{this.ImgPath}}"
-                        alt="{{this.Title}}"
-                    />
+                    <img src="./img/{{this.ImgPath}}" alt="{{this.Title}}" />
                     <div class="caption">
                         <h3>{{this.Title}}</h3>
                         <p>{{this.Description}}</p>
@@ -94,10 +91,7 @@
     <div class="banner-container">
         {{#each featuredProducts}}
             <div class="banner-item">
-                <img
-                    src="/images/{{this.ImgPath}}"
-                    alt="{{this.ProductName}}"
-                />
+                <img src="/img/{{this.ImgPath}}" alt="{{this.ProductName}}" />
                 <div class="banner-info">
                     <div class="left">
                         <h3>{{this.ProductName}}</h3>
@@ -123,7 +117,7 @@
                 <div class="image-wrapper">
                     <span class="new-label">BEST</span>
                     <img
-                        src="/images/{{this.ImgPath}}"
+                        src="/img/{{this.ImgPath}}"
                         alt="{{this.ProductName}}"
                     />
                     <div class="overlay-name">{{this.TypeName}}</div>
@@ -163,7 +157,7 @@
     <div class="videos">
         <div class="video-card">
             <div class="video-thumb">
-                <img src="./home_assets/vid1.png" alt="Channel video 1" />
+                <img src="./img/vid1.png" alt="Channel video 1" />
                 <span class="play">&#9658;</span>
                 <span class="duration">1:23</span>
             </div>
@@ -175,7 +169,7 @@
 
         <div class="video-card">
             <div class="video-thumb">
-                <img src="./home_assets/vid2.png" alt="Channel video 2" />
+                <img src="./img/vid2.png" alt="Channel video 2" />
                 <span class="play">&#9658;</span>
                 <span class="duration">1:23</span>
             </div>
@@ -187,7 +181,7 @@
 
         <div class="video-card">
             <div class="video-thumb">
-                <img src="./home_assets/vid3.png" alt="Channel video 3" />
+                <img src="./img/vid3.png" alt="Channel video 3" />
                 <span class="play">&#9658;</span>
                 <span class="duration">1:23</span>
             </div>
@@ -210,7 +204,7 @@
                 <div class="image-wrapper">
                     <span class="new-label">{{this.Badge}}</span>
                     <img
-                        src="/images/{{this.ImgPath}}"
+                        src="/img/{{this.ImgPath}}"
                         alt="{{this.ProductName}}"
                     />
                     <div class="overlay-name">{{this.TypeName}}</div>
@@ -235,10 +229,7 @@
     <div class="banner-container">
         {{#each featuredProducts}}
             <div class="banner-item">
-                <img
-                    src="/images/{{this.ImgPath}}"
-                    alt="{{this.ProductName}}"
-                />
+                <img src="/img/{{this.ImgPath}}" alt="{{this.ProductName}}" />
                 <div class="banner-info">
                     <div class="left">
                         <h3>{{this.ProductName}}</h3>

@@ -32,7 +32,25 @@ app.use("/img", express.static(path.join(__dirname, "img")))
 app.use(morgan("combined"))
 
 // Template engine
-app.engine(".hbs", engine({ extname: ".hbs" }))
+app.engine(
+    ".hbs",
+    engine({
+        extname: ".hbs",
+        allowProtoPropertiesByDefault: true,
+        helpers: {
+            block: function (name) {
+                this._blocks = this._blocks || {}
+                const val = (this._blocks[name] || []).join("\n")
+                return val
+            },
+            contentFor: function (name, options) {
+                this._blocks = this._blocks || {}
+                this._blocks[name] = this._blocks[name] || []
+                this._blocks[name].push(options.fn(this))
+            },
+        },
+    })
+)
 app.set("view engine", ".hbs")
 app.set("views", path.join(__dirname, "resources", "views"))
 
