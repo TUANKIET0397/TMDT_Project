@@ -6,8 +6,21 @@
     <section class="section__status">
         <!-- Header -->
         <div class="section__inner-heading">
-            <h1 class="section__heading">Orders Status</h1>
-            
+            <div
+                style="display: flex; align-items: center; gap: 15px; width: 100%;"
+            >
+                <h1 class="section__heading">Orders Status</h1>
+                <select
+                    id="sort-status"
+                    style="padding: 8px 12px; border: 1px solid currentColor; border-radius: 4px; cursor: pointer; font-size: 14px; background: #0a1330; color: #ffffffc0;"
+                >
+                    <option value="">Sort by Status</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Cancelled">Cancelled</option>
+                    <option value="Prepare">Prepare</option>
+                </select>
+            </div>
+
             <div class="section__headeing-wrap--small">
                 <div class="section__data">
                     <div class="section__data-wrap">
@@ -18,15 +31,21 @@
                                 {{stats.TotalInvoices}}
                                 orders
                             {{/if}}
-                        
+
                         </div>
                     </div>
                 </div>
-                <div class="section-item section-icon__trash" id="delete-all-btn">
-    <i class="fa-solid fa-trash"></i>
-</div>
+                <button
+                    id="delete-all-btn"
+                    type="button"
+                    class="section-item section-icon__trash"
+                    title="Delete selected orders or all"
+                    style="background: none; border: none; cursor: pointer; color: inherit;"
+                >
+                    <i class="fa-solid fa-trash"></i>
+                </button>
             </div>
-            
+
         </div>
 
         <!-- Header Labels -->
@@ -75,6 +94,7 @@
                             id="section-checkbox-{{this.InvoiceID}}"
                             class="section-checkbox"
                             name="status"
+                            value="{{this.InvoiceID}}"
                         />
                         <span
                             class="section-checkmark section-item__title"
@@ -173,3 +193,7 @@
         {{/unless}}
     </section>
 </div>
+
+{{#contentFor "scriptAdmin"}}
+    <script src="/js/scriptAdmin.js"></script>
+{{/contentFor}}

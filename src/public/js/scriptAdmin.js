@@ -1,44 +1,57 @@
-// Xử lý xóa đơn hàng
-document.querySelectorAll(".section-icon__trash i").forEach((icon) => {
-    icon.addEventListener("click", async function () {
-        const invoiceID = this.getAttribute("data-invoice-id")
-        if (confirm("Delete this order?")) {
-            console.log("Deleting order ID:", invoiceID)
+document.addEventListener("DOMContentLoaded", () => {
+    // Handle sort by status
+    const sortSelect = document.getElementById("sort-status")
+    if (sortSelect) {
+        sortSelect.addEventListener("change", (e) => {
+            const status = e.target.value
+            const url = status ? `/admin/invoice?sortBy=${status}` : `/admin/invoice`
+            window.location.href = url
+        })
+    }
+
+    // Only handle delete-all behavior here. Per-row deletion uses the existing form POSTs.
+    const deleteAllBtn = document.getElementById("delete-all-btn")
+    if (!deleteAllBtn) return
+
+    deleteAllBtn.addEventListener("click", async () => {
+        const checked = Array.from(
+            document.querySelectorAll(".section-checkbox:checked")
+        )
+        const ids = checked.map((c) => c.value).filter(Boolean)
+
+        // If none selected, confirm delete-all fallback
+        if (!ids.length) {
             try {
-                const response = await fetch(`/admin/invoice/${invoiceID}`, {
-                    method: "DELETE",
+                const res = await fetch("/admin/invoice/delete/all", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
                 })
-                const data = await response.json()
-                if (data.success) {
-                    window.location.reload()
-                    
-                }
+                const data = await res.json()
+                if (data.success) window.location.reload()
+                else alert(data.message || "Failed to delete all orders")
+            } catch (err) {
+                console.error(err)
+                alert("Please select at least one order to delete.")
+            }
 
             return
-            } catch (error) {
-                alert("Error deleting order")
-                window.location.reload()
-            }
+        }
+
+        if (!confirm(`Delete ${ids.length} selected order(s)?`)) return
+
+        try {
+            const res = await fetch("/admin/invoice/delete/selected", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ids }),
+            })
+
+            const data = await res.json()
+            if (data.success) window.location.reload()
+            else alert(data.message || "Failed to delete selected orders")
+        } catch (err) {
+            console.error(err)
+            alert("Error deleting selected orders")
         }
     })
 })
-
-// XÓA TẤT CẢ ĐƠN HÀNG
-document.getElementById("delete-all-btn").addEventListener("click", async function () {
-    if (confirm("Delete ALL orders?")) {
-        try {
-            const res = await fetch("/admin/invoice/delete/all", {
-                method: "DELETE"
-            });
-
-            const data = await res.json();
-
-            if (data.success) {
-                window.location.reload();
-            }
-        } catch (error) {
-            alert("Error deleting all orders");
-            window.location.reload();
-        }
-    }
-});

@@ -1,11 +1,11 @@
 // src/app/models/AdminSite.js
-const db = require('../../config/db');
+const db = require("../../config/db")
 
 class AdminSite {
-  // ===== LẤY TẤT CẢ ĐƠN HÀNG (INVOICE) =====
-  static async getAllInvoices() {
-    try {
-      const [rows] = await db.query(`
+    // ===== LẤY TẤT CẢ ĐƠN HÀNG (INVOICE) =====
+    static async getAllInvoices() {
+        try {
+            const [rows] = await db.query(`
                 SELECT 
                     i.ID as InvoiceID,
                     i.DateCreated,
@@ -27,32 +27,32 @@ class AdminSite {
                 LEFT JOIN Users u ON i.UserID = u.ID
                 LEFT JOIN StatusInvoice si ON i.StatusID = si.ID
                 ORDER BY i.DateCreated DESC
-            `);
-      return rows;
-    } catch (error) {
-      console.error('Error in getAllInvoices:', error);
-      throw error;
+            `)
+            return rows
+        } catch (error) {
+            console.error("Error in getAllInvoices:", error)
+            throw error
+        }
     }
-  }
 
-  // ===== LẤY CHI TIẾT SẢN PHẨM TRONG ĐƠN HÀNG =====
-  static async getInvoiceProducts(invoiceID) {
-    try {
-      const [invoice] = await db.query(
-        `
+    // ===== LẤY CHI TIẾT SẢN PHẨM TRONG ĐƠN HÀNG =====
+    static async getInvoiceProducts(invoiceID) {
+        try {
+            const [invoice] = await db.query(
+                `
                 SELECT CartID FROM Invoice WHERE ID = ?
             `,
-        [invoiceID]
-      );
+                [invoiceID]
+            )
 
-      if (!invoice || !invoice[0]) {
-        return [];
-      }
+            if (!invoice || !invoice[0]) {
+                return []
+            }
 
-      const cartID = invoice[0].CartID;
+            const cartID = invoice[0].CartID
 
-      const [products] = await db.query(
-        `
+            const [products] = await db.query(
+                `
                 SELECT 
                     p.ProductName,
                     cp.ImgID,
@@ -68,37 +68,48 @@ class AdminSite {
                 LEFT JOIN ColorProduct cp ON ci.ColorID = cp.ID
                 WHERE ci.CartID = ?
             `,
-        [cartID]
-      );
+                [cartID]
+            )
 
-      return products;
-    } catch (error) {
-      console.error('Error in getInvoiceProducts:', error);
-      throw error;
+            return products
+        } catch (error) {
+            console.error("Error in getInvoiceProducts:", error)
+            throw error
+        }
     }
-  }
 
-  // ===== LẤY ĐƠN HÀNG KÈM SẢN PHẨM =====
-  static async getInvoicesWithProducts() {
-    try {
-      const invoices = await this.getAllInvoices();
+    // ===== LẤY ĐƠN HÀNG KÈM SẢN PHẨM =====
+    static async getInvoicesWithProducts(sortBy = null) {
+        try {
+            const invoices = await this.getAllInvoices()
 
-      // Lấy sản phẩm cho từng invoice
-      for (let invoice of invoices) {
-        invoice.Products = await this.getInvoiceProducts(invoice.InvoiceID);
-      }
+            // Lấy sản phẩm cho từng invoice
+            for (let invoice of invoices) {
+                invoice.Products = await this.getInvoiceProducts(
+                    invoice.InvoiceID
+                )
+            }
 
-      return invoices;
-    } catch (error) {
-      console.error('Error in getInvoicesWithProducts:', error);
-      throw error;
+            // Sort by status if provided
+            if (sortBy) {
+                invoices.sort((a, b) => {
+                    if (a.StatusName === sortBy) return -1
+                    if (b.StatusName === sortBy) return 1
+                    return 0
+                })
+            }
+
+            return invoices
+        } catch (error) {
+            console.error("Error in getInvoicesWithProducts:", error)
+            throw error
+        }
     }
-  }
 
-  // ===== THỐNG KÊ ĐơN HÀNG =====
-  static async getInvoiceStats() {
-    try {
-      const [stats] = await db.query(`
+    // ===== THỐNG KÊ ĐơN HÀNG =====
+    static async getInvoiceStats() {
+        try {
+            const [stats] = await db.query(`
                 SELECT 
                     COUNT(*) as TotalInvoices,
                     SUM(CASE WHEN si.StatusName = 'Delivered' THEN 1 ELSE 0 END) as DeliveredCount,
@@ -106,60 +117,73 @@ class AdminSite {
                     SUM(CASE WHEN si.StatusName = 'Pending' THEN 1 ELSE 0 END) as PendingCount
                 FROM Invoice i
                 LEFT JOIN StatusInvoice si ON i.StatusID = si.ID
-            `);
-      return stats[0];
-    } catch (error) {
-      console.error('Error in getInvoiceStats:', error);
-      throw error;
+            `)
+            return stats[0]
+        } catch (error) {
+            console.error("Error in getInvoiceStats:", error)
+            throw error
+        }
     }
-  }
 
-  // ===== XÓA ĐƠN HÀNG =====
-  static async deleteInvoice(invoiceID) {
-    try {
-      const [result] = await db.query(
-        `
+    // ===== XÓA ĐƠN HÀNG =====
+    static async deleteInvoice(invoiceID) {
+        try {
+            const [result] = await db.query(
+                `
                 DELETE FROM Invoice WHERE ID = ?
             `,
-        [invoiceID]
-      );
-      return result.affectedRows;
-    } catch (error) {
-      console.error('Error in deleteInvoice:', error);
-      throw error;
+                [invoiceID]
+            )
+            return result.affectedRows
+        } catch (error) {
+            console.error("Error in deleteInvoice:", error)
+            throw error
+        }
     }
-<<<<<<< HEAD
+    // XÓA NHIỀU ĐƠN HÀNG THEO MẢNG ID
+    static async deleteInvoicesByIds(ids = []) {
+        if (!Array.isArray(ids) || ids.length === 0) return 0
+
+        // Sanitize and build placeholders
+        const placeholders = ids.map(() => "?").join(",")
+        try {
+            const [result] = await db.query(
+                `DELETE FROM Invoice WHERE ID IN (${placeholders})`,
+                ids
+            )
+            return result.affectedRows
+        } catch (error) {
+            console.error("Error in deleteInvoicesByIds:", error)
+            throw error
+        }
+    }
     // all delete
     static async deleteAllInvoices() {
-    const query = "DELETE FROM Invoice"
-    const [result] = await db.execute(query)
-    return result.affectedRows
+        const query = "DELETE FROM Invoice"
+        const [result] = await db.execute(query)
+        return result.affectedRows
     }
 
-=======
-  }
->>>>>>> 528d4abb636cf19d19810a58f1dbd7366f52b435
-
-  // ===== CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG =====
-  static async updateInvoiceStatus(invoiceID, statusID) {
-    try {
-      const [result] = await db.query(
-        `
+    // ===== CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG =====
+    static async updateInvoiceStatus(invoiceID, statusID) {
+        try {
+            const [result] = await db.query(
+                `
                 UPDATE Invoice SET StatusID = ? WHERE ID = ?
             `,
-        [statusID, invoiceID]
-      );
-      return result.affectedRows;
-    } catch (error) {
-      console.error('Error in updateInvoiceStatus:', error);
-      throw error;
+                [statusID, invoiceID]
+            )
+            return result.affectedRows
+        } catch (error) {
+            console.error("Error in updateInvoiceStatus:", error)
+            throw error
+        }
     }
-  }
 
-  // ===== LẤY TẤT CẢ SẢN PHẨM =====
-  static async getAllProducts(typeName = null) {
-    try {
-      let query = `
+    // ===== LẤY TẤT CẢ SẢN PHẨM =====
+    static async getAllProducts(typeName = null) {
+        try {
+            let query = `
             SELECT 
                 p.ID,
                 p.ProductName,
@@ -177,26 +201,26 @@ class AdminSite {
             FROM Product p
             LEFT JOIN TypeProduct tp ON p.TypeID = tp.ID
             LEFT JOIN Price pr ON p.ID = pr.ProductID
-        `;
-      const params = [];
-      if (typeName) {
-        query += ' WHERE tp.TypeName = ?';
-        params.push(typeName);
-      }
-
-      const [rows] = await db.query(query, params);
-      return rows;
-    } catch (error) {
-      console.error('Error in getAllProducts:', error);
-      throw error;
-    }
-  }
-
-  // ===== LẤY CHI TIẾT SẢN PHẨM THEO ID =====
-  static async getProductByID(productID) {
-    try {
-      const [products] = await db.query(
         `
+            const params = []
+            if (typeName) {
+                query += " WHERE tp.TypeName = ?"
+                params.push(typeName)
+            }
+
+            const [rows] = await db.query(query, params)
+            return rows
+        } catch (error) {
+            console.error("Error in getAllProducts:", error)
+            throw error
+        }
+    }
+
+    // ===== LẤY CHI TIẾT SẢN PHẨM THEO ID =====
+    static async getProductByID(productID) {
+        try {
+            const [products] = await db.query(
+                `
                 SELECT 
                     p.ID,
                     p.ProductName,
@@ -211,119 +235,118 @@ class AdminSite {
                 LEFT JOIN TypeProduct tp ON p.TypeID = tp.ID
                 WHERE p.ID = ?
             `,
-        [productID]
-      );
-      return products[0] || null;
-    } catch (error) {
-      console.error('Error in getProductByID:', error);
-      throw error;
+                [productID]
+            )
+            return products[0] || null
+        } catch (error) {
+            console.error("Error in getProductByID:", error)
+            throw error
+        }
     }
-  }
 
-  // ===== THÊM SẢN PHẨM MỚI =====
-  static async addProduct({ ProductName, Descriptions, TypeID, Price }) {
-    const connection = await db.getConnection();
-    try {
-      await connection.beginTransaction();
+    // ===== THÊM SẢN PHẨM MỚI =====
+    static async addProduct({ ProductName, Descriptions, TypeID, Price }) {
+        const connection = await db.getConnection()
+        try {
+            await connection.beginTransaction()
 
-      // Thêm sản phẩm
-      const [result] = await connection.query(
-        `
+            // Thêm sản phẩm
+            const [result] = await connection.query(
+                `
                 INSERT INTO Product (ProductName, Descriptions, TypeID)
                 VALUES (?, ?, ?)
             `,
-        [ProductName, Descriptions, TypeID]
-      );
+                [ProductName, Descriptions, TypeID]
+            )
 
-      const productID = result.insertId;
+            const productID = result.insertId
 
-      // Thêm giá sản phẩm
-      await connection.query(
-        `
+            // Thêm giá sản phẩm
+            await connection.query(
+                `
                 INSERT INTO Price (ProductID, Price)
                 VALUES (?, ?)
             `,
-        [productID, Price]
-      );
+                [productID, Price]
+            )
 
-      await connection.commit();
-      return productID;
-    } catch (error) {
-      await connection.rollback();
-      console.error('Error in addProduct:', error);
-      throw error;
-    } finally {
-      connection.release();
+            await connection.commit()
+            return productID
+        } catch (error) {
+            await connection.rollback()
+            console.error("Error in addProduct:", error)
+            throw error
+        } finally {
+            connection.release()
+        }
     }
-  }
 
-  // ===== CẬP NHẬT SẢN PHẨM =====
-  static async updateProduct(
-    productID,
-    { ProductName, Descriptions, TypeID, Price }
-  ) {
-    const connection = await db.getConnection();
-    try {
-      await connection.beginTransaction();
+    // ===== CẬP NHẬT SẢN PHẨM =====
+    static async updateProduct(
+        productID,
+        { ProductName, Descriptions, TypeID, Price }
+    ) {
+        const connection = await db.getConnection()
+        try {
+            await connection.beginTransaction()
 
-      await connection.query(
-        `
+            await connection.query(
+                `
                 UPDATE Product 
                 SET ProductName = ?, Descriptions = ?, TypeID = ?
                 WHERE ID = ?
             `,
-        [ProductName, Descriptions, TypeID, productID]
-      );
+                [ProductName, Descriptions, TypeID, productID]
+            )
 
-      // Cập nhật giá
-      await connection.query(
-        `
+            // Cập nhật giá
+            await connection.query(
+                `
                 UPDATE Price 
                 SET Price = ?
                 WHERE ProductID = ?
             `,
-        [Price, productID]
-      );
+                [Price, productID]
+            )
 
-      await connection.commit();
-      return true;
-    } catch (error) {
-      await connection.rollback();
-      console.error('Error in updateProduct:', error);
-      throw error;
-    } finally {
-      connection.release();
+            await connection.commit()
+            return true
+        } catch (error) {
+            await connection.rollback()
+            console.error("Error in updateProduct:", error)
+            throw error
+        } finally {
+            connection.release()
+        }
     }
-  }
 
-  // ===== XÓA SẢN PHẨM =====
-  static async deleteProduct(productID) {
-    try {
-      const [result] = await db.query(
-        `
+    // ===== XÓA SẢN PHẨM =====
+    static async deleteProduct(productID) {
+        try {
+            const [result] = await db.query(
+                `
                 DELETE FROM Product WHERE ID = ?
             `,
-        [productID]
-      );
-      return result.affectedRows;
-    } catch (error) {
-      console.error('Error in deleteProduct:', error);
-      throw error;
+                [productID]
+            )
+            return result.affectedRows
+        } catch (error) {
+            console.error("Error in deleteProduct:", error)
+            throw error
+        }
     }
-  }
-
-  // ===== LẤY TẤT CẢ LOẠI SẢN PHẨM =====
-  static async getAllProductTypes() {
-    try {
-      const [types] = await db.query(`
+    // ===== LẤY TẤT CẢ LOẠI SẢN PHẨM =====
+    static async getAllProductTypes() {
+        try {
+            const [types] = await db.query(`
                 SELECT * FROM TypeProduct ORDER BY TypeName
-            `);
-      return types;
-    } catch (error) {
-      console.error('Error in getAllProductTypes:', error);
-      throw error;
+            `)
+            return types
+        } catch (error) {
+            console.error("Error in getAllProductTypes:", error)
+            throw error
+        }
     }
-  }
 }
 
-module.exports = AdminSite;
+module.exports = AdminSite

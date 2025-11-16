@@ -46,6 +46,7 @@
 }
 
 .section__data-wrap {
+    padding: 0 10px;
     display: flex;
     align-items: center;
     gap: 4px;
@@ -56,6 +57,7 @@
 }
 
 .section-date {
+    min-width: calc(100% + 75px);
     font-size: 1rem;
     font-weight: 500;
     color: #a6b1d8;
@@ -85,8 +87,6 @@
     );
     color: #fff;
 }
-
-
 
 .active-hidden {
     display: none;
