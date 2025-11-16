@@ -8,7 +8,7 @@ document.querySelectorAll(".section-icon__trash i").forEach((icon) => {
                 const response = await fetch(`/admin/invoice/${invoiceID}`, {
                     method: "DELETE",
                 })
-                con st data = await response.json()
+                const data = await response.json()
                 if (data.success) {
                     window.location.reload()
                 }
