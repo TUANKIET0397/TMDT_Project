@@ -1,1 +1,67 @@
-pants
+    {{#contentFor "styles"}}
+  <link rel="stylesheet" href="/css/products.css" />
+{{/contentFor}}
+
+<section class="hero">
+  <h2>Pants</h2>
+  <p>Danh mục Pants</p>
+
+  <form method="GET" id="filterForm" action="/products/pants" class="filter-form">
+    <div class="filters">
+      <div class="filter-group">
+        <label>Prices</label>
+        <select name="price" id="priceFilter" onchange="this.form.submit()">
+          <option value="">All Prices</option>
+          <option value="low-high" {{#if (eq filters.price 'low-high')}}selected{{/if}}>Low to High</option>
+          <option value="high-low" {{#if (eq filters.price 'high-low')}}selected{{/if}}>High to Low</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Size</label>
+        <select name="size" id="sizeFilter" onchange="this.form.submit()">
+          <option value="">All Sizes</option>
+          <option value="XS" {{#if (eq filters.size 'XS')}}selected{{/if}}>XS</option>
+          <option value="S" {{#if (eq filters.size 'S')}}selected{{/if}}>S</option>
+          <option value="M" {{#if (eq filters.size 'M')}}selected{{/if}}>M</option>
+          <option value="L" {{#if (eq filters.size 'L')}}selected{{/if}}>L</option>
+          <option value="XL" {{#if (eq filters.size 'XL')}}selected{{/if}}>XL</option>
+          <option value="XXL" {{#if (eq filters.size 'XXL')}}selected{{/if}}>XXL</option>
+        </select>
+      </div>
+
+      <p><span id="productCount">{{count}}</span> products</p>
+    </div>
+  </form>
+</section>
+
+<section class="best-seller">
+  <div class="best-container" id="product-list">
+    {{#each products}}
+      <div class="best-item" data-category="{{this.TypeName}}" data-price="{{this.Price}}">
+        <div class="image-wrapper">
+          <img src="/img/{{this.ImgPath}}" alt="{{this.ProductName}}"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="alt-text" style="display:none; align-items:center; justify-content:center; width:100%; height:300px; background:#f0f0f0; border:1px solid #ddd; font-size:16px; color:#666;">
+            {{this.ProductName}}
+          </div>
+        </div>
+        <div class="Name-price">
+          <h4>{{this.ProductName}}</h4>
+          <div class="price">${{this.Price}}</div>
+        </div>
+        <div class="info">
+          <p class="desc">{{this.Descriptions}}</p>
+        </div>
+      </div>
+    {{else}}
+      <p style="grid-column: 1/-1; text-align:center; padding:40px; color:#999;">No products found</p>
+    {{/each}}
+  </div>
+</section>
+
+<script>
+  document.getElementById("user-icon")?.addEventListener("click", function () {
+    window.location.href = "/profile";
+  });
+</script>

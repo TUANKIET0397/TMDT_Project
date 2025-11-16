@@ -48,6 +48,16 @@ app.engine(
                 this._blocks[name] = this._blocks[name] || []
                 this._blocks[name].push(options.fn(this))
             },
+            eq: function (a, b) {
+                return a === b
+            },
+            includes: function (arr, val) {
+                if (!arr) return false
+                if (Array.isArray(arr)) {
+                    return arr.includes(val)
+                }
+                return arr === val
+            },
         },
     })
 )

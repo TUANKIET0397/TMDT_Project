@@ -1,1 +1,51 @@
-{{! chat with admin }}
+
+<!-- CHAT DRAWER -->
+<div class="chat-overlay"></div>
+
+<div class="chat-drawer" id="chatDrawer">
+    <div class="chat-header">
+        <h3>Chat with us</h3>
+        <button id="closeChat" aria-label="Close chat">×</button>
+    </div>
+    <div class="chat-area">
+        <h4>Gucci official</h4>
+        <div class="messages-time">
+            <h5>10/11/2025</h5>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <!-- messages rendered by chat.js -->
+            <div class="message received"
+              style="width: 100% !important; max-width: 100% !important;">
+              <div class="product-message">
+                <div class="product-image"></div>
+                <div class="product-info">
+                  <div class="product-name">Type II Trucker Jacket
+                    'Pioneeracket' - Raw Selvedge Denimxsg <br> <br> <div class="chat-price">333.032$</div></div>
+                </div>
+                <button class="Buy">Buy now</button>
+              </div>
+
+            </div>
+
+            <div class="message received">
+              <div class="message-content">
+                can you give me some advise about this product
+              </div>
+            </div>
+
+            <div class="message sent">
+              <div class="message-content">
+                Hi sir how can i help you
+              </div>
+            </div>
+          </div>
+    </div>
+    <div class="chat-footer">
+        <input
+            type="text"
+            id="chatInput"
+            placeholder="Type your message..."
+            class="chat-input" />
+        <button id="sendMessage" class="btn-send">Send</button>
+    </div>
+</div>
