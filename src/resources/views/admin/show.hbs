@@ -1,2 +1,56 @@
+{{#contentFor "styleadmin"}}
+    <link rel="stylesheet" href="/css/listProduct.css" />
+{{/contentFor}}
+
+
+
 {{! List prouduct }}
-Show - list product
+        <main class="main-content">
+            <div class="header">
+                <div class="header_search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" class="header_search-input" placeholder=" Search product">
+                </div>
+                <div class="filer_box">
+                    <i class="fa-solid fa-filter"></i>
+                    <select id="filter" onchange="filterType()">
+                        <option value="" {{#if (eq selectedType "")}}selected{{/if}}>Filter</option>
+                        {{#each types}}
+                            <option value="{{this.TypeName}}" {{#if (eq ../selectedType this.TypeName)}}selected{{/if}}>
+                                {{this.TypeName}}
+                            </option>
+                        {{/each}}
+                    </select>
+                </div>
+                <a href="/admin/create" class="add_page">+ Add</a>
+            </div>
+            
+            <div class="product-grid">
+                {{#each products}}
+                    <a href="#" class="detail_page">
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="quantity-badge">
+                                    {{this.QuantityValue}}
+                                </div>
+                                <img src="{{#if this.ImgPath}}{{this.ImgPath}}{{else}}/img/product-other1.png{{/if}}" alt="{{this.ProductName}}">
+                            </div>
+                            <div class="product-info">
+                                <div class="name_price">
+                                    <div class="product-name">{{this.ProductName}}</div>
+                                    <div class="product-price">{{this.Price}}$</div>
+                                </div>
+                                <div class="product-des">{{this.Descriptions}}</div>
+                            </div>
+                        </div>
+                    </a>
+                {{/each}}
+            </div>
+        </main>
+
+        <script>
+            function filterType() {
+                const type = document.getElementById('filter').value
+                window.location.href = `/admin/show${type ? '?type=' + encodeURIComponent(type) : ''}`
+            }
+        </script>
