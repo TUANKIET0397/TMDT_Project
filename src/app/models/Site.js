@@ -2,7 +2,7 @@
 const db = require("../../config/db")
 
 class Site {
-    // ===== 1. LẤY DANH MỤC SẢN PHẨM =====
+    
     static async getAllCategories() {
         try {
             const [rows] = await db.query(`

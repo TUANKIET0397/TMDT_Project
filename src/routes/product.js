@@ -16,7 +16,6 @@ router.get("/detail", productController.detail)
 
 router.get("/", productController.index)
 
-router.post("/product/add", productController.create)
 
 module.exports = router
 
