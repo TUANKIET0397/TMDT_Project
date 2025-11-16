@@ -18,11 +18,14 @@
         />
         {{!-- styleAdmin css --}}
         <link rel="stylesheet" href="/css/styleAdmin.css" />
+        {{{block "styleadmin"}}}
     </head>
     <body>
         <div class="Listproduct_container">
             {{> sidebar}}
             {{{body}}}
         </div>
+
+    {{{block "sidebar"}}}
     </body>
 </html>

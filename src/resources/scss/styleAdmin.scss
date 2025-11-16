@@ -19,6 +19,26 @@ body {
     height: 100%;
     overflow: hidden;
 }
+/* Common */
+.clamp-text {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--line-content);
+    overflow: hidden;
+    width: 180px;
+}
+
+.clamp-text-other {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--line-content);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    word-break: break-word;
+    width: 145px;
+    text-align: center;
+}
 
 .Listproduct_container {
     display: flex;
