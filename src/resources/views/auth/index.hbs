@@ -14,28 +14,30 @@
     <div class="login_container">
         <div class="login_box">
             <h1 class="login_title">Login</h1>
-            <form>
+            <form id="loginForm">
                 <div class="login_info">
-                    <input type="text" id="username" name="username" placeholder="User name" autocomplete="off">
+                    <input type="text" id="username" name="username" placeholder="Username" autocomplete="username" required>
                 </div>
 
                 <div class="login_info">
-                        <input type="password" id="password" name="password" placeholder="Password" autocomplete="new-password">
+                    <input type="password" id="password" name="password" placeholder="Password" autocomplete="current-password" required>
                 </div>
 
                 <div class="login_options">
                     <label class="remember-me">
-                        <input type="checkbox">
+                        <input type="checkbox" id="rememberMe" name="rememberMe">
                         Remember me
                     </label>
-                    <a href="Forget.html" class="forget-password">Forget password</a>
+                    <a href="/authSite/forgot-password" class="forget-password">Forgot password?</a>
                 </div>
 
                 <button type="submit" class="login-button">Login</button>
 
                 <div class="register-link">
-                    Don't have an account? <a href="/auth/register" class="switch">Registers</a>
+                    Don't have an account? <a href="/authSite/register" class="switch">Register</a>
                 </div>
             </form>
         </div>
     </div>
+
+    <script src="/js/login.js"></script>

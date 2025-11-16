@@ -1,17 +1,17 @@
 // Home page + about + profile + checkout
-const siteRouter = require("./site")
+const siteRouter = require('./site');
 // Products + detail
-const productRouter = require("./product")
+const productRouter = require('./product');
 // Auth = login + register
-const authRouter = require("./auth")
+const authRouter = require('./authSite');
 // admin
-const adminRouter = require("./admin")
+const adminRouter = require('./admin');
 
 function router(app) {
-    app.use("/admin", adminRouter)
-    app.use("/auth", authRouter)
-    app.use("/products", productRouter)
-    app.use("/", siteRouter) // dùng đúng biến siteRouter
+  app.use('/admin', adminRouter);
+  app.use('/authSite', authRouter);
+  app.use('/products', productRouter);
+  app.use('/', siteRouter); // dùng đúng biến siteRouter
 }
 
-module.exports = router
+module.exports = router;
