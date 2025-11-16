@@ -59,16 +59,22 @@ class AdminController {
         res.render("admin/chat", { layout: "admin" })
     }
 
-    // ===== API ENDPOINTS =====
-
     // [DELETE] /admin/invoice/:id - Xóa đơn hàng
     async deleteInvoice(req, res) {
         try {
             const invoiceID = req.params.id
             const result = await AdminSite.deleteInvoice(invoiceID)
+            // If deletion succeeded, redirect back to the invoice page so the UI updates
+            if (result && result > 0) {
+                return res.redirect("/admin/invoice")
+            }
+
+            // If nothing was deleted, return 404 so caller knows
+            return res.status(404).send("Invoice not found")
         } catch (error) {
             console.error("Error deleting invoice:", error)
-            res.status(500).json({ success: false, message: error.message })
+            // Send a simple error response (form POST expects an HTTP response)
+            res.status(500).send("Internal Server Error: " + error.message)
         }
     }
 }
