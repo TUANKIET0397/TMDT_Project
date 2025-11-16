@@ -37,4 +37,13 @@ router.post("/invoice/:id/delete", (req, res) => {
     adminController.deleteInvoice(req, res)
 })
 
+router.post("/invoice/delete/all", (req, res) => {
+    adminController.deleteAllInvoices(req, res)
+})
+
+
+
+
+
+
 module.exports = router

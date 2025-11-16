@@ -77,6 +77,23 @@ class AdminController {
             res.status(500).send("Internal Server Error: " + error.message)
         }
     }
+
+async deleteAllInvoices(req, res) {
+    try {
+        const result = await AdminSite.deleteAllInvoices() // hàm bạn tự viết
+
+        if (result && result > 0) {
+            return res.json({ success: true })
+        }
+
+        return res.status(404).json({ success: false, message: "No invoices found" })
+    } catch (error) {
+        console.error("Error deleting all invoices:", error)
+        return res.status(500).json({ success: false, error: error.message })
+    }
+}
+
+
 }
 
 module.exports = new AdminController()

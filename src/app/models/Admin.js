@@ -131,6 +131,13 @@ class AdminSite {
             throw error
         }
     }
+    // all delete
+    static async deleteAllInvoices() {
+    const query = "DELETE FROM Invoice"
+    const [result] = await db.execute(query)
+    return result.affectedRows
+    }
+
 
     // ===== CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG =====
     static async updateInvoiceStatus(invoiceID, statusID) {

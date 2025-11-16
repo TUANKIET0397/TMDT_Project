@@ -22,3 +22,23 @@ document.querySelectorAll(".section-icon__trash i").forEach((icon) => {
         }
     })
 })
+
+// XÓA TẤT CẢ ĐƠN HÀNG
+document.getElementById("delete-all-btn").addEventListener("click", async function () {
+    if (confirm("Delete ALL orders?")) {
+        try {
+            const res = await fetch("/admin/invoice/delete/all", {
+                method: "DELETE"
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                window.location.reload();
+            }
+        } catch (error) {
+            alert("Error deleting all orders");
+            window.location.reload();
+        }
+    }
+});
