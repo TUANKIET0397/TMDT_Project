@@ -11,9 +11,13 @@ document.querySelectorAll(".section-icon__trash i").forEach((icon) => {
                 const data = await response.json()
                 if (data.success) {
                     window.location.reload()
+                    
                 }
+
+            return
             } catch (error) {
                 alert("Error deleting order")
+                window.location.reload()
             }
         }
     })
