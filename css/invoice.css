@@ -260,26 +260,7 @@ a {
     font-size: 8px;
 }
 
-/* save  + edit */
-.section__save-btn,
-.section__edit-btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    width: 39px;
-    height: 30px;
-    border-radius: 5px;
-    font-size: 1rem;
-    font-weight: 500;
-    background: #cb3cff;
-    background: linear-gradient(
-        90deg,
-        rgba(203, 60, 255, 1) 0%,
-        rgba(127, 37, 251, 1) 100%
-    );
-    color: #fff;
-}
+
 
 .section__save-btn:hover,
 .section__edit-btn:hover {
@@ -440,7 +421,7 @@ a {
 
 .section-item__status--green::before {
     position: absolute;
-    top: 4px;
+    top: 2px;
     left: 12px;
     content: "Delivered";
     font-size: 1rem;

@@ -1,0 +1,42 @@
+body {
+  font-family: "Nunito Sans", sans-serif;
+  background-color: #fff;
+}
+
+.about_container {
+    display: flex;
+    align-items: center;
+    margin-top: 12px;
+    justify-content: space-between;
+}
+
+.about_content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin: 0 70px 80px 90px;
+}
+
+.about_content_title{
+    font-size: 4.8rem;
+    font-weight: 600;
+    color: #000;
+}
+
+.about_content_text {
+    font-size: 1.6rem;
+    color: #000;
+    line-height: 1.5;
+    max-width: 641px;
+    gap: 30px;
+}
+
+.about_content_text p {
+    margin: 24px 0 24px 0;
+}
+
+.about_content_text a {
+    color: #000;
+    font-weight: 800;
+    text-decoration: none;
+}

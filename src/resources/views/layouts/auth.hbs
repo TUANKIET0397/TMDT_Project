@@ -2,9 +2,9 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Login Page</title>
+        <title>Auth Page</title>
         <!-- Reset css -->
-        <link rel="stylesheet" href="./assets/css/reset.css" />
+        <link rel="stylesheet" href="/css/reset.css" />
         <!-- font Embed -->
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,8 +16,13 @@
             href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
             rel="stylesheet"
         />
+        {{!-- styleAuth css --}}
+        <link rel="stylesheet" href="/css/styleAuth.css" />
+        {{{block "styleAuth"}}}
     </head>
+
     <body>
+        {{> header}}
         {{{body}}}
     </body>
 </html>

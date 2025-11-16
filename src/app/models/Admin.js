@@ -17,7 +17,7 @@ class AdminSite {
                     CASE 
                         WHEN si.StatusName = 'Delivered' THEN 'green'
                         WHEN si.StatusName = 'Cancelled' THEN 'red'
-                        WHEN si.StatusName = 'Pending' THEN 'yellow'
+                        WHEN si.StatusName = 'Prepare' THEN 'yellow'
                         ELSE 'gray'
                     END as StatusColor,
                     (SELECT SUM(ci.TotalPrice) 
@@ -79,7 +79,7 @@ class AdminSite {
     }
 
     // ===== LẤY ĐƠN HÀNG KÈM SẢN PHẨM =====
-    static async getInvoicesWithProducts() {
+    static async getInvoicesWithProducts(sortBy = null) {
         try {
             const invoices = await this.getAllInvoices()
 
@@ -88,6 +88,15 @@ class AdminSite {
                 invoice.Products = await this.getInvoiceProducts(
                     invoice.InvoiceID
                 )
+            }
+
+            // Sort by status if provided
+            if (sortBy) {
+                invoices.sort((a, b) => {
+                    if (a.StatusName === sortBy) return -1
+                    if (b.StatusName === sortBy) return 1
+                    return 0
+                })
             }
 
             return invoices
@@ -131,6 +140,29 @@ class AdminSite {
             throw error
         }
     }
+    // XÓA NHIỀU ĐƠN HÀNG THEO MẢNG ID
+    static async deleteInvoicesByIds(ids = []) {
+        if (!Array.isArray(ids) || ids.length === 0) return 0
+
+        // Sanitize and build placeholders
+        const placeholders = ids.map(() => "?").join(",")
+        try {
+            const [result] = await db.query(
+                `DELETE FROM Invoice WHERE ID IN (${placeholders})`,
+                ids
+            )
+            return result.affectedRows
+        } catch (error) {
+            console.error("Error in deleteInvoicesByIds:", error)
+            throw error
+        }
+    }
+    // all delete
+    static async deleteAllInvoices() {
+        const query = "DELETE FROM Invoice"
+        const [result] = await db.execute(query)
+        return result.affectedRows
+    }
 
     // ===== CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG =====
     static async updateInvoiceStatus(invoiceID, statusID) {
@@ -144,6 +176,174 @@ class AdminSite {
             return result.affectedRows
         } catch (error) {
             console.error("Error in updateInvoiceStatus:", error)
+            throw error
+        }
+    }
+
+    // ===== LẤY TẤT CẢ SẢN PHẨM =====
+    static async getAllProducts(typeName = null) {
+        try {
+            let query = `
+            SELECT 
+                p.ID,
+                p.ProductName,
+                p.Descriptions,
+                tp.TypeName,
+                pr.Price,
+                (SELECT SUM(q.QuantityValue) 
+                FROM Quantity q 
+                WHERE q.ProductID = p.ID
+                ) AS QuantityValue,
+                (SELECT img.ImgPath 
+                 FROM ProductImg pi 
+                 LEFT JOIN Image img ON pi.ImgID = img.ID 
+                 WHERE pi.ProductID = p.ID LIMIT 1) as ImgPath
+            FROM Product p
+            LEFT JOIN TypeProduct tp ON p.TypeID = tp.ID
+            LEFT JOIN Price pr ON p.ID = pr.ProductID
+        `
+            const params = []
+            if (typeName) {
+                query += " WHERE tp.TypeName = ?"
+                params.push(typeName)
+            }
+
+            const [rows] = await db.query(query, params)
+            return rows
+        } catch (error) {
+            console.error("Error in getAllProducts:", error)
+            throw error
+        }
+    }
+
+    // ===== LẤY CHI TIẾT SẢN PHẨM THEO ID =====
+    static async getProductByID(productID) {
+        try {
+            const [products] = await db.query(
+                `
+                SELECT 
+                    p.ID,
+                    p.ProductName,
+                    p.Descriptions,
+                    tp.ID AS TypeID,
+                    tp.TypeName,
+                    (SELECT Price FROM Price pr WHERE pr.ProductID = p.ID LIMIT 1) AS Price,
+                    (SELECT GROUP_CONCAT(img.ImgPath) FROM ProductImg pi
+                        LEFT JOIN Image img ON pi.ImgID = img.ID
+                        WHERE pi.ProductID = p.ID) AS Images
+                FROM Product p
+                LEFT JOIN TypeProduct tp ON p.TypeID = tp.ID
+                WHERE p.ID = ?
+            `,
+                [productID]
+            )
+            return products[0] || null
+        } catch (error) {
+            console.error("Error in getProductByID:", error)
+            throw error
+        }
+    }
+
+    // ===== THÊM SẢN PHẨM MỚI =====
+    static async addProduct({ ProductName, Descriptions, TypeID, Price }) {
+        const connection = await db.getConnection()
+        try {
+            await connection.beginTransaction()
+
+            // Thêm sản phẩm
+            const [result] = await connection.query(
+                `
+                INSERT INTO Product (ProductName, Descriptions, TypeID)
+                VALUES (?, ?, ?)
+            `,
+                [ProductName, Descriptions, TypeID]
+            )
+
+            const productID = result.insertId
+
+            // Thêm giá sản phẩm
+            await connection.query(
+                `
+                INSERT INTO Price (ProductID, Price)
+                VALUES (?, ?)
+            `,
+                [productID, Price]
+            )
+
+            await connection.commit()
+            return productID
+        } catch (error) {
+            await connection.rollback()
+            console.error("Error in addProduct:", error)
+            throw error
+        } finally {
+            connection.release()
+        }
+    }
+
+    // ===== CẬP NHẬT SẢN PHẨM =====
+    static async updateProduct(
+        productID,
+        { ProductName, Descriptions, TypeID, Price }
+    ) {
+        const connection = await db.getConnection()
+        try {
+            await connection.beginTransaction()
+
+            await connection.query(
+                `
+                UPDATE Product 
+                SET ProductName = ?, Descriptions = ?, TypeID = ?
+                WHERE ID = ?
+            `,
+                [ProductName, Descriptions, TypeID, productID]
+            )
+
+            // Cập nhật giá
+            await connection.query(
+                `
+                UPDATE Price 
+                SET Price = ?
+                WHERE ProductID = ?
+            `,
+                [Price, productID]
+            )
+
+            await connection.commit()
+            return true
+        } catch (error) {
+            await connection.rollback()
+            console.error("Error in updateProduct:", error)
+            throw error
+        } finally {
+            connection.release()
+        }
+    }
+
+    // ===== XÓA SẢN PHẨM =====
+    static async deleteProduct(productID) {
+        try {
+            const [result] = await db.query(
+                `
+                DELETE FROM Product WHERE ID = ?
+            `,
+                [productID]
+            )
+            return result.affectedRows
+        } catch (error) {
+            console.error("Error in deleteProduct:", error)
+            throw error
+        }
+    }
+    // ===== LẤY TẤT CẢ LOẠI SẢN PHẨM =====
+    static async getAllProductTypes() {
+        try {
+            const [types] = await db.query(`
+                SELECT * FROM TypeProduct ORDER BY TypeName
+            `)
+            return types
+        } catch (error) {
+            console.error("Error in getAllProductTypes:", error)
             throw error
         }
     }
