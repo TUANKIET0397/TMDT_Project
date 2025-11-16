@@ -3,11 +3,11 @@ const Auth = require("../models/Auth")
 
 class AuthController {
     async index(req, res) {
-        res.render("auth/index")
+        res.render("auth/index", { layout: "Auth" })
     }
 
     async register(req, res) {
-        res.render("auth/register")
+        res.render("auth/register", { layout: "Auth" })
     }
 }
 
