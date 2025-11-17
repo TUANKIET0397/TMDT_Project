@@ -2,158 +2,122 @@
     <link rel="stylesheet" href="/css/addProducts.css" />
 {{/contentFor}}
 
- {{! Add product }}
-
-        <div class="main-content">
-            <div class="header">       
-                <div class="header__save-box">
-                    <i class="fa-solid fa-floppy-disk"></i>
-                    <div class="header__save">Save</div>
+{{! Add product }}
+<div class="main-content">
+    <div class="header">       
+        <div class="header__save-box">
+            <i class="fa-solid fa-floppy-disk"></i>
+            <div class="header__save">Save</div>
+        </div>
+    </div>
+    <!-- Information add products -->
+    <div class="add-wrap">
+        <div class="add-left">
+            <!-- Main Product Images -->
+            <div class="add-card__item" data-index="0">
+                <input type="file" class="image-input" accept="image/*" style="display: none;">
+                <div class="add-card__plus">
+                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 6.25V23.75" stroke="#aeb9e1" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M6.25 15H23.75" stroke="#aeb9e1" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <img class="preview-image" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div class="add-card__item" data-index="1">
+                <input type="file" class="image-input" accept="image/*" style="display: none;">
+                <div class="add-card__plus">
+                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 6.25V23.75" stroke="#aeb9e1" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M6.25 15H23.75" stroke="#aeb9e1" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <img class="preview-image" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div class="add-card__item" data-index="2">
+                <input type="file" class="image-input" accept="image/*" style="display: none;">
+                <div class="add-card__plus">
+                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 6.25V23.75" stroke="#aeb9e1" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M6.25 15H23.75" stroke="#aeb9e1" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <img class="preview-image" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div class="add-card__item" data-index="3">
+                <input type="file" class="image-input" accept="image/*" style="display: none;">
+                <div class="add-card__plus">
+                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 6.25V23.75" stroke="#aeb9e1" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M6.25 15H23.75" stroke="#aeb9e1" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <img class="preview-image" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div class="add-card__item" data-index="4">
+                <input type="file" class="image-input" accept="image/*" style="display: none;">
+                <div class="add-card__plus">
+                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 6.25V23.75" stroke="#aeb9e1" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M6.25 15H23.75" stroke="#aeb9e1" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <img class="preview-image" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div class="add-card__item" data-index="5">
+                <input type="file" class="image-input" accept="image/*" style="display: none;">
+                <div class="add-card__plus">
+                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 6.25V23.75" stroke="#aeb9e1" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M6.25 15H23.75" stroke="#aeb9e1" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <img class="preview-image" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+            </div>
+        </div>
+        <div class="add__info-wrap">
+            <input class="add__info-desc" type="text" placeholder="Enter Name product" id="productName">
+            <textarea class="add__info-textarea" name="description" id="description" placeholder="Enter Description"></textarea>
+            <div class="add__info--input">
+                <div class="add__info-cost">
+                    <label class="add__info-desc" for="add__input-cost">Cost :</label>
+                    <input type="number" name="cost" id="add__input-cost" class="add__input-cost" placeholder="What is the price of the product?" step="0.01" min="0">
+                </div>
+                <div class="filer_box add__info-filter">
+                    <i class="fa-solid fa-filter"></i>
+                    <select class="add__info-edit" id="typeSelect">
+                        <option value="">Select Type</option>
+                        <option value="1">t-shirts</option>
+                        <option value="2">shirts</option>
+                        <option value="3">knitwear</option>
+                        <option value="4">sweatshirts</option>
+                        <option value="5">pants</option>
+                        <option value="6">outerwear</option>
+                        <option value="7">shoes</option>
+                    </select>
                 </div>
             </div>
-            <!-- Information add products -->
-            <div class="add-wrap">
-                <div class="add-left">
-                    <!-- item 1 -->
-                    <div class="add-card__item">
-                        <div class="add-card__plus ">
-                            <svg width="30" height="30" viewBox="0 0 30 30" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 6.25V23.75" stroke="#aeb9e1" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                                <path d="M6.25 15H23.75" stroke="#aeb9e1" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                            </svg>
-                        </div>
-                    </div>
-                    <!-- item 2 -->
-                    <div class="add-card__item">
-                        <div class="add-card__plus">
-                            <svg width="30" height="30" viewBox="0 0 30 30" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 6.25V23.75" stroke="#aeb9e1" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                                <path d="M6.25 15H23.75" stroke="#aeb9e1" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                            </svg>
-                        </div>
-                    </div>
-                    <!-- item 3 -->
-                    <div class="add-card__item">
-                        <div class="add-card__plus">
-                            <svg width="30" height="30" viewBox="0 0 30 30" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 6.25V23.75" stroke="#aeb9e1" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                                <path d="M6.25 15H23.75" stroke="#aeb9e1" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                            </svg>
-                        </div>
-                    </div>
-                    <!-- item 4 -->
-                    <div class="add-card__item">
-                        <div class="add-card__plus">
-                            <svg width="30" height="30" viewBox="0 0 30 30" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 6.25V23.75" stroke="#aeb9e1" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                                <path d="M6.25 15H23.75" stroke="#aeb9e1" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                            </svg>
-                        </div>
-                    </div>
-                    <!-- item 5 -->
-                    <div class="add-card__item">
-                        <div class="add-card__plus">
-                            <svg width="30" height="30" viewBox="0 0 30 30" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 6.25V23.75" stroke="#aeb9e1" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                                <path d="M6.25 15H23.75" stroke="#aeb9e1" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                            </svg>
-                        </div>
-                    </div>
-                    <!-- item 6 -->
-                    <div class="add-card__item">
-                        <div class="add-card__plus">
-                            <svg width="30" height="30" viewBox="0 0 30 30" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 6.25V23.75" stroke="#aeb9e1" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                                <path d="M6.25 15H23.75" stroke="#aeb9e1" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-                <div class="add-right">
-                    <div class="add__info-wrap">
-                        <p class="add__info-desc">Name product</p>
-                        <h2 class="add__info-heading">Information</h2>
-                        <div class="add__info--input">
-                            <div class="add__info-cost">
-                                <label class="add__info-desc" for="add__input-cost">Cost :</label>
-                                <input type="text" name="cost" id="add__input-cost" class="add__input-cost"
-                                    placeholder="What is the price of the product?">
-                            </div>
-                            <div class="filer_box add__info-filter">
-                                <i class="fa-solid fa-filter"></i>
-                                <select class="add__info-edit" id="outerwear">
-                                    <option selected>
-                                        Outerswear
-                                    </option>
-                                    <option value="1">t-shirts</option>
-                                    <option value="2">shirts</option>
-                                    <option value="3">knitwear</option>
-                                    <option value="4">sweatshirts</option>
-                                    <option value="5">pants</option>
-                                    <option value="6">outerwear</option>
-                                    <option value="7">shoes</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="section__form">
-                            <div class="section__form-size section__form-size--M">M</div>
-                            <div class="section__form-size section__form-size--L ">L</div>
-                            <div class="section__form-size section__form-size--XL">XL</div>
-                            <div class="section__form-size section__form-size--XXL">XXL</div>
-                        </div>
-                        <div class="add_quantity">
-                            <input type="text" class="add__quantity-input" placeholder="Enter quantity">
-                            <button class="add-save-btn">
-                                <i class="fa-solid fa-floppy-disk"></i>
-                                <span class="modal-save-text">Save</span>
-                            </button>
-                        </div>
-                        <h2 class="add__info-heading-other">OTHER COLORS</h2>
-                        <div class="add__info-card--wrap">
-                            <!-- other color 1 -->
-                            <div class="add__product-color" id="openModalBtn">
-                                <div class="add-card__plus add__product-plus active__product-color">
-                                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M15 6.25V23.75" stroke="#000" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                        <path d="M6.25 15H23.75" stroke="#000" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                    </svg>
-                                </div>
-                            </div>
-                            <!-- other color 2 -->
-                            <div class="add__product-color " id="openModalBtn">
-                                <div class="add-card__plus add__product-plus">
-                                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M15 6.25V23.75" stroke="#000" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                        <path d="M6.25 15H23.75" stroke="#000" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                    </svg>
-                                </div>
-                            </div>
-                            
-                        </div>
+            <div class="section__form">
+                <div class="section__form-size section__form-size--M">M</div>
+                <div class="section__form-size section__form-size--L">L</div>
+                <div class="section__form-size section__form-size--XL">XL</div>
+                <div class="section__form-size section__form-size--XXL">XXL</div>
+            </div>
+            <div class="add_quantity">
+                <input type="number" class="add__quantity-input" placeholder="Enter quantity" step="1" min="0" pattern="[0-9]*">
+                <button class="add-save-btn">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    <span class="modal-save-text">Save</span>
+                </button>
+            </div>
+            <h2 class="add__info-heading-other">OTHER COLORS</h2>
+            <div class="add__info-card--wrap" id="colorCardsContainer">
+                <div class="add__product-color">
+                    <div class="add-card__plus add__product-plus">
+                        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15 6.25V23.75" stroke="#000" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M6.25 15H23.75" stroke="#000" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
                     </div>
                 </div>
             </div>
@@ -161,227 +125,105 @@
     </div>
 </div>
 
-<!-- Modal -->
-    <div class="modal-overlay" id="colorModal">
-        <div class="modal-content">
-            <div class="modal-grid">
-                <!-- Left - Image Grid -->
-                <div class="modal-left">
-                    <div class="modal-image-item">
-                        <div class="modal-image-plus">
-                            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 6.25V23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                <path d="M6.25 15H23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </div>
+<!-- Modal for Other Colors -->
+<div class="modal-overlay" id="colorModal">
+    <div class="modal-content">
+        <div class="modal-grid">
+            <!-- Left - Color Images -->
+            <div class="modal-left">
+                <div class="modal-image-item" data-modal-index="0">
+                    <input type="file" class="modal-image-input" accept="image/*" style="display: none;">
+                    <div class="modal-image-plus">
+                        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15 6.25V23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M6.25 15H23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
                     </div>
-                    <div class="modal-image-item">
-                        <div class="modal-image-plus">
-                            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 6.25V23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                <path d="M6.25 15H23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="modal-image-item">
-                        <div class="modal-image-plus">
-                            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 6.25V23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                <path d="M6.25 15H23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="modal-image-item">
-                        <div class="modal-image-plus">
-                            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 6.25V23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                <path d="M6.25 15H23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="modal-image-item">
-                        <div class="modal-image-plus">
-                            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 6.25V23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                <path d="M6.25 15H23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="modal-image-item">
-                        <div class="modal-image-plus">
-                            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 6.25V23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                <path d="M6.25 15H23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </div>
-                    </div>
+                    <img class="modal-preview-image" style="display: none; width: 100%; height: 100%; object-fit: cover;">
                 </div>
-
-                <!-- Right - Product Info -->
-                <div class="modal-right">
-                    <div>
-                        <div class="modal-product-name">Rock Jean</div>
-                        <div class="modal-product-color">
-                            <input type="text" class="modal_color" placeholder="Enter color">
-                        </div>
+                <div class="modal-image-item" data-modal-index="1">
+                    <input type="file" class="modal-image-input" accept="image/*" style="display: none;">
+                    <div class="modal-image-plus">
+                        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15 6.25V23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M6.25 15H23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
                     </div>
-
-                    <!-- Size Selection -->
-                    <div class="modal-size-grid">
-                        <button class="modal-size-btn" data-size="M">M</button>
-                        <button class="modal-size-btn" data-size="L">L</button>
-                        <button class="modal-size-btn" data-size="XL">XL</button>
-                        <button class="modal-size-btn" data-size="XXL">XXL</button>
+                    <img class="modal-preview-image" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div class="modal-image-item" data-modal-index="2">
+                    <input type="file" class="modal-image-input" accept="image/*" style="display: none;">
+                    <div class="modal-image-plus">
+                        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15 6.25V23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M6.25 15H23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
                     </div>
-
-                    <!-- Quantity Input -->
-                    <div class="modal-quantity-wrap">
-                        <input type="text" class="modal-quantity-input" placeholder="Enter quality">
-                        <button class="modal-save-btn">
-                            <i class="fa-solid fa-floppy-disk"></i>
-                            <span class="modal-save-text">Save</span>
-                        </button>
+                    <img class="modal-preview-image" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div class="modal-image-item" data-modal-index="3">
+                    <input type="file" class="modal-image-input" accept="image/*" style="display: none;">
+                    <div class="modal-image-plus">
+                        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15 6.25V23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M6.25 15H23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
                     </div>
+                    <img class="modal-preview-image" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div class="modal-image-item" data-modal-index="4">
+                    <input type="file" class="modal-image-input" accept="image/*" style="display: none;">
+                    <div class="modal-image-plus">
+                        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15 6.25V23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M6.25 15H23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                    <img class="modal-preview-image" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div class="modal-image-item" data-modal-index="5">
+                    <input type="file" class="modal-image-input" accept="image/*" style="display: none;">
+                    <div class="modal-image-plus">
+                        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15 6.25V23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M6.25 15H23.75" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                    <img class="modal-preview-image" style="display: none; width: 100%; height: 100%; object-fit: cover;">
                 </div>
             </div>
 
-            <!-- Done Button -->
-            <button class="modal-done-btn" id="closeModalBtn">
-                <i class="fa-solid fa-check"></i>
-                Done
-            </button>
+            <!-- Right - Product Info -->
+            <div class="modal-right">
+                <div>
+                    <div class="modal-product-name">Product Color</div>
+                    <div class="modal-product-color">
+                        <input type="text" class="modal_color" placeholder="Enter color name">
+                    </div>
+                </div>
+
+                <div class="modal-size-grid">
+                    <button class="modal-size-btn" data-size="M">M</button>
+                    <button class="modal-size-btn" data-size="L">L</button>
+                    <button class="modal-size-btn" data-size="XL">XL</button>
+                    <button class="modal-size-btn" data-size="XXL">XXL</button>
+                </div>
+
+                <div class="modal-quantity-wrap">
+                    <input type="number" class="modal-quantity-input" placeholder="Enter quantity" step="1" min="0" pattern="[0-9]*">
+                    <button class="modal-save-btn">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span class="modal-save-text">Save</span>
+                    </button>
+                </div>
+            </div>
         </div>
+
+        <button class="modal-done-btn" id="closeModalBtn">
+            <i class="fa-solid fa-check"></i>
+            Done
+        </button>
     </div>
+</div>
 
-
-
-
-
-    <script>
-        const dashboardBtn = document.querySelector('.dashboard-btn');
-        const dashboardMenu = document.querySelector('.dashboard_menu');
-        const dashboardIcon = document.querySelector('.dashboard-icon');
-        const menuItems = document.querySelectorAll('.menu-item');
-
-        // Ẩn menu
-        dashboardMenu.style.maxHeight = '0';
-        dashboardMenu.style.opacity = '0';
-        dashboardMenu.style.overflow = 'hidden';
-        dashboardMenu.style.transition = 'max-height 0.5s ease, opacity 0.5s ease';
-
-        // Biến theo dõi trạng thái menu
-        let isMenuOpen = false;
-
-        dashboardBtn.addEventListener('click', function () {
-            isMenuOpen = !isMenuOpen;
-
-            if (isMenuOpen) {
-                dashboardMenu.style.maxHeight = dashboardMenu.scrollHeight + 'px';
-                dashboardMenu.style.opacity = '1';
-                dashboardIcon.style.transform = 'rotate(90deg)';
-                dashboardIcon.style.transition = 'transform 0.3s ease';
-            } else {
-                dashboardMenu.style.maxHeight = '0';
-                dashboardMenu.style.opacity = '0';
-                dashboardIcon.style.transform = 'rotate(0deg)';
-            }
-        });
-
-        // Xử lý active menu item
-        menuItems.forEach(item => {
-            const container = item.querySelector('.item_container');
-            if (!container) return;
-
-            item.addEventListener('click', function (e) {
-                e.stopPropagation();
-
-                const isActive = container.classList.contains('menu-item--active');
-
-                menuItems.forEach(i => {
-                    const c = i.querySelector('.item_container');
-                    if (c) c.classList.remove('menu-item--active');
-                });
-
-                if (!isActive) container.classList.add('menu-item--active');
-            });
-        });
-
-
-
-        // Xử lý chọn size
-        const sizeOptions = document.querySelectorAll('.section__form-size');
-        const addQuantity = document.querySelector('.add_quantity');
-        const qtyInput = document.querySelector('.add__quantity-input');
-
-        // Ẩn input quantity ban đầu và disable input
-        addQuantity.style.display = 'none';
-        qtyInput.disabled = true;
-
-        function updateQuantityVisibility() {
-            const selected = document.querySelector('.section__form-size.active-form');
-            if (selected) {
-                addQuantity.style.display = 'flex'; // hoặc 'block' tùy CSS
-                qtyInput.disabled = false;
-                qtyInput.focus();
-            } else {
-                addQuantity.style.display = 'none';
-                qtyInput.disabled = true;
-                qtyInput.value = '';
-            }
-        }
-
-        sizeOptions.forEach(option => {
-            option.addEventListener('click', function () {
-                const isActive = this.classList.contains('active-form');
-
-                // Nếu đang active và click lại -> bỏ active và ẩn input
-                if (isActive) {
-                    this.classList.remove('active-form');
-                    updateQuantityVisibility();
-                    return;
-                }
-
-                // Nếu không thì kích hoạt size được chọn, bỏ các size khác
-                sizeOptions.forEach(opt => opt.classList.remove('active-form'));
-                this.classList.add('active-form');
-                updateQuantityVisibility();
-            });
-        });
-
-        // Modal functionality
-        const modal = document.getElementById('colorModal');
-        const openModalBtns = document.querySelectorAll('.add__product-color'); // Đổi thành querySelectorAll
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const modalSizeBtns = document.querySelectorAll('.modal-size-btn');
-
-        // Open modal - Lặp qua tất cả các nút
-        openModalBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                modal.classList.add('active');
-            });
-        });
-
-        // Close modal
-        closeModalBtn.addEventListener('click', function() {
-            modal.classList.remove('active');
-        });
-
-        // Close modal when clicking outside
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                modal.classList.remove('active');
-            }
-        });
-
-        // Handle modal size selection
-        modalSizeBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                modalSizeBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-
-
-    </script>
-
-
+<script src="/js/create.js"></script>

@@ -366,11 +366,14 @@ a {
     padding-top: 8px;
 }
 
-.add__info-desc {
-    font-weight: 500;
-    font-size: 1.5rem;
+.add__info-desc,.add__info-textarea{
+    background-color: transparent;
+    width: 100%;
+    font-size: 2.5rem;
+    outline: none;
+    border: none;
+    margin-bottom: 12px;
     color: #fff;
-    margin-bottom: 26px;
 }
 
 .add__info-heading,
@@ -378,6 +381,7 @@ a {
     font-weight: 800;
     font-size: 2rem;
     color: #fff;
+    margin-top: 12px;
 }
 
 .add__info-heading-other {
@@ -516,32 +520,43 @@ a {
     color: #000;
 }
 
+/* When a color card contains the active product marker, show the
+   plus block (we will render an <img> inside it). Remove hardcoded
+   background so uploaded thumbnails can be used instead. */
 .active__product-color {
     position: relative;
-    display: none;
-    z-index: -1;
-}
-
-.add__product-color:has(.active__product-color) {
-    background-image: url(../img/ortherColor1.svg);
-}
-
-.add__product-color:has(.active__product-color)::after {
     display: flex;
-    justify-content: center;
     align-items: center;
-    font-size: 0.9rem;
-    content: "X";
+    justify-content: center;
+    z-index: 2;
+}
+
+/* remove hardcoded background image; thumbnails will be displayed
+   via an <img> inside the .add__product-plus element */
+.add__product-color:has(.active__product-color) {
+    background-image: none;
+}
+
+/* Make the plus block fill the color card so the thumbnail image
+   covers the whole card area */
+.add__product-color .add__product-plus {
     position: absolute;
-    right: -9px;
-    top: -9px;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #4a4f60;
-    color: #fff;
-    z-index: 1;
-    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    outline: none;
+}
+
+/* Thumbnail image styling */
+.add__product-color .color-thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 2px;
 }
 
 .add__product-color:has(.active__product-color)::after:hover {
@@ -648,6 +663,7 @@ a {
             background-color: transparent;
             color: #fff;
             font-size: 1.6rem;
+            text-transform: uppercase;
         }
 
         /* Modal Size Selector */
@@ -747,3 +763,26 @@ a {
         .modal-done-btn i {
             font-size: 1.4rem;
         }
+        
+.modal-remove-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 170px; 
+  padding: 12px 24px;
+  background: #4961CB; 
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.4rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s;
+  z-index: 40;
+}
+
+.modal-remove-btn:hover {
+  background: #AEB9E1;
+}
