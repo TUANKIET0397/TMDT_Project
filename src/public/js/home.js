@@ -61,6 +61,21 @@ document.addEventListener("DOMContentLoaded", () => {
         cartOverlay.classList.add("active")
     }
 
+    // Before submitting cart form, attach cart JSON to hidden input
+    const cartForm = document.getElementById('cartForm')
+    const cartDataInput = document.getElementById('cartData')
+    if (cartForm && cartDataInput) {
+        cartForm.addEventListener('submit', function (e) {
+            try {
+                cartDataInput.value = JSON.stringify(cart || [])
+            } catch (err) {
+                console.error('Failed to serialize cart for checkout', err)
+                cartDataInput.value = '[]'
+            }
+            // allow the form to submit normally (POST)
+        })
+    }
+
     // === SAVE CART TO LOCAL STORAGE ===
     function saveCart() {
         localStorage.setItem("cart", JSON.stringify(cart))

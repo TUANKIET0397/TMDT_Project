@@ -5,6 +5,7 @@ const siteController = require("../app/controllers/SiteController")
 
 // GET /site
 router.get("/checkout", siteController.checkout) //lúc làm đổi post
+router.post("/payment", siteController.payment)
 router.get("/profile", siteController.profile) //lúc làm đổi post
 router.get("/about", siteController.about)
 router.get("/", (req, res, next) => {

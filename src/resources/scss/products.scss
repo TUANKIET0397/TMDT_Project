@@ -1,332 +1,334 @@
-
 section {
 }
 
 section h2 {
-  font-size: 28px;
-  font-weight: 400;
-  margin-bottom: 10px;
-  color: #111;
+    font-size: 28px;
+    font-weight: 400;
+    margin-bottom: 10px;
+    color: #111;
 }
 
 section p {
-  font-size: 14px;
-  color: #000;
-  line-height: 1.6;
-  font-weight: 300;
-  font-size: 15px;
+    font-size: 14px;
+    color: #000;
+    line-height: 1.6;
+    font-weight: 300;
+    font-size: 15px;
 }
 
 .hero {
-  text-align: left;
-  margin-top: 36px;
+    text-align: left;
+    margin-top: 36px;
 }
 
 .hero h2 {
-  font-size: 36px;
-  font-weight: 500;
-  color: #111;
-  margin-bottom: 10px;
-  letter-spacing: 0.5px;
-  padding: 0 80px;
+    font-size: 36px;
+    font-weight: 500;
+    color: #111;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+    padding: 0 80px;
 }
 
 .hero p {
-  padding: 0 80px;
+    padding: 0 80px;
 }
 
 /* ...existing code... */
 .filter-group .filter-toggle {
-  cursor: pointer;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 .checkbox-group {
-  display: none;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 8px;
-  max-height: 220px;
-  overflow-y: auto;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+    max-height: 220px;
+    overflow-y: auto;
 }
 .checkbox-group.show {
-  display: flex;
+    display: flex;
 }
 /* cho layout cột dọc */
 .checkbox-group label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-} 
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
 
 /* category dropdown overlay */
-.category-filter-group { position: relative; }
+.category-filter-group {
+    position: relative;
+}
 .filter-toggle {
-  cursor: pointer;
-  user-select: none;
+    cursor: pointer;
+    user-select: none;
 }
 .dropdown-panel {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 260px; /* adjust */
-  max-height: 320px;
-  overflow-y: auto;
-  background: #fff;
-  border: 1px solid #e3e3e3;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-  padding: 12px;
-  border-radius: 6px;
-  z-index: 999;
-  margin-top: 8px;
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 260px; /* adjust */
+    max-height: 320px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #e3e3e3;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    padding: 12px;
+    border-radius: 6px;
+    z-index: 999;
+    margin-top: 8px;
 }
-.dropdown-panel.show { display: block; }
+.dropdown-panel.show {
+    display: block;
+}
 .dropdown-panel .checkbox-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 .panel-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-  margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 10px;
 }
 .panel-actions button {
-  padding: 6px 10px;
-  border: 1px solid #ddd;
-  background: #fff;
-  cursor: pointer;
-  border-radius: 4px;
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    background: #fff;
+    cursor: pointer;
+    border-radius: 4px;
 }
 .panel-actions button#applyFilters {
-  background: #0a8f4a;
-  color: #fff;
-  border-color: #0a8f4a;
+    background: #0a8f4a;
+    color: #fff;
+    border-color: #0a8f4a;
 }
 
 /* Best seller */
 .best-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  padding: 10px 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 10px 0;
 }
-
 
 /*moi san pham */
 .best-item {
-  flex: 0 0 367px;
-  max-width: 370px;
-  background: #fff;
-  border: #000 0.5px solid;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-  display: flex;
-  flex-direction: column;
+    flex: 0 0 367px;
+    max-width: 370px;
+    background: #fff;
+    border: #000 0.5px solid;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    display: flex;
+    flex-direction: column;
 }
 .best-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* anh*/
 .image-wrapper {
-  position: relative;
-  width: 100%;
-  height: 480px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f7f7f7;
-  border-bottom: 1px solid #eee;
-  overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 480px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f7f7f7;
+    border-bottom: 1px solid #eee;
+    overflow: hidden;
 }
 
 .image-wrapper img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-  transition: transform 0.4s ease;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    transition: transform 0.4s ease;
 }
 .image-wrapper:hover img {
-  transform: scale(1.05);
+    transform: scale(1.05);
 }
 
 /* nhan new */
 .new-label {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-  color: #00b050;
-  font-size: 13px;
-  font-weight: 600;
-  border-bottom: 2px solid #00b050;
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    color: #00b050;
+    font-size: 13px;
+    font-weight: 600;
+    border-bottom: 2px solid #00b050;
 }
 
 /*ten san pham*/
 .Name-price {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  color: #000000;
-  font-family: "Nunito Sans", sans-serif;
-  font-size: 24px;
-  text-transform: uppercase;
-  font-style: semi-bold;
-  padding: 0 10px;
-  margin-top: 3px;
-  box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    color: #000000;
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 24px;
+    text-transform: uppercase;
+    font-style: semi-bold;
+    padding: 0 10px;
+    margin-top: 3px;
+    box-sizing: border-box;
 }
 .Name-price .price {
-  font-size: 20px;
-  font-weight: 500;
-  color: #000000;
+    font-size: 20px;
+    font-weight: 500;
+    color: #000000;
 }
 
 /* thong tin duoi anh */
 .info {
-  padding: 3px 12px ;
-  background: #fff;
-  font-family: "Nunito Sans", sans-serif;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+    padding: 3px 12px;
+    background: #fff;
+    font-family: "Nunito Sans", sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .info .desc {
-  font-size: 16px;
-  color: #555;
-  line-height: 1.4;
-  margin-bottom: 10px;
+    font-size: 16px;
+    color: #555;
+    line-height: 1.4;
+    margin-bottom: 10px;
 }
 
 /* gia va nut mua */
 .bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-
-
 /*profile*/
-.profile{
-  display: flex;
-  justify-content: center;
-  margin-top: 40px;
+.profile {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
 }
 
 .container-profile {
-  background: #f5f5f5;
-  border-radius: 20px;
-  padding: 24px;
-  width: 1200px;
-  box-shadow: 2 4px 12px rgba(0,0,0,0.1);
+    background: #f5f5f5;
+    border-radius: 20px;
+    padding: 24px;
+    width: 1200px;
+    box-shadow: 2 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .profile-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
 }
 
 .avatar {
-  width: 74px;
-  height: 74px;
-  border-radius: 50%;
-  background: #d9d9d9;
-  margin-right: 15px;
-  object-fit: contain;
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+    background: #d9d9d9;
+    margin-right: 15px;
+    object-fit: contain;
 }
 
 .info-user {
-  flex-grow: 1;
+    flex-grow: 1;
 }
 
 .info-user h3 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: bold;
+    margin: 0;
+    font-size: 20px;
+    font-weight: bold;
 }
 
 .info-user p {
-  margin: 3px 0 0;
-  color: #777;
-  font-size: 15px;
+    margin: 3px 0 0;
+    color: #777;
+    font-size: 15px;
 }
 
 .edit-btn {
-  color: #0078d4;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
+    color: #0078d4;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 .profile-form {
-  display: flex;
-  flex-direction: column;
-  gap: 35px;
-  padding: 0 74px;
+    display: flex;
+    flex-direction: column;
+    gap: 35px;
+    padding: 0 74px;
 }
 
 .form-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 16px;
 }
 
-.profile input, select {
-  padding: 10px 14px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-  transition: all 0.2s ease;
+.profile input,
+select {
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.2s ease;
 }
 
-.profile input:focus, select:focus {
-  border-color: #0078d4;
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(0,120,212,0.2);
+.profile input:focus,
+select:focus {
+    border-color: #0078d4;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
 }
 
 /* Buttons */
 .form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 10px;
 }
 
 .btn {
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  border: none;
-  transition: 0.2s;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    transition: 0.2s;
 }
 
 .btn.cancel {
-  background-color: #e0e0e0;
-  color: #333;
+    background-color: #e0e0e0;
+    color: #333;
 }
 
 .btn.cancel:hover {
-  background-color: #c9c9c9;
+    background-color: #c9c9c9;
 }
 
 .btn.save {
-  background-color: #0078d4;
-  color: #fff;
+    background-color: #0078d4;
+    color: #fff;
 }
 
 .btn.save:hover {
-  background-color: #005ea6;
+    background-color: #005ea6;
 }

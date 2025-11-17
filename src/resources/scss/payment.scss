@@ -1,0 +1,77 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+}
+
+html {
+    font-size: 62.5%;
+}
+
+body {
+    font-size: 1.6rem;
+    font-family: "Nunito Sans", sans-serif;
+}
+
+/* Common */
+.underline {
+    text-decoration: underline;
+    /* border-bottom: 1px solid #000; */
+}
+
+a {
+    text-decoration: none;
+}
+
+.header__checkout-container {
+    width: 1250px;
+    max-width: calc(100% - 138px);
+    margin: 0 auto;
+}
+
+/* Header */
+.header__checkout {
+    position: relative;
+}
+
+.header__checkout::after {
+    position: absolute;
+    bottom: -14px;
+    left: 0;
+    right: 0;
+    content: "";
+    height: 0.5px;
+    background: #00000071;
+}
+
+.header__checkout-wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 43px;
+}
+
+/* Logo */
+.header__link-logo:hover {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.logo {
+    font-weight: 700;
+    font-size: 22px;
+    text-transform: lowercase;
+    letter-spacing: 1px;
+    color: #000;
+}
+.header-action__shop {
+    margin-top: 29px;
+    padding-right: 12px;
+    color: #000;
+}
+
+.header-action__shop img {
+    width: 49px;
+    height: 49px;
+}

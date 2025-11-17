@@ -1,2 +1,154 @@
+{{#contentFor "payment"}}
+    <link rel="stylesheet" href="/css/checkout.css" />
+{{/contentFor}}
 {{! Checkout }}
-checkout
+<main class="checkout">
+
+    <form class="checkout__form" action="#!" method="post">
+
+        <div class="checkout-wrap">
+            <!-- Form Sign Up Delivery -->
+            <section class="checkout__left">
+                <div class="checkout__left-label">Express checkout</div>
+                <div class="checkout__btn">
+                    <img
+                        src="img/momo.png"
+                        alt="MoMo"
+                        class="checkout__brand-momo"
+                    />
+                </div>
+                <div class="checkout__aside">Or</div>
+                <p class="checkout__info">minhthuann2604@gmail.com</p>
+                <h2 class="checkout__heading">Delivery</h2>
+                <select
+                    class="checkout__country"
+                    name="country"
+                    id="country"
+                    required
+                >
+                    <option
+                        value=""
+                        disabled
+                        selected
+                        hidden
+                    >Country/Region</option>
+                    <option value="1">TP Hồ Chí Minh</option>
+                    <option value="2">Cà Mau</option>
+                    <option value="3">Hà Nội</option>
+                    <option value="4">Hà Nội</option>
+                    <option value="5">Hà Nội</option>
+                    <option value="6">Hà Nội</option>
+                    <option value="7">Hà Nội</option>
+                    <option value="8">Hà Nội</option>
+                    <option value="9">Hà Nội</option>
+                    <option value="10">Hà Nội</option>
+                </select>
+                <div class="checkout__fullname">
+                    <input
+                        class="firstName"
+                        type="text"
+                        name="first_name"
+                        placeholder="First Name"
+                        required
+                    />
+                    <input
+                        class="lastName"
+                        type="text"
+                        name="last_name"
+                        placeholder="Last Name"
+                        required
+                    />
+                </div>
+                <input
+                    class="checkout__address"
+                    type="text"
+                    name="address"
+                    placeholder="Address"
+                    required
+                />
+                <div class="checkout__zipcode">
+                    <input
+                        class="checkout__post"
+                        type="text"
+                        name="post code"
+                        placeholder="Post code"
+                        required
+                    />
+                    <input
+                        class="checkout__city"
+                        type="text"
+                        name="city"
+                        placeholder="City"
+                        required
+                    />
+                </div>
+                <input
+                    class="checkout__phone"
+                    type="text"
+                    name="phone_number"
+                    placeholder="Phone number"
+                    required
+                />
+                <h3 class="checkout__title-payment">Direct payment</h3>
+                <button class="checkout__btn-payment" type="submit">Order now</button>
+                <p class="checkout__desc-rule">
+                    Your info will be saved to a Shop account. By continuing,
+                    you agree to Shop's
+                    <span class="underline"> Terms of Service</span>
+                    and acknowledge the
+                    <span class="underline">Privacy Policy</span>.
+                </p>
+            </section>
+
+            <!-- The number of products -->
+            <div class="checkout__right">
+                <div class="Box-list">
+                    {{#if cartItems}}
+                        {{#each cartItems}}
+                            <div class="Box__wrap-item">
+                                <div class="wrap-img--item">
+                                    <img
+                                        class="box__wrap-img"
+                                        src="{{this.img}}"
+                                        alt="{{this.name}}"
+                                    />
+                                    <div
+                                        class="box__wrap-img--numberDecord"
+                                    >{{this.quantity}}</div>
+                                </div>
+                                <div class="box__inner-small">
+                                    <p class="box-desc">{{this.name}}</p>
+                                    <p class="box-size">{{#if
+                                            this.size
+                                        }}{{this.size}}{{else}}N/A{{/if}}</p>
+                                </div>
+                                <p class="box-price">${{this.price}}</p>
+                            </div>
+                        {{/each}}
+                    {{else}}
+                        <p
+                            style="grid-column:1/-1; text-align:center; padding:20px; color:#666;"
+                        >No items in cart</p>
+                    {{/if}}
+                </div>
+                <div class="checkout__discount">
+                    <input
+                        type="text"
+                        id="discountCode"
+                        placeholder="Discount code or gift card"
+                    />
+                    <button type="button" class="applyDiscount">Apply</button>
+                </div>
+                <div class="checkout__summary-item">Subtotal -
+                    {{itemCount}}
+                    item{{#unless (eq itemCount 1)}}s{{/unless}}</div>
+                <div class="checkout__total">
+                    <p class="checkout__total-label">Total</p>
+                    <div class="checkout__total-price">${{subtotal}}</div>
+                </div>
+                <p class="checkout__summary-desc">Including taxes (if any)</p>
+            </div>
+        </div>
+    </form>
+
+</main>

@@ -59,7 +59,52 @@ class SiteController {
     }
 
     async checkout(req, res) {
-        res.render("checkout")
+        res.render("checkout", {
+            layout: "payment",
+        })
+    }
+
+    async payment(req, res) {
+        try {
+            // cartData is a JSON string posted from the cart form
+            const cartData = req.body && req.body.cartData
+            let items = []
+            if (cartData) {
+                try {
+                    items = JSON.parse(cartData)
+                } catch (err) {
+                    console.error("Invalid cartData JSON:", err)
+                    items = []
+                }
+            }
+
+            // Normalize item fields and compute totals
+            const cartItems = (items || []).map((it) => ({
+                name: it.name || it.ProductName || "",
+                price: parseFloat(it.price || it.Price || 0) || 0,
+                img: it.img || it.ImgPath || "/img/default.jpg",
+                quantity: parseInt(it.quantity || it.qty || 1) || 1,
+                size: it.size || it.Size || null,
+            }))
+
+            const subtotal = cartItems.reduce(
+                (s, it) => s + it.price * it.quantity,
+                0
+            )
+            const itemCount = cartItems.reduce((c, it) => c + it.quantity, 0)
+            const total = subtotal // extendable: add tax/shipping if needed
+
+            return res.render("checkout", {
+                layout: "payment",
+                cartItems,
+                subtotal: subtotal.toFixed(2),
+                total: total.toFixed(2),
+                itemCount,
+            })
+        } catch (error) {
+            console.error("Error in postCheckout:", error)
+            return res.status(500).send("Internal Server Error")
+        }
     }
 }
 
