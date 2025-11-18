@@ -1,6 +1,6 @@
 <aside class="Listproduct_sidebar">
     <div class="sidebar_content">
-        <div class="Listproduct_logo">Shoppmall</div>
+        <a href="/admin" class="Listproduct_logo" id="sidebarLogo">Shoppmall</a>
 
         <div class="sidebar_search-box">
             <i class="fa-solid fa-magnifying-glass"></i>
@@ -21,9 +21,15 @@
             </div>
 
             <div class="dashboard_menu">
-                <div class="dashboard_item dashboard_item--active">Reports</div>
-                <div class="dashboard_item">Products</div>
-                <div class="dashboard_item">Invoices</div>
+                <div class="dashboard_item" data-route="/admin">Reports</div>
+                <div
+                    class="dashboard_item"
+                    data-route="/admin/products"
+                >Products</div>
+                <div
+                    class="dashboard_item"
+                    data-route="/admin/invoice"
+                >Invoices</div>
             </div>
 
             <div class="menu-item">

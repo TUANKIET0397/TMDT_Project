@@ -2,6 +2,7 @@
 const dashboardBtn = document.querySelector(".dashboard-btn")
 const dashboardMenu = document.querySelector(".dashboard_menu")
 const dashboardIcon = document.querySelector(".dashboard-icon")
+const dashboardItem = document.querySelector(".dashboard_item")
 const menuItems = document.querySelectorAll(".menu-item")
 
 dashboardMenu.style.maxHeight = "0"
@@ -21,6 +22,73 @@ dashboardBtn.addEventListener("click", function () {
         dashboardMenu.style.maxHeight = "0"
         dashboardMenu.style.opacity = "0"
         dashboardIcon.style.transform = "rotate(0deg)"
+    }
+})
+
+// dashboard item click: add active class, persist state, and navigate
+const dashboardItems = document.querySelectorAll(".dashboard_item")
+dashboardItems.forEach((item) => {
+    item.addEventListener("click", function (e) {
+        e.stopPropagation()
+        // Remove active from all dashboard items
+        dashboardItems.forEach((i) =>
+            i.classList.remove("dashboard_item--active")
+        )
+        // Add active to clicked item
+        this.classList.add("dashboard_item--active")
+        // Persist to localStorage
+        const text = this.textContent.trim()
+        if (text) localStorage.setItem("sidebarActive", `dashboard:${text}`)
+        // Navigate to the route if data-route exists
+        const route = this.getAttribute("data-route")
+        if (route) {
+            window.location.href = route
+        }
+    })
+})
+
+// logo click: clear sidebar active state
+const sidebarLogo = document.getElementById("sidebarLogo")
+if (sidebarLogo) {
+    sidebarLogo.addEventListener("click", function (e) {
+        // clear active state from localStorage
+        localStorage.removeItem("sidebarActive")
+        // remove all active classes
+        menuItems.forEach((i) => {
+            const c = i.querySelector(".item_container")
+            if (c) c.classList.remove("menu-item--active")
+        })
+        dashboardItems.forEach((item) =>
+            item.classList.remove("dashboard_item--active")
+        )
+        // collapse dashboard menu
+        if (dashboardMenu) {
+            dashboardMenu.style.maxHeight = "0"
+            dashboardMenu.style.opacity = "0"
+        }
+        if (dashboardIcon) dashboardIcon.style.transform = "rotate(0deg)"
+    })
+}
+
+// restore active dashboard item from localStorage on page load
+window.addEventListener("load", () => {
+    const savedActive = localStorage.getItem("sidebarActive")
+    if (savedActive && savedActive.startsWith("dashboard:")) {
+        const itemText = savedActive.split(":")[1]
+        dashboardItems.forEach((item) => {
+            if (item.textContent.trim() === itemText) {
+                item.classList.add("dashboard_item--active")
+                // ensure menu is open when item is active
+                if (dashboardMenu) {
+                    dashboardMenu.style.maxHeight =
+                        dashboardMenu.scrollHeight + "px"
+                    dashboardMenu.style.opacity = "1"
+                }
+                if (dashboardIcon)
+                    dashboardIcon.style.transform = "rotate(90deg)"
+                isMenuOpen = true
+            }
+        })
     }
 })
 
