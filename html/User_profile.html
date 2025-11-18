@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>User Profile & Orders</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/User_profile.css">
+
+</head>
+<body>
+  <div class="profile-page">
+    <!-- radio tab -->
+    <input type="radio" name="tab" id="tab-profile" checked />
+    <input type="radio" name="tab" id="tab-orders" />
+
+    <!-- TOP header -->
+    <div class="tab-header">
+      <div class="user-summary">
+        <div class="user-avatar"></div>
+        <div class="user-info">
+          <strong>Nguyen Minh Thuan</strong>
+          <span>Edit profile</span>
+        </div>
+      </div>
+
+      <label for="tab-profile">Profile of user</label>
+      <label for="tab-orders">Order Purchases</label>
+    </div>
+
+    <!-- PROFILE CONTENT -->
+    <div class="tab-content profile">
+      <form class="profile-form">
+        <div>
+          <div class="field-label">First name</div>
+          <input class="field-input" placeholder="First name" />
+        </div>
+
+        <div>
+          <div class="field-label">Last name</div>
+          <input class="field-input" placeholder="Last name" />
+        </div>
+
+        <div>
+          <div class="field-label">ID</div>
+          <input class="field-input" placeholder="ID: 9425u98" />
+        </div>
+
+<div>
+  <div class="field-label">Birth date</div>
+  <input type="date" class="field-input" />
+</div>
+        <div>
+          <div class="field-label">Gender</div>
+          <input class="field-input" placeholder="Gender" />
+        </div>
+
+        <div>
+          <div class="field-label">User name</div>
+          <input class="field-input" placeholder="User name" />
+        </div>
+
+        <div>
+          <div class="field-label">Phone number</div>
+          <input class="field-input" placeholder="Phone number" />
+        </div>
+
+        <div  class="field-span-2">
+          <div class="field-label">Email</div>
+          <input class="field-input" placeholder="Email" />
+        </div>
+
+        <div class="full-width" >
+          <div class="field-label" >Address</div>
+          <input class="field-input" placeholder="Address" />
+        </div>
+
+        <div>
+          <div class="field-label">Region</div>
+          <select class="field-select">
+            <option>Choose region</option>
+          </select>
+        </div>
+      </form>
+    </div>
+
+    <!-- ORDERS CONTENT -->
+    <div class="tab-content orders">
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Quantity types</th>
+            <th>Dates</th>
+            <th>Costs</th>
+            <th>States</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- ORDER 1 -->
+          <tr class="order-row" data-detail="detail-1">
+            <td class="order-id">
+              <span class="order-arrow">˅</span>
+              <span>7825h2</span>
+            </td>
+            <td>1</td>
+            <td>February 28, 2018</td>
+            <td>$10,320</td>
+            <td><span class="status-pill status-done"> Done</span></td>
+          </tr>
+          <tr id="detail-1" class="order-detail-row">
+            <td colspan="5">
+              <div class="detail-header">
+                <span>Name</span>
+                <span>Quantity</span>
+                <span>Cost</span>
+              </div>
+
+              <div class="detail-item">
+                <div class="detail-info">
+                  <img src="https://via.placeholder.com/60" alt="">
+                  <p>
+                    Tai nghe dây chần dệt hiển thị của sổ kết nối có mic cho táo 7/8Plus/X/Xr/Xs/Max/
+                    11/12/13/14ProMax [PAPA 868]
+                  </p>
+                </div>
+                <div class="detail-qty">x3</div>
+                <div class="detail-cost">$60,193</div>
+              </div>
+
+              <div class="detail-item">
+                <div class="detail-info">
+                  <img src="https://via.placeholder.com/60" alt="">
+                  <p>
+                    Tai nghe dây chần dệt hiển thị của sổ kết nối có mic cho táo 7/8Plus/X/Xr/Xs/Max/
+                    11/12/13/14ProMax [PAPA 868]
+                  </p>
+                </div>
+                <div class="detail-qty">x3</div>
+                <div class="detail-cost">$192,383</div>
+              </div>
+
+              <div class="detail-item">
+                <div class="detail-info">
+                  <img src="https://via.placeholder.com/60" alt="">
+                  <p>
+                    Tai nghe dây chần dệt hiển thị của sổ kết nối có mic cho táo 7/8Plus/X/Xr/Xs/Max/
+                    11/12/13/14ProMax [PAPA 868]
+                  </p>
+                </div>
+                <div class="detail-qty">x3</div>
+                <div class="detail-cost">$194,192</div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- ORDER 2 -->
+          <tr class="order-row" data-detail="detail-2">
+            <td class="order-id">
+              <span class="order-arrow">˅</span>
+              <span>7825h2</span>
+            </td>
+            <td>2</td>
+            <td>August 2, 2013</td>
+            <td>$7,063</td>
+            <td><span class="status-pill status-done"> Done</span></td>
+          </tr>
+          <tr id="detail-2" class="order-detail-row">
+            <td colspan="5">
+               <div class="detail-header">
+                <span>Name</span>
+                <span>Quantity</span>
+                <span>Cost</span>
+              </div>
+
+              <div class="detail-item">
+                <div class="detail-info">
+                  <img src="https://via.placeholder.com/60" alt="">
+                  <p>
+                    Tai nghe dây chần dệt hiển thị của sổ kết nối có mic cho táo 7/8Plus/X/Xr/Xs/Max/
+                    11/12/13/14ProMax [PAPA 868]
+                  </p>
+                </div>
+                <div class="detail-qty">x3</div>
+                <div class="detail-cost">$60,193</div>
+              </div>
+
+              <div class="detail-item">
+                <div class="detail-info">
+                  <img src="https://via.placeholder.com/60" alt="">
+                  <p>
+                    Tai nghe dây chần dệt hiển thị của sổ kết nối có mic cho táo 7/8Plus/X/Xr/Xs/Max/
+                    11/12/13/14ProMax [PAPA 868]
+                  </p>
+                </div>
+                <div class="detail-qty">x3</div>
+                <div class="detail-cost">$192,383</div>
+              </div>
+
+              <div class="detail-item">
+                <div class="detail-info">
+                  <img src="https://via.placeholder.com/60" alt="">
+                  <p>
+                    Tai nghe dây chần dệt hiển thị của sổ kết nối có mic cho táo 7/8Plus/X/Xr/Xs/Max/
+                    11/12/13/14ProMax [PAPA 868]
+                  </p>
+                </div>
+                <div class="detail-qty">x3</div>
+                <div class="detail-cost">$194,192</div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- ORDER 3 -->
+          <tr class="order-row" data-detail="detail-3">
+            <td class="order-id">
+              <span class="order-arrow">˅</span>
+              <span>7825h2</span>
+            </td>
+            <td>5</td>
+            <td>December 29, 2012</td>
+            <td>$40,581</td>
+            <td><span class="status-pill status-cancelled"> Canceled</span></td>
+          </tr>
+          <tr id="detail-3" class="order-detail-row">
+            <td colspan="5">
+                 <div class="detail-header">
+                <span>Name</span>
+                <span>Quantity</span>
+                <span>Cost</span>
+              </div>
+
+              <div class="detail-item">
+                <div class="detail-info">
+                  <img src="https://via.placeholder.com/60" alt="">
+                  <p>
+                    Tai nghe dây chần dệt hiển thị của sổ kết nối có mic cho táo 7/8Plus/X/Xr/Xs/Max/
+                    11/12/13/14ProMax [PAPA 868]
+                  </p>
+                </div>
+                <div class="detail-qty">x3</div>
+                <div class="detail-cost">$60,193</div>
+              </div>
+
+              <div class="detail-item">
+                <div class="detail-info">
+                  <img src="https://via.placeholder.com/60" alt="">
+                  <p>
+                    Tai nghe dây chần dệt hiển thị của sổ kết nối có mic cho táo 7/8Plus/X/Xr/Xs/Max/
+                    11/12/13/14ProMax [PAPA 868]
+                  </p>
+                </div>
+                <div class="detail-qty">x3</div>
+                <div class="detail-cost">$192,383</div>
+              </div>
+
+              <div class="detail-item">
+                <div class="detail-info">
+                  <img src="https://via.placeholder.com/60" alt="">
+                  <p>
+                    Tai nghe dây chần dệt hiển thị của sổ kết nối có mic cho táo 7/8Plus/X/Xr/Xs/Max/
+                    11/12/13/14ProMax [PAPA 868]
+                  </p>
+                </div>
+                <div class="detail-qty">x3</div>
+                <div class="detail-cost">$194,192</div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- ORDER 4 -->
+          <tr class="order-row" data-detail="detail-4">
+            <td class="order-id">
+              <span class="order-arrow">˅</span>
+              <span>7825h2</span>
+            </td>
+            <td>9</td>
+            <td>May 31, 2015</td>
+            <td>$40,112</td>
+            <td><span class="status-pill status-delivered"> Delivered</span></td>
+          </tr>
+          <tr id="detail-4" class="order-detail-row">
+            <td colspan="5"></td>
+          </tr>
+
+          <!-- ORDER 5 -->
+          <tr class="order-row" data-detail="detail-5">
+            <td class="order-id">
+              <span class="order-arrow">˅</span>
+              <span>7825h2</span>
+            </td>
+            <td>10</td>
+            <td>March 6, 2018</td>
+            <td>$9,776</td>
+            <td><span class="status-pill status-prepare"> Prepare</span></td>
+          </tr>
+          <tr id="detail-5" class="order-detail-row">
+            <td colspan="5"></td>
+          </tr>
+
+          <!-- ORDER 6 -->
+          <tr class="order-row" data-detail="detail-6">
+            <td class="order-id">
+              <span class="order-arrow">˅</span>
+              <span>7825h2</span>
+            </td>
+            <td>3</td>
+            <td>December 2, 2018</td>
+            <td>$8,896</td>
+            <td><span class="status-pill status-prepare"> Prepare</span></td>
+          </tr>
+          <tr id="detail-6" class="order-detail-row">
+            <td colspan="5"></td>
+          </tr>
+
+          <!-- ORDER 7 -->
+          <tr class="order-row" data-detail="detail-7">
+            <td class="order-id">
+              <span class="order-arrow">˅</span>
+              <span>7825h2</span>
+            </td>
+            <td>4</td>
+            <td>October 24, 2018</td>
+            <td>$16,362</td>
+            <td><span class="status-pill status-delivered"> Delivered</span></td>
+          </tr>
+          <tr id="detail-7" class="order-detail-row">
+            <td colspan="5"></td>
+          </tr>
+
+          <!-- ORDER 8 -->
+          <tr class="order-row" data-detail="detail-8">
+            <td class="order-id">
+              <span class="order-arrow">˅</span>
+              <span>7825h2</span>
+            </td>
+            <td>8</td>
+            <td>May 20, 2015</td>
+            <td>$6,778</td>
+            <td><span class="status-pill status-done"> Done</span></td>
+          </tr>
+          <tr id="detail-8" class="order-detail-row">
+            <td colspan="5"></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- JS toggle mở/đóng detail -->
+  <script>
+    document.querySelectorAll(".order-row").forEach(function (row) {
+      row.addEventListener("click", function () {
+        const targetId = row.getAttribute("data-detail");
+        const detailRow = document.getElementById(targetId);
+        const isOpen = row.classList.contains("open");
+
+        if (isOpen) {
+          row.classList.remove("open");
+          detailRow.style.display = "none";
+        } else {
+          row.classList.add("open");
+          detailRow.style.display = "table-row";
+        }
+      });
+    });
+  </script>
+</body>
+</html>
