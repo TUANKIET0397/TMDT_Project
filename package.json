@@ -20,6 +20,7 @@
     "homepage": "https://github.com/TUANKIET0397/TMDT_Prpject#readme",
     "description": "",
     "dependencies": {
+        "aos": "^2.3.4",
         "bcrypt": "^6.0.0",
         "dotenv": "^17.2.3",
         "express": "^5.1.0",

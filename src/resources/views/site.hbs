@@ -5,13 +5,13 @@
 
 <!-- HERO SLIDER -->
 <section class="hero">
-    <h2>New arrivals</h2>
-    <p>
+    <h2 data-aos="slide-right">New arrivals</h2>
+    <p data-aos="slide-right">
         Discover our meticulous curation of the finest pieces from the men's
         wardrobe around the world.
     </p>
 
-    <div class="filters">
+    <div class="filters" data-aos="fade-right">
         <select>
             <option>Prices</option>
             {{#if minPrice}}
@@ -34,7 +34,7 @@
         <p>{{totalProducts}} products</p>
     </div>
 
-    <div class="slider">
+    <div class="slider" data-aos="fade-up">
         <div class="slide-track">
             {{#each sliderImages}}
                 <div class="slide">
@@ -62,8 +62,8 @@
 
 <!-- CATEGORIES -->
 <section class="categories">
-    <h2>Our products</h2>
-    <p>
+    <h2 data-aos="slide-right">Our products</h2>
+    <p data-aos="slide-right">
         A carefully curated collection bringing together the best of each
         category.
     </p>
@@ -81,8 +81,8 @@
 
 <section class="chunkky-section">
     <div class="chunkky-content">
-        <h2>chunkky tee<span class="tm">™</span></h2>
-        <p>The first "made by shoppmall" 300GSM heavyweight t-shirt</p>
+        <h2data-aos="slide-left">chunkky tee<span class="tm">™</span></h2data-aos=>
+        <p data-aos="slide-left">The first "made by shoppmall" 300GSM heavyweight t-shirt</p>
     </div>
 </section>
 
@@ -108,27 +108,27 @@
 
 <!-- BEST SELLER -->
 <section class="best-seller">
-    <h2>Best seller</h2>
-    <small>A curated selection of our top-selling products.</small>
+    <h2 data-aos="slide-right">Best seller</h2>
+    <small data-aos="slide-right">A curated selection of our top-selling products.</small>
 
     <div class="best-scroll">
         {{#each bestSellers}}
             <div class="best-item">
-                <div class="image-wrapper">
-                    <span class="new-label">BEST</span>
+                <div class="image-wrapper"data-aos="fade-up">
+                    <span class="new-label" >BEST</span>
                     <img
                         src="/img/{{this.ImgPath}}"
                         alt="{{this.ProductName}}"
                     />
                     <div class="overlay-name">{{this.TypeName}}</div>
                 </div>
-                <div class="info">
-                    <p class="desc">{{this.ProductName}}</p>
+                <div class="info" >
+                    <p class="desc" data-aos="fade-up">{{this.ProductName}}</p>
                     <div class="bottom">
-                        <p class="price">${{this.Price}}</p>
+                        <p class="price" data-aos="fade-up">${{this.Price}}</p>
                         <button
                             onclick="addToCart({id: {{this.ID}}, name: '{{this.ProductName}}', price: {{this.Price}}, img: '{{this.ImgPath}}'})"
-                            class="buy-btn"
+                            class="buy-btn" data-aos="fade-left"
                         >Buy</button>
                     </div>
                 </div>
@@ -138,24 +138,24 @@
 </section>
 
 <!-- CHANNELS -->
-<section class="channels">
-    <div class="left">
+<section class="channels" >
+    <div class="left"  data-aos="fade-right">
         <h2><em>Shoppmall Channels</em></h2>
         <p class="sub">Iconic pieces, spring stories.</p>
 
-        <button class="social-btn insta">
+        <button class="social-btn insta" data-aos="zoom-in-up">
             <i class="fab fa-instagram"></i>
             Follow us on Instagram
         </button>
 
-        <button class="social-btn tiktok">
+        <button class="social-btn tiktok" data-aos="zoom-in-up">
             <i class="fab fa-tiktok"></i>
             Follow us on TikTok
         </button>
     </div>
 
-    <div class="videos">
-        <div class="video-card">
+    <div class="videos" data-aos="fade-left" >
+        <div class="video-card" >
             <div class="video-thumb">
                 <img src="./img/vid1.png" alt="Channel video 1" />
                 <span class="play">&#9658;</span>
@@ -195,13 +195,13 @@
 
 <!-- NEW IN -->
 <section class="best-seller">
-    <h2>New in</h2>
-    <small>Freshly added must-haves.</small>
+    <h2 data-aos="slide-right">New in</h2>
+    <small data-aos="slide-right">Freshly added must-haves.</small>
 
     <div class="best-scroll">
         {{#each newProducts}}
-            <div class="best-item">
-                <div class="image-wrapper">
+            <div class="best-item" data-aos="fade-up">
+                <div class="image-wrapper" >
                     <span class="new-label">{{this.Badge}}</span>
                     <img
                         src="/img/{{this.ImgPath}}"
@@ -210,12 +210,12 @@
                     <div class="overlay-name">{{this.TypeName}}</div>
                 </div>
                 <div class="info">
-                    <p class="desc">{{this.ProductName}}</p>
+                    <p class="desc"data-aos="fade-up">{{this.ProductName}}</p>
                     <div class="bottom">
-                        <p class="price">${{this.Price}}</p>
+                        <p class="price" data-aos="fade-up">${{this.Price}}</p>
                         <button
                             onclick="addToCart({id: {{this.ID}}, name: '{{this.ProductName}}', price: {{this.Price}}, img: '{{this.ImgPath}}'})"
-                            class="buy-btn"
+                            class="buy-btn" data-aos="fade-left"
                         >Buy</button>
                     </div>
                 </div>
