@@ -1,5 +1,5 @@
 src/public/css/
-
+/src/public/uploads/products/
 node_modules/
 
 # Dependencies

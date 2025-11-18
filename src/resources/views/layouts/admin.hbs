@@ -19,8 +19,16 @@
         {{!-- styleAdmin css --}}
         <link rel="stylesheet" href="/css/styleAdmin.css" />
         {{{block "styleadmin"}}}
+        {{!-- Ngăn transitions khi tải trang để tránh giựt --}}
+        <style>
+            body.sidebar-loading .dashboard_menu,
+            body.sidebar-loading .dashboard-icon,
+            body.sidebar-loading .dashboard_item {
+                transition: none !important;
+            }
+        </style>
     </head>
-    <body>
+    <body class="sidebar-loading">
         <div class="Listproduct_container">
             {{> sidebar}}
             {{{body}}}

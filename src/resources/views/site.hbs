@@ -114,12 +114,9 @@
     <div class="best-scroll">
         {{#each bestSellers}}
             <div class="best-item">
-                <div class="image-wrapper"data-aos="fade-up">
-                    <span class="new-label" >BEST</span>
-                    <img
-                        src="/img/{{this.ImgPath}}"
-                        alt="{{this.ProductName}}"
-                    />
+                <div class="image-wrapper">
+                    <span class="new-label">BEST</span>
+                    <img src="{{this.ImgPath}}" alt="{{this.ProductName}}" />
                     <div class="overlay-name">{{this.TypeName}}</div>
                 </div>
                 <div class="info" >
@@ -203,10 +200,7 @@
             <div class="best-item" data-aos="fade-up">
                 <div class="image-wrapper" >
                     <span class="new-label">{{this.Badge}}</span>
-                    <img
-                        src="/img/{{this.ImgPath}}"
-                        alt="{{this.ProductName}}"
-                    />
+                    <img src="{{this.ImgPath}}" alt="{{this.ProductName}}" />
                     <div class="overlay-name">{{this.TypeName}}</div>
                 </div>
                 <div class="info">
