@@ -4,12 +4,17 @@ const express = require("express")
 const morgan = require("morgan")
 const { engine } = require("express-handlebars")
 const session = require("express-session")
+const http = require("http") // CAUHINH SERVER CHO SOCKET.IO
+const { Server } = require("socket.io") // CAUHINH SERVER CHO SOCKET.IO
 
 const app = express()
 const port = process.env.PORT || 3000
 
 // Route và Database
 const route = require("./routes")
+const server = http.createServer(app) // ← TẠO HTTP SERVER
+const io = new Server(server) // ← TẠO SOCKET.IO SERVER
+
 const db = require("./config/db")
 
 // Test database connection
@@ -146,7 +151,102 @@ app.set("views", path.join(__dirname, "resources", "views"))
 // nạp route vào app
 route(app)
 
-// Start server
-app.listen(port, () => {
-    console.log(`App listening on port ${port}`)
+// Cấu hình Socket.IO
+// ===== SOCKET.IO LOGIC =====
+io.on("connection", (socket) => {
+    console.log("🟢 User connected:", socket.id)
+
+    // User join với UserID hoặc SessionID
+    socket.on("user:join", (data) => {
+        const userId = data.userId || socket.id
+        socket.userId = userId
+        socket.join(`user:${userId}`)
+        console.log(`👤 User ${userId} joined`)
+
+        // Gửi lại userId cho client
+        socket.emit("user:joined", { userId })
+
+        // Thông báo cho admin có user mới
+        io.emit("admin:new-user", {
+            userId,
+            timestamp: new Date().toISOString(),
+        })
+    })
+
+    // Admin join
+    socket.on("admin:join", () => {
+        socket.join("admin-room")
+        console.log("👨‍💼 Admin joined")
+    })
+
+    // User gửi tin nhắn
+    socket.on("user:message", async (data) => {
+        console.log("📩 User message:", data)
+
+        const messageData = {
+            userId: socket.userId,
+            message: data.message,
+            productId: data.productId || null,
+            productName: data.productName || null,
+            productPrice: data.productPrice || null,
+            productImage: data.productImage || null,
+            timestamp: new Date().toISOString(),
+            sender: "user",
+        }
+
+        // Lưu vào database
+        try {
+            await db.query(
+                "INSERT INTO Chat (UserID, ProductID, Message, SendTime) VALUES (?, ?, ?, NOW())",
+                [socket.userId, data.productId, data.message]
+            )
+        } catch (error) {
+            console.error("Error saving message:", error)
+        }
+
+        // Gửi cho admin
+        io.to("admin-room").emit("admin:receive-message", messageData)
+
+        // Gửi lại cho user (confirmation)
+        socket.emit("user:message-sent", messageData)
+    })
+
+    // Admin gửi tin nhắn
+    socket.on("admin:message", async (data) => {
+        console.log("📩 Admin message:", data)
+
+        const messageData = {
+            userId: data.userId,
+            message: data.message,
+            timestamp: new Date().toISOString(),
+            sender: "admin",
+        }
+
+        // Lưu vào database
+        try {
+            await db.query(
+                "INSERT INTO Chat (UserID, AdminID, Message, SendTime) VALUES (?, ?, ?, NOW())",
+                [data.userId, 1, data.message] // AdminID = 1 (tạm thời)
+            )
+        } catch (error) {
+            console.error("Error saving message:", error)
+        }
+
+        // Gửi cho user cụ thể
+        io.to(`user:${data.userId}`).emit("user:receive-message", messageData)
+
+        // Gửi lại cho admin (confirmation)
+        socket.emit("admin:message-sent", messageData)
+    })
+
+    // Disconnect
+    socket.on("disconnect", () => {
+        console.log("🔴 User disconnected:", socket.id)
+    })
+})
+
+// Start HTTP server (so Socket.IO is attached to the same server)
+server.listen(port, () => {
+    console.log(`🚀 App listening on port ${port}`)
+    console.log(`💬 Socket.IO ready`)
 })
