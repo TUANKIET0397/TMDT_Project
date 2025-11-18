@@ -1,178 +1,4 @@
-* {
-    box-sizing: border-box;
-}
-
-:root {
-}   
-
-html {
-    font-size: 62.5%;
-}
-
-body {
-    font-size: 1.6rem;
-    font-family: "Nunito Sans", sans-serif;
-}
-
-/* Common */
-.Listproduct_container {
-    display: flex;
-    min-height: 100vh;
-}
-
-a {
-    text-decoration: none;
-}
-
-/* Sidebar */
-.Listproduct_sidebar {
-    width: 300px;
-    height: 100vh;
-    background-color: #081028;
-    padding: 20px;
-    border-right: 1px solid #2a3040;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.Listproduct_logo {
-    font-size: 3.8rem;
-    font-weight: bold;
-    color: #fff;
-    text-align: center;
-    margin-bottom: 24px;
-}
-
-.sidebar_search-box {
-    background: #0b1739;
-    border: 1px solid #343b4f;
-    border-radius: 6px;
-    padding: 12px;
-    margin-bottom: 30px;
-    color: #aeb9e1;
-    font-size: 1.4rem;
-    width: 244px;
-    height: 42px;
-    margin: 12px 0 24px 12px;
-    border-radius: 6px;
-}
-
-.sidebar_search-input {
-    background-color: transparent;
-    border: none;
-    outline: none;
-    padding-left: 6px;
-    color: #aeb9e1;
-    font-size: 1.4rem;
-}
-
-.sidebar_search-input::placeholder {
-    color: #aeb9e1;
-}
-
-.menu {
-    border-bottom: 1px solid #2a3040;
-}
-
-.menu-item {
-    height: 42px;
-    width: 244px;
-    color: #aeb9e1;
-    cursor: pointer;
-    font-size: 1.4rem;
-    display: flex;
-    align-items: center;
-    margin-left: 12px;
-    justify-content: space-between;
-}
-
-.item_container {
-    display: flex;
-}
-
-.menu-item i {
-    margin-right: 12px;
-    padding-left: 8px;
-}
-
-.menu-item:hover {
-    background-color: #152043;
-    border-radius: 5px;
-}
-
-.menu-item--active {
-    color: #cb3cff;
-}
-
-.dashboard_menu {
-    display: block;
-    overflow: hidden;
-    transition: max-height 0.5s ease, opacity 0.5s ease;
-}
-
-.dashboard-icon {
-    transition: transform 0.3s ease;
-}
-
-.dashboard_item {
-    height: 42px;
-    width: 244px;
-    color: #aeb9e1;
-    cursor: pointer;
-    font-size: 1.4rem;
-    padding-left: 38px;
-    margin-left: 12px;
-    display: flex;
-    align-items: center;
-}
-
-.dashboard_item--active {
-    border-left: 6px solid #cb3cff;
-    border-radius: 5px;
-    background-color: #152043;
-}
-
-.dashboard_item:hover {
-    background-color: #152043;
-    border-radius: 5px;
-}
-
-.user-section {
-    margin-top: 30px;
-    padding-top: 20px;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.user-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.user-name {
-    font-size: 1.4rem;
-    color: #fff;
-}
-
-.user_sub {
-    display: flex;
-    font-size: 1.2rem;
-    color: #aeb9e1;
-    gap: 100px;
-}
-
-.user-subtitle:hover {
-    cursor: pointer;
-    text-decoration: underline;
-}
-
+/* Main Content */
 .main-content {
     background: #081028;
     flex: 1;
@@ -293,18 +119,24 @@ a {
 /* Add product */
 .add-wrap {
     display: flex;
-    margin-top: 77px;
-    overflow-y: auto;
+    justify-content: flex-start; /* align to left so content flows naturally */
+    align-items: flex-start;
+    margin-top: 40px;
+    /* allow the page to scroll vertically (avoid internal scroll traps) */
+    overflow-y: visible;
     overflow-x: hidden;
+    width: 100%;
+    gap: 28px; /* spacing between left and right panes */
 }
 
 /* add card -- left */
 .add-left {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(219px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
     row-gap: 1px;
     column-gap: 1px;
-    width: 439px;
+    flex: 0 0 439px; /* fixed column so right panel doesn't get pushed */
+    max-width: 439px;
     background: #d9d9d9;
 }
 
@@ -315,26 +147,6 @@ a {
     background: #d9d9d9;
     border: 1px solid #999898;
 }
-
-/* .add-card__item::before {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 25px;
-    content: "";
-    width: calc(440px / 6);
-    background: #cfcfd0;
-} */
-
-/* .add-card__item::after {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 25px;
-    content: "";
-    width: calc(440px / 6);
-    background: #cfcfd0;
-} */
 
 .add-card__plus {
     position: absolute;
@@ -358,6 +170,12 @@ a {
         rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
 }
 
+.preview-image:hover {
+    cursor: pointer;
+    opacity: 0.7;
+    box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px,
+        rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+}
 /* add card -- right */
 .add__info-wrap {
     width: 465px;
@@ -366,7 +184,8 @@ a {
     padding-top: 8px;
 }
 
-.add__info-desc,.add__info-textarea{
+.add__info-desc,
+.add__info-textarea {
     background-color: transparent;
     width: 100%;
     font-size: 2.5rem;
@@ -398,9 +217,10 @@ a {
 
 .add__input-cost {
     background: transparent;
-    border: 1px solid #152b6b23;
+    border: 1px solid transparent;
     color: #e8ebbc;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
+    padding-left: 1px;
     width: 270px;
 }
 
@@ -408,23 +228,81 @@ a {
     outline: none;
 }
 
+.filer_box {
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    border-radius: 8px;
+    background: #0b1739;
+    color: #aeb9e1;
+    cursor: pointer;
+}
+
 .add__info-filter {
-    justify-content: space-between;
-    width: 120px;
+    // justify-content: space-between;
     gap: 8px;
 }
 
 .add__info-edit {
     font-size: 1.2rem;
     font-weight: 500;
-    background: #0b1739;
     border: 1px solid #343b4f;
     border-radius: 6px;
+    background: #0b1739;
     color: #aeb9e1;
     height: 40px;
     border: none;
     outline: none;
     cursor: pointer;
+}
+
+/* hide number input spinners across browsers */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+/* header and save button layout */
+.header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 8px 16px;
+}
+.header__save-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #2b1b67, #1b3a8a);
+    color: #fff;
+    cursor: pointer;
+}
+.header__save-box i {
+    font-size: 1.1rem;
+}
+.header__save {
+    font-weight: 700;
+}
+
+/* prevent .add__info--input children being pushed out; prefer gap */
+.add__info--input {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+/* ensure Add Save button has stable size */
+.add-save-btn {
+    min-width: 78px;
+    padding: 8px 12px;
 }
 
 /* Form size */
@@ -457,11 +335,11 @@ a {
     color: #000;
 }
 
-.add_quantity{
+.add_quantity {
     margin-top: 12px;
     display: flex;
     align-items: center;
-    border-bottom: 2px solid #A1A1A1;
+    border-bottom: 2px solid #a1a1a1;
     border-radius: 4px;
 }
 
@@ -476,7 +354,7 @@ a {
 }
 
 .add-save-btn {
-    background: #30185D;
+    background: #30185d;
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -486,7 +364,6 @@ a {
     gap: 8px;
     color: #fff;
 }
-
 
 .add__info-heading-other {
     font-weight: 700;
@@ -564,225 +441,317 @@ a {
 }
 
 /* Modal Overlay */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 999;
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.3s ease;
-        }
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 999;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
 
-        .modal-overlay.active {
-            display: flex;
-        }
+.modal-overlay.active {
+    display: flex;
+}
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
 
-        /* Modal Content */
-        .modal-content {
-            background: #1a2039;
-            border-radius: 16px;
-            padding: 30px;
-            width: 630px;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-        }
+/* Modal Content */
+.modal-content {
+    background: #1a2039;
+    border-radius: 16px;
+    padding: 30px;
+    width: 630px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
 
-        .modal-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-        }
+.modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
 
-        /* Modal Left - Image Grid */
-        .modal-left {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1px;
-            background: #000;
-        }
+/* Modal Left - Image Grid */
+.modal-left {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: #000;
+}
 
-        .modal-image-item {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1;
-            background: #d9d9d9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+.modal-image-item {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    background: #d9d9d9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-        .modal-image-plus {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #fff;
-            cursor: pointer;
-        }
+.modal-image-plus {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+}
 
-        .modal-image-plus svg {
-            width: 24px;
-            height: 24px;
-        }
+.modal-image-plus svg {
+    width: 24px;
+    height: 24px;
+}
 
-        /* Modal Right - Info */
-        .modal-right {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+/* Modal Right - Info */
+.modal-right {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
 
-        .modal-product-name {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 10px;
-        }
+.modal-product-name {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 10px;
+}
 
-        .modal_color
-        {
-            border: none;
-            outline: none;
-            background-color: transparent;
-            color: #fff;
-            font-size: 1.6rem;
-            text-transform: uppercase;
-        }
+.modal_color {
+    border: none;
+    outline: none;
+    background-color: transparent;
+    color: #fff;
+    font-size: 1.6rem;
+    text-transform: uppercase;
+}
 
-        /* Modal Size Selector */
-        .modal-size-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 10px;
-        }
+/* Modal Size Selector */
+.modal-size-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 10px;
+}
 
-        .modal-size-btn {
-            padding: 14px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            background: transparent;
-            color: #fff;
-            font-size: 1.8rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
+.modal-size-btn {
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: transparent;
+    color: #fff;
+    font-size: 1.8rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
 
-        .modal-size-btn:hover {
-            border-color: #fff;
-        }
+.modal-size-btn:hover {
+    border-color: #fff;
+}
 
-        .modal-size-btn.active {
-            background: #fff;
-            color: #1a2039;
-            border-color: #fff;
-        }
+.modal-size-btn.active {
+    background: #fff;
+    color: #1a2039;
+    border-color: #fff;
+}
 
-        /* Modal Quantity Input */
-        .modal-quantity-wrap {
-            margin-top: 10px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-            display: flex;
-            align-items: center;
-        }
+/* Right column — improve card appearance and textarea appearance */
+.add__info-wrap {
+    background: linear-gradient(180deg, #0f1530 0%, #0b1124 100%);
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(2, 6, 23, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    width: 100%;
+    max-width: 540px;
+}
 
-        .modal-quantity-input {
-            width: 100%;
-            padding: 12px 0;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 1.6rem;
-        }
+.add__info-desc {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #f7fbff;
+    margin-bottom: 6px;
+}
 
-        .modal-quantity-input::placeholder {
-            color: rgba(255, 255, 255, 0.3);
-        }
+.add__info-textarea {
+    resize: none; /* remove default textarea handle */
+    min-height: 140px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    color: #e6eef8;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    outline: none;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
 
-        .modal-save-btn {
-            background: #4961CB;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            padding: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #fff;
-        }
+.add__info-textarea::placeholder {
+    color: rgba(255, 255, 255, 0.35);
+}
 
-        .modal-save-btn i {
-            font-size: 1.8rem;
-        }
+.add__info-textarea:focus {
+    box-shadow: 0 6px 18px rgba(9, 30, 66, 0.2),
+        inset 0 0 0 3px rgba(58, 123, 213, 0.06);
+}
 
-        .modal-save-text {
-            font-size: 1.4rem;
-        }
+/* small label for color cards (injected by JS) */
+.color-card-label {
+    position: absolute;
+    left: 6px;
+    bottom: 6px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 4px 6px;
+    border-radius: 6px;
+    font-size: 12px;
+    z-index: 3;
+}
 
-        /* Modal Done Button */
-        .modal-done-btn {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            padding: 12px 24px;
-            background: #4961CB;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.4rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-        }
+/* modal right refinement */
+.modal-right .modal-product-name {
+    font-size: 1.6rem;
+}
 
-        .modal-done-btn:hover {
-            background: #AEB9E1;
-        }
+.modal-right .modal_color,
+.modal-quantity-input,
+.add__input-cost,
+.add__info-edit {
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
 
-        .modal-done-btn i {
-            font-size: 1.4rem;
-        }
-        
+/* header save box */
+.header__save-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(90deg, #2b1b67, #1b3a8a);
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+}
+
+// /* responsive tweak: stack columns on narrow screens */
+// @media (max-width: 980px) {
+//     .add-wrap {
+//         flex-direction: column;
+//         gap: 10px;
+//     }
+//     .add-left {
+//         width: 100%;
+//     }
+//     .add__info-wrap {
+//         margin-left: 0;
+//         width: 100%;
+//     }
+// }
+
+/* Modal Quantity Input */
+.modal-quantity-wrap {
+    margin-top: 10px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+}
+
+.modal-quantity-input {
+    width: 100%;
+    padding: 12px 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.6rem;
+}
+
+.modal-quantity-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.modal-save-btn {
+    background: #4961cb;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+}
+
+.modal-save-btn i {
+    font-size: 1.8rem;
+}
+
+.modal-save-text {
+    font-size: 1.4rem;
+}
+
+/* Modal Done Button */
+.modal-done-btn {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 24px;
+    background: #4961cb;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+}
+
+.modal-done-btn:hover {
+    background: #aeb9e1;
+}
+
+.modal-done-btn i {
+    font-size: 1.4rem;
+}
+
 .modal-remove-btn {
-  position: absolute;
-  bottom: 20px;
-  right: 170px; 
-  padding: 12px 24px;
-  background: #4961CB; 
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.4rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.3s;
-  z-index: 40;
+    position: absolute;
+    bottom: 20px;
+    right: 170px;
+    padding: 12px 24px;
+    background: #4961cb;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    z-index: 40;
 }
 
 .modal-remove-btn:hover {
-  background: #AEB9E1;
+    background: #aeb9e1;
 }

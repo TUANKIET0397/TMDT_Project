@@ -454,11 +454,11 @@ a {
     color: #000;
 }
 
-.add_quantity{
+.add_quantity {
     margin-top: 12px;
     display: flex;
     align-items: center;
-    border-bottom: 2px solid #A1A1A1;
+    border-bottom: 2px solid #a1a1a1;
     border-radius: 4px;
 }
 
@@ -473,7 +473,7 @@ a {
 }
 
 .add-save-btn {
-    background: #30185D;
+    background: #30185d;
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -483,7 +483,6 @@ a {
     gap: 8px;
     color: #fff;
 }
-
 
 .add__info-heading-other {
     font-weight: 700;
@@ -580,201 +579,200 @@ a {
 }
 
 /* Modal Overlay */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 999;
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.3s ease;
-        }
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 999;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
 
-        .modal-overlay.active {
-            display: flex;
-        }
+.modal-overlay.active {
+    display: flex;
+}
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
 
-        /* Modal Content */
-        .modal-content {
-            background: #1a2039;
-            border-radius: 16px;
-            padding: 30px;
-            width: 630px;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-        }
+/* Modal Content */
+.modal-content {
+    background: #1a2039;
+    border-radius: 16px;
+    padding: 30px;
+    width: 630px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
 
-        .modal-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-        }
+.modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
 
-        /* Modal Left - Image Grid */
-        .modal-left {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1px;
-            background: #000;
-        }
+/* Modal Left - Image Grid */
+.modal-left {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: #000;
+}
 
-        .modal-image-item {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1;
-            background: #d9d9d9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+.modal-image-item {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    background: #d9d9d9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-        .modal-image-plus {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #fff;
-            cursor: pointer;
-        }
+.modal-image-plus {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+}
 
-        .modal-image-plus svg {
-            width: 24px;
-            height: 24px;
-        }
+.modal-image-plus svg {
+    width: 24px;
+    height: 24px;
+}
 
-        /* Modal Right - Info */
-        .modal-right {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+/* Modal Right - Info */
+.modal-right {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
 
-        .modal-product-name {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 10px;
-        }
+.modal-product-name {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 10px;
+}
 
-        .modal_color
-        {
-            border: none;
-            outline: none;
-            background-color: transparent;
-            color: #fff;
-            font-size: 1.6rem;
-        }
+.modal_color {
+    border: none;
+    outline: none;
+    background-color: transparent;
+    color: #fff;
+    font-size: 1.6rem;
+}
 
-        /* Modal Size Selector */
-        .modal-size-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 10px;
-        }
+/* Modal Size Selector */
+.modal-size-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 10px;
+}
 
-        .modal-size-btn {
-            padding: 14px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            background: transparent;
-            color: #fff;
-            font-size: 1.8rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
+.modal-size-btn {
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: transparent;
+    color: #fff;
+    font-size: 1.8rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
 
-        .modal-size-btn:hover {
-            border-color: #fff;
-        }
+.modal-size-btn:hover {
+    border-color: #fff;
+}
 
-        .modal-size-btn.active {
-            background: #fff;
-            color: #1a2039;
-            border-color: #fff;
-        }
+.modal-size-btn.active {
+    background: #fff;
+    color: #1a2039;
+    border-color: #fff;
+}
 
-        /* Modal Quantity Input */
-        .modal-quantity-wrap {
-            margin-top: 10px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-            display: flex;
-            align-items: center;
-        }
+/* Modal Quantity Input */
+.modal-quantity-wrap {
+    margin-top: 10px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+}
 
-        .modal-quantity-input {
-            width: 100%;
-            padding: 12px 0;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 1.6rem;
-        }
+.modal-quantity-input {
+    width: 100%;
+    padding: 12px 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.6rem;
+}
 
-        .modal-quantity-input::placeholder {
-            color: rgba(255, 255, 255, 0.3);
-        }
+.modal-quantity-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
 
-        .modal-save-btn {
-            background: #4961CB;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            padding: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #fff;
-        }
+.modal-save-btn {
+    background: #4961cb;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+}
 
-        .modal-save-btn i {
-            font-size: 1.8rem;
-        }
+.modal-save-btn i {
+    font-size: 1.8rem;
+}
 
-        .modal-save-text {
-            font-size: 1.4rem;
-        }
+.modal-save-text {
+    font-size: 1.4rem;
+}
 
-        /* Modal Done Button */
-        .modal-done-btn {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            padding: 12px 24px;
-            background: #4961CB;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.4rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-        }
+/* Modal Done Button */
+.modal-done-btn {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 24px;
+    background: #4961cb;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+}
 
-        .modal-done-btn:hover {
-            background: #AEB9E1;
-        }
+.modal-done-btn:hover {
+    background: #aeb9e1;
+}
 
-        .modal-done-btn i {
-            font-size: 1.4rem;
-        }
+.modal-done-btn i {
+    font-size: 1.4rem;
+}
