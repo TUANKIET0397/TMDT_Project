@@ -20,10 +20,10 @@ class ProductController {
                 "t-shirts": "t-shirts",
                 tshirts: "t-shirts",
                 shirts: "shirts",
-                knitwear: "knitswear", // map to DB value
-                sweatshirts: "swearshirts", // map to DB value
+                knitwear: "knitwear",
+                sweatshirts: "sweatshirts", 
                 pants: "pants",
-                outerwear: "outerswear", // map to DB value
+                outerwear: "outerwear", 
                 shoes: "shoes",
             }
 
@@ -142,27 +142,60 @@ class ProductController {
 
     async pants(req, res) {
         try {
-            const products = await Product.getProductsByType("Pants")
+            const { price, size } = req.query
+            let products = await Product.getProductsByType("Pants")
+            // Sort by price
+            if (price === "low-high") {
+                products.sort(
+                    (a, b) => parseFloat(a.Price) - parseFloat(b.Price)
+                )
+            } else if (price === "high-low") {
+                products.sort(
+                    (a, b) => parseFloat(b.Price) - parseFloat(a.Price)
+                )
+            }
+
+            // Filter by size (if implemented in DB)
+            // For now, we just pass the filter
+
             res.render("products/pants", {
                 products: products,
                 count: products.length,
+                filters: { price, size },
             })
         } catch (error) {
             console.log(error)
-            res.render("products/pants", { products: [], count: 0 })
+            res.render("products/pants", { products: [], count: 0, filters: {} })
         }
     }
 
     async shirts(req, res) {
         try {
-            const products = await Product.getProductsByType("Shirts")
+            const { price, size } = req.query
+            let products = await Product.getProductsByType("Shirts")
+
+            // Sort by price
+            if (price === "low-high") {
+                products.sort(
+                    (a, b) => parseFloat(a.Price) - parseFloat(b.Price)
+                )
+            } else if (price === "high-low") {
+                products.sort(
+                    (a, b) => parseFloat(b.Price) - parseFloat(a.Price)
+                )
+            }
+
+            // Filter by size (if implemented in DB)
+            // For now, we just pass the filter
+
             res.render("products/shirts", {
                 products: products,
                 count: products.length,
+                filters: { price, size },
             })
         } catch (error) {
             console.log(error)
-            res.render("products/shirts", { products: [], count: 0 })
+            res.render("products/shirts", { products: [], count: 0, filters: {} })
         }
     }
 
@@ -215,14 +248,31 @@ class ProductController {
 
     async tShirts(req, res) {
         try {
-            const products = await Product.getProductsByType("T-Shirts")
+            const { price, size } = req.query
+            let products = await Product.getProductsByType("T-Shirts")
+
+            // Sort by price
+            if (price === "low-high") {
+                products.sort(
+                    (a, b) => parseFloat(a.Price) - parseFloat(b.Price)
+                )
+            } else if (price === "high-low") {
+                products.sort(
+                    (a, b) => parseFloat(b.Price) - parseFloat(a.Price)
+                )
+            }
+
+            // Filter by size (if implemented in DB)
+            // For now, we just pass the filter
+
             res.render("products/t_shirts", {
                 products: products,
                 count: products.length,
+                filters: { price, size },
             })
         } catch (error) {
             console.log(error)
-            res.render("products/t_shirts", { products: [], count: 0 })
+            res.render("products/t_shirts", { products: [], count: 0, filters: {} })
         }
     }
 
