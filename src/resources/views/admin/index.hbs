@@ -1,2 +1,286 @@
+{{#contentFor "styleadmin"}}
+    <link rel="stylesheet" href="/css/dashboard.css" />
+{{/contentFor}}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 {{! Dashboard }}
-dashboard
+<main class="main">
+        <div class="topbar">
+          <div class="topbar-left">
+            <h1>Welcome back, Thuan</h1>
+            <p>All your data have recorded in dashboard</p>
+          </div>
+
+          <button class="export-btn">
+            Export data <i class="fa-solid fa-download"></i>
+          </button>
+        </div>
+
+        <!-- Stats cards -->
+        <div class="stats">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <i class="fa-solid fa-eye"></i>
+                <span>Pageviews</span>
+              </div>
+              <i class="fa-solid fa-ellipsis"></i>
+            </div>
+
+            <div class="card-bottom">
+              <div class="card-value">50.8K</div>
+              <div class="card-growth positive">
+                <span>28.4%</span>
+                <i class="fa-solid fa-arrow-trend-up"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <i class="fa-solid fa-user"></i>
+                <span>Monthly users</span>
+              </div>
+              <i class="fa-solid fa-ellipsis"></i>
+            </div>
+
+            <div class="card-bottom">
+              <div class="card-value">23.6K</div>
+              <div class="card-growth negative">
+                <span>12.6%</span>
+                <i class="fa-solid fa-arrow-trend-down"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <i class="fa-solid fa-user-plus"></i>
+                <span>New sign ups</span>
+              </div>
+              <i class="fa-solid fa-ellipsis"></i>
+            </div>
+
+            <div class="card-bottom">
+              <div class="card-value">756</div>
+              <div class="card-growth positive">
+                <span>3.1%</span>
+                <i class="fa-solid fa-arrow-trend-up"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <i class="fa-solid fa-file-invoice"></i>
+                <span>Total invoices</span>
+              </div>
+              <i class="fa-solid fa-ellipsis"></i>
+            </div>
+
+            <div class="card-bottom">
+              <div class="card-value">2.3K</div>
+              <div class="card-growth positive">
+                <span>11.3%</span>
+                <i class="fa-solid fa-arrow-trend-up"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts">
+          <!-- TOTAL REVENUE -->
+          <div class="chart-large">
+            <div class="chart-header">
+              <div class="chart-title">
+                <h3>Total revenue</h3>
+                <div class="chart-stats">
+                  <span class="chart-value"></span>
+                  <p class="growth positive">
+                    +24.6% <i class="fa-solid fa-arrow-trend-up"></i>
+                  </p>
+                </div>
+              </div>
+              <input type="date" class="date-picker" id="revenueDatePicker" value="2025-10-20" />
+            </div>
+            <div class="chart-date-display" id="chartDateDisplay" style="font-size: 14px; color: #a0aec0; margin-bottom: 10px;"></div>
+            <canvas id="revenueChart"></canvas>
+          </div>
+
+          <!-- SIDE CHARTS -->
+          <div class="chart-side">
+            <div class="chart-small">
+              <div class="chart-header">
+                <div class="chart-title">
+                  <h3>Clothes category</h3>
+                  <div class="chart-stats">
+                    <span class="chart-value">3,652</span>
+                    <p class="growth positive">
+                      +28.5% <i class="fa-solid fa-arrow-trend-up"></i>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <canvas id="clothesChart"></canvas>
+            </div>
+
+            <div class="chart-small">
+              <div class="chart-header">
+                <div class="chart-title">
+                  <h3>Product revenue</h3>
+                  <div class="chart-stats">
+                    <span class="chart-value">$400.875</span>
+                    <p class="growth negative">
+                      -3.2% <i class="fa-solid fa-arrow-trend-down"></i>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <canvas id="productChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== INVOICES STATUS ===== -->
+        <div class="main-content">
+            <section class="section__status">
+                <!-- Header -->
+                <div class="section__inner-heading">
+                    <div
+                        style="display: flex; align-items: center; gap: 15px; width: 100%;"
+                    >
+                        <h1 class="section__heading">Orders Status</h1>
+                        
+                    </div>
+
+                    <div class="section__headeing-wrap--small">
+                        <a
+                            href="/admin/invoice"
+                            id="delete-all-btn"
+                            type="button"
+                            class="section-item section-icon__trash"
+                            title="Delete selected orders or all"
+                            style="background: none; border: none; cursor: pointer; color: inherit;"
+                        >
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </a>
+                    </div>
+
+                </div>
+
+                <!-- Header Labels -->
+                <div class="section__inner-label--other">
+                    <div class="section-item">
+                        <label class="section-item__title">Order</label>
+                    </div>
+                    <div class="section-item">
+                        <i class="fa-solid fa-user"></i>
+                        <label class="section-item__title">Client</label>
+                    </div>
+                    <div class="section-item">
+                        <i class="fa-solid fa-calendar"></i>
+                        <label class="section-item__title">Date</label>
+                    </div>
+                    <div class="section-item">
+                        <i class="fa-solid fa-square-check"></i>
+                        <label class="section-item__title">Status</label>
+                    </div>
+                    <div class="section-item">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <label class="section-item__title">Country</label>
+                    </div>
+                    <div class="section-item">
+                        <label class="section-item__title">Total</label>
+                    </div>
+                </div>
+
+                <!-- Danh sách đơn hàng -->
+                {{#each invoices}}
+                    <div class="section__inner-label">
+                        <!-- Order ID -->
+                        <div class="section-item">
+                            <label
+                                for="section-checkbox-{{this.InvoiceID}}"
+                                class="section__custom-checkbox"
+                            >
+                                <input
+                                    type="checkbox"
+                                    id="section-checkbox-{{this.InvoiceID}}"
+                                    class="section-checkbox"
+                                    name="status"
+                                    value="{{this.InvoiceID}}"
+                                />
+                                <span
+                                    class="section-checkmark section-item__title"
+                                >#{{this.InvoiceID}}</span>
+                            </label>
+                        </div>
+
+                        <!-- Client Info -->
+                        <div class="section-item section__info-wrap">
+                            <p
+                                class="section__info-name section-item__title clamp-text"
+                                style="--line-content:1;"
+                            >
+                                {{this.FirstName}}
+                                {{this.LastName}}
+                            </p>
+                            <p
+                                class="section__info-mail section-item__title clamp-text"
+                                style="--line-content:1;"
+                            >
+                                {{this.Email}}
+                            </p>
+                        </div>
+
+                        <!-- Date -->
+                        <div class="section-item">
+                            <p class="section-item__date section-item__title">
+                                {{formatDate this.DateCreated}}
+                            </p>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="section-item">
+                            <div
+                                class="section-item__status--{{this.StatusColor}}"
+                            ></div>
+                        </div>
+
+                        <!-- Country -->
+                        <div class="section-item">
+                            <p class="section-item__location section-item__title">
+                                {{#if this.Region}}{{this.Region}}{{else}}N/A{{/if}}
+                            </p>
+                        </div>
+
+                        <!-- Total -->
+                        <div class="section-item">
+                            <div class="section-item__total section-item__title">
+                                $
+                                {{formatPrice this.TotalAmount}}
+                            </div>
+                        </div>
+
+                        <!-- Delete Form - DÙNG POST -->
+                      
+                    </div>
+                {{/each}}
+
+                {{#unless invoices}}
+                    <div class="section__inner-label">
+                        <p
+                            style="text-align: center; padding: 20px; grid-column: 1 / -1;"
+                        >No orders found</p>
+                    </div>
+                {{/unless}}
+            </section>
+        </div>
+      </main>
+
+<script src="/js/dashboard.js"></script>

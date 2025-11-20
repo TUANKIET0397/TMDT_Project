@@ -181,6 +181,44 @@ class AuthSite {
     }
   }
 
+  // ===== LOGIN ADMIN =====
+  static async loginAdmin(adminName, password) {
+    try {
+      const [admins] = await db.query(
+        `SELECT * FROM Admins WHERE AdminName = ?`,
+        [adminName]
+      );
+
+      if (admins.length === 0) {
+        return null; // không tìm thấy admin
+      }
+
+      const admin = admins[0];
+
+      // Nếu admin có hash password
+      const isValidPassword = await bcrypt.compare(
+        password,
+        admin.PasswordHash
+      );
+      if (!isValidPassword) {
+        return null;
+      }
+
+      return {
+        ID: admin.ID,
+        AdminName: admin.AdminName,
+        Roles: admin.Roles,
+      };
+    } catch (error) {
+      console.error('Error in loginAdmin:', error);
+      throw error;
+    }
+  }
+
+  static async loginUser(username, password) {
+    return this.login(username, password);
+  }
+
   // ===== LẤY USER THEO ID =====
   static async getUserById(userId) {
     try {

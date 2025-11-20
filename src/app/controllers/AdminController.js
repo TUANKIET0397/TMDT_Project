@@ -7,7 +7,169 @@ const fsSync = require('fs');
 class AdminController {
   // [GET] /admin - Trang chủ admin (Dashboard)
   async index(req, res) {
-    res.render('admin/index', { layout: 'admin' });
+    try {
+      // Lấy danh sách invoices + stats
+      const [invoices, stats] = await Promise.all([
+        AdminSite.getInvoicesWithProducts(), // tương tự invoice()
+        AdminSite.getInvoiceStats(),
+      ]);
+
+      console.log('✅ Invoices loaded in dashboard:', invoices.length);
+      const maxInvoices = 5;
+      const invoicesLimited = invoices.slice(0, maxInvoices);
+
+      // Render dashboard và truyền dữ liệu invoices
+      res.render('admin/index', {
+        layout: 'admin',
+        invoices: invoicesLimited,
+        stats,
+      });
+    } catch (error) {
+      console.error('❌ Error loading dashboard invoices:', error);
+      res.status(500).send('Internal Server Error');
+    }
+  }
+
+  // [GET] /admin/dashboard/data - Lấy dữ liệu dashboard dưới dạng JSON
+  async dashboardData(req, res) {
+    try {
+      const year = parseInt(req.query.year, 10) || new Date().getFullYear();
+
+      // 1) Lấy dữ liệu cơ bản (dùng Promise.all để chạy song song)
+      const [
+        stats,
+        invoices,
+        typeData,
+        totalPageViews,
+        monthlyUsers,
+        newSignUps,
+        totalInvoices,
+        clothesSold,
+      ] = await Promise.all([
+        // tổng quan (số order theo trạng thái, doanh thu tạm, v.v.)
+        AdminSite.getInvoiceStats(),
+        // danh sách invoices kèm product nếu cần
+        AdminSite.getInvoicesWithProducts(),
+        // product counts grouped by type
+        AdminSite.getProductCountsByType(),
+        // tổng page views (tháng/năm tùy hàm bạn cài)
+        AdminSite.getTotalPageViews(),
+        // monthly users (distinct logins trong tháng hiện tại)
+        AdminSite.getMonthlyUsers(),
+        // số user đăng ký mới trong tháng
+        AdminSite.getNewSignUps(),
+        // tổng số invoices trong tháng
+        AdminSite.getTotalInvoices(),
+        // tổng sản phẩm bán ra của category "Clothes" (tháng)
+        AdminSite.getClothesSoldCount(),
+      ]);
+
+      // 2) Monthly revenue (dạng mảng 12 phần tử cho chart)
+      const monthlyRevenue = await AdminSite.getMonthlyRevenueByYear(year);
+
+      // 3) Growth: PageViews, MonthlyUsers, NewSignUps, TotalInvoices, Clothes
+      //    Lưu ý: getGrowthPercentage(currentValue, tableName, column, dateColumn)
+      const [
+        pageViewsGrowth,
+        monthlyUsersGrowth,
+        signUpsGrowth,
+        totalInvoicesGrowth,
+        clothesGrowth,
+      ] = await Promise.all([
+        // PageViews: COUNT(DISTINCT VisitorID) last month
+        AdminSite.getGrowthPercentage(
+          totalPageViews,
+          'PageView',
+          'DISTINCT VisitorID',
+          'ViewTime'
+        ),
+        // MonthlyUsers: sử dụng Accounts hoặc bảng login (hàm getMonthlyUsers phải tương thích)
+        AdminSite.getGrowthPercentage(
+          monthlyUsers,
+          'Accounts',
+          'DISTINCT UserID',
+          'CreatedTime'
+        ),
+        // New signups: Users.CreatedAt
+        AdminSite.getGrowthPercentage(newSignUps, 'Users', '*', 'CreatedAt'),
+        // Total invoices: Invoice.DateCreated
+        AdminSite.getGrowthPercentage(
+          totalInvoices,
+          'Invoice',
+          '*',
+          'DateCreated'
+        ),
+        // Clothes sold: dùng subquery bảng bán hàng (getGrowthPercentage hỗ trợ tableName là subquery alias)
+        AdminSite.getGrowthPercentage(
+          clothesSold,
+          `(
+          SELECT ci.ID, ci.Volume, i.DateCreated
+          FROM CartItem ci
+          JOIN Product p ON ci.ProductID = p.ID
+          JOIN TypeProduct tp ON p.TypeID = tp.ID
+          JOIN Cart c ON ci.CartID = c.ID
+          JOIN Invoice i ON c.ID = i.CartID
+          WHERE tp.TypeName = 'Clothes'
+        ) AS sub`,
+          'Volume',
+          'DateCreated'
+        ),
+      ]);
+
+      // 4) Tổng doanh thu năm hiện tại và growth YoY (year-over-year)
+      //    getTotalRevenueByYear(year) => số (số tiền)
+      //    getRevenueGrowthYoY(year) => % so với năm trước
+      const [totalRevenueThisYear, totalRevenueGrowthYoY] = await Promise.all([
+        AdminSite.getTotalRevenueByYear(year),
+        AdminSite.getRevenueGrowthYoY(year),
+      ]);
+
+      // 5) Convert product counts by type sang object { TypeName: count }
+      const productsByType = {};
+      if (Array.isArray(typeData)) {
+        typeData.forEach((item) => {
+          const key = item.TypeName || 'Unknown';
+          productsByType[key] = Number(item.cnt || 0);
+        });
+      }
+
+      // 6) Trả về JSON cho frontend
+      return res.json({
+        success: true,
+        stats: {
+          // giữ nguyên các trường từ stats (nếu có)
+          ...stats,
+          // các metric mới/overrides
+          TotalPageViews: Number(totalPageViews || 0),
+          PageViewsGrowth: Number(pageViewsGrowth || 0),
+
+          MonthlyUsers: Number(monthlyUsers || 0),
+          MonthlyUsersGrowth: Number(monthlyUsersGrowth || 0),
+
+          NewSignUps: Number(newSignUps || 0),
+          NewSignUpsGrowth: Number(signUpsGrowth || 0),
+
+          TotalInvoices: Number(totalInvoices || 0),
+          TotalInvoicesGrowth: Number(totalInvoicesGrowth || 0),
+
+          ClothesSold: Number(clothesSold || 0),
+          ClothesGrowth: Number(clothesGrowth || 0),
+
+          // Total revenue (year) và growth YoY
+          TotalRevenue: Number(totalRevenueThisYear || 0),
+          TotalRevenueGrowthYoY: Number(totalRevenueGrowthYoY || 0),
+        },
+        monthlyRevenue,
+        productsByType,
+        invoices,
+        recentInvoices: Array.isArray(invoices) ? invoices.slice(0, 7) : [],
+      });
+    } catch (err) {
+      console.error('Error in dashboardData:', err);
+      return res
+        .status(500)
+        .json({ success: false, error: err.message || String(err) });
+    }
   }
 
   // [GET] /admin/register - Đăng ký admin
