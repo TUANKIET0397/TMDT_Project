@@ -549,6 +549,7 @@ h3 {
     justify-content: space-between;
     align-items: center;
     padding: 16px;
+    margin-top: 4px;
     height: 80px;
     border-bottom: 1px solid #eee;
 }
@@ -574,7 +575,7 @@ h3 {
 .chat-area {
     display: flex;
     flex-direction: column;
-    flex: 1; 
+    flex: 1;
 }
 
 .chat-area h4 {
@@ -726,25 +727,23 @@ button.Buy {
     background: #0056b3;
 }
 
+/* Scrollbar Styles */
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
 
-        /* Scrollbar Styles */
-        .chat-messages::-webkit-scrollbar {
-            width: 6px;
-        }
+.chat-messages::-webkit-scrollbar-track {
+    background: transparent;
+}
 
-        .chat-messages::-webkit-scrollbar-track {
-            background: transparent;
-        }
+.chat-messages::-webkit-scrollbar-thumb {
+    background: #18318b;
+    border-radius: 10px;
+}
 
-        .chat-messages::-webkit-scrollbar-thumb {
-            background: #18318b;
-            border-radius: 10px;
-        }
-
-        .chat-messages::-webkit-scrollbar-thumb:hover {
-            background: #6073c1;
-        }
-
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #6073c1;
+}
 
 /* Responsive */
 @media (max-width: 480px) {

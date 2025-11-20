@@ -16,6 +16,7 @@ const chatUserName = document.querySelector(".chat-user-name")
 // Store
 let activeUsers = new Map() // userId -> user data
 let currentChatUserId = null
+let lastMessageDate = null
 
 // Nhận thông báo có user mới
 socket.on("admin:new-user", (data) => {
@@ -41,14 +42,14 @@ socket.on("admin:receive-message", (data) => {
         activeUsers.set(data.userId, {
             userId: data.userId,
             name: `User ${data.userId.substring(0, 8)}`,
-            lastMessage: data.message,
+            lastMessage: data.productName ? data.productName : data.message,
             unreadCount: 0,
         })
     }
 
     // Luôn cập nhật lastMessage
     const user = activeUsers.get(data.userId)
-    user.lastMessage = data.message
+    user.lastMessage = data.productName ? data.productName : data.message
 
     // Nếu admin không đang xem user này, tăng unreadCount
     if (currentChatUserId !== data.userId) {
@@ -60,17 +61,20 @@ socket.on("admin:receive-message", (data) => {
         user.unreadCount = 0
         activeUsers.set(data.userId, user)
         renderUserList()
+        // Hiển thị sản phẩm nếu có
         if (data.productName) {
-            addProductMessage(data)
-        } else {
-            addMessage(data.message, "received")
+            addProductMessage(data, "received")
+        }
+        // Hiển thị tin nhắn text nếu có
+        if (data.message && data.message.trim() !== "") {
+            addMessage(data.message, "received", data.timestamp)
         }
     }
 })
 
 // Tin nhắn đã gửi
 socket.on("admin:message-sent", (data) => {
-    addMessage(data.message, "sent")
+    addMessage(data.message, "sent", data.timestamp)
 })
 
 // Thêm hoặc cập nhật user trong danh sách (không set unreadCount ở đây)
@@ -145,6 +149,9 @@ async function switchToUser(userId) {
     activeUsers.set(userId, user)
     renderUserList()
 
+    // Reset date separator tracking
+    lastMessageDate = null
+
     // Load lịch sử chat từ database
     try {
         const response = await fetch(`/admin/chat/history/${userId}`)
@@ -152,15 +159,23 @@ async function switchToUser(userId) {
 
         chatMessages.innerHTML = ""
         data.messages.forEach((msg) => {
-            if (msg.ProductID) {
-                // Hiển thị sản phẩm
-                addProductMessage({
-                    productName: msg.ProductName,
-                    productPrice: msg.ProductPrice,
-                    productImage: msg.ProductImage,
-                })
+            const type = msg.AdminID ? "sent" : "received"
+            if (msg.ProductID && msg.ProductName) {
+                // Hiển thị sản phẩm (with timestamp)
+                addProductMessage(
+                    {
+                        productName: msg.ProductName,
+                        productPrice: msg.ProductPrice,
+                        productImage: msg.ProductImage,
+                        timestamp: msg.SendTime,
+                    },
+                    type
+                )
             }
-            addMessage(msg.Message, msg.AdminID ? "sent" : "received")
+            // Chỉ hiển thị message nếu có text
+            if (msg.Message && msg.Message.trim() !== "") {
+                addMessage(msg.Message, type, msg.SendTime)
+            }
         })
     } catch (error) {
         console.error("Error loading chat history:", error)
@@ -192,29 +207,107 @@ function sendMessage() {
 }
 
 // Thêm tin nhắn vào chat
-function addMessage(message, type) {
+function addMessage(message, type, timestamp) {
+    // Thêm date separator nếu cần
+    if (shouldShowDateSeparator(timestamp)) {
+        addDateSeparator(timestamp)
+    }
+
     const messageDiv = document.createElement("div")
     messageDiv.className = `message ${type}`
-    messageDiv.innerHTML = `<div class="message-content">${message}</div>`
+    const timeHTML = timestamp
+        ? `<div class="message-time" style="font-size: 12px; color: #999; margin-bottom: 5px;">${formatTimestamp(
+              timestamp
+          )}</div>`
+        : ""
+    messageDiv.innerHTML = `${timeHTML}<div class="message-content">${escapeHtml(
+        message
+    )}</div>`
     chatMessages.appendChild(messageDiv)
     scrollToBottom()
 }
 
+function formatTimestamp(ts) {
+    try {
+        const d = new Date(ts)
+        return d.toLocaleString()
+    } catch (e) {
+        return ts
+    }
+}
+
+function formatDateOnly(ts) {
+    try {
+        const d = new Date(ts)
+        return d.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+        })
+    } catch (e) {
+        return ""
+    }
+}
+
+function shouldShowDateSeparator(timestamp) {
+    if (!timestamp) return false
+    const currentDate = formatDateOnly(timestamp)
+    if (currentDate !== lastMessageDate) {
+        lastMessageDate = currentDate
+        return true
+    }
+    return false
+}
+
+function addDateSeparator(timestamp) {
+    const dateDiv = document.createElement("div")
+    dateDiv.style.cssText =
+        "text-align: center; color: #999; font-size: 12px; margin: 15px 0 10px 0; padding: 0 20px;"
+    dateDiv.textContent = formatDateOnly(timestamp)
+    chatMessages.appendChild(dateDiv)
+}
+
+function escapeHtml(text) {
+    if (!text) return ""
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#039;")
+}
+
 // Thêm sản phẩm vào chat
-function addProductMessage(data) {
+function addProductMessage(data, type = "received") {
+    // Thêm date separator nếu cần
+    if (shouldShowDateSeparator(data.timestamp)) {
+        addDateSeparator(data.timestamp)
+    }
+
     const productDiv = document.createElement("div")
-    productDiv.className = "message received"
+    productDiv.className = `message ${type}`
     productDiv.style.width = "100%"
+    productDiv.style.maxWidth = "none"
+    productDiv.style.padding = "0"
+    const timeHTML = data.timestamp
+        ? `<div class="message-time" style="font-size: 12px; color: #999; margin-bottom: 10px;">${formatTimestamp(
+              data.timestamp
+          )}</div>`
+        : ""
+    const productImage = data.productImage || "/img/default.jpg"
     productDiv.innerHTML = `
-        <div class="product-message">
-            <div class="product-image" style="background-image: url('${
-                data.productImage || ""
-            }')"></div>
-            <div class="product-info">
-                <div class="product-name">${data.productName || "Product"}
-                    <br /><br />
-                    <div class="chat-price">${data.productPrice || "0"}$</div>
-                </div>
+        ${timeHTML}
+        <div class="product-message" style="width: 100%; display: flex; gap: 10px; padding: 10px; background-color: #f5f5f5; border-radius: 8px;">
+            <div class="product-image" style="width: 100px; height: 100px; flex-shrink: 0; background-image: url('${escapeHtml(
+                productImage
+            )}'); background-size: cover; background-position: center; background-repeat: no-repeat; border-radius: 8px;"></div>
+            <div class="product-info" style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+                <div class="product-name" style="font-weight: bold; margin-bottom: 5px; font-size: 14px;">${escapeHtml(
+                    data.productName || "Product"
+                )}</div>
+                <div class="chat-price" style="color: #e74c3c; font-weight: bold; font-size: 14px;">${escapeHtml(
+                    data.productPrice || "0"
+                )}$</div>
             </div>
         </div>
     `

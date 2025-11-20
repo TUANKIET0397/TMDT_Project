@@ -1,6 +1,6 @@
 {{! Detail product }}
 {{#contentFor "styles"}}
-<link rel="stylesheet" href="/css/detail.css" />
+    <link rel="stylesheet" href="/css/detail.css" />
 {{/contentFor}}
 
 <!-- Detail section content -->
@@ -9,20 +9,31 @@
         <div class="section__inner">
             <!-- LEFT section: 6 ảnh grid -->
             <div class="section__hero-left">
-    <div class="section__hero-item">
-      <img src="{{product.ImgPath}}" alt="{{product.ProductName}}">
-    </div>
+                <div class="section__hero-item">
+                    <img
+                        src="{{product.ImgPath}}"
+                        alt="{{product.ProductName}}"
+                    />
+                </div>
             </div>
 
             <!-- RIGHT section: Product info from backend -->
-            <div class="section__content-right">
+            <div
+                class="section__content-right product-detail"
+                data-product-id="{{product.ID}}"
+                data-product-name="{{product.ProductName}}"
+                data-product-price="{{product.Price}}"
+                data-product-image="{{product.ImgPath}}"
+            >
                 <p class="section__label">{{product.TypeName}}</p>
                 <h2 class="section__heading">{{product.ProductName}}</h2>
                 <p class="section__price">${{product.Price}}</p>
 
                 <div class="section__aside">
                     <p class="section__aside-price">
-                        or 4 times {{divide product.Price 4}} €
+                        or 4 times
+                        {{divide product.Price 4}}
+                        €
                     </p>
                     <span class="section__aside-size">
                         What's my size?
@@ -31,59 +42,86 @@
 
                 <!-- form size -->
                 <div class="section__form">
-                    <div class="section__form-size section__form-size--S"
-                        data-size="S">S</div>
-                    <div class="section__form-size section__form-size--M"
-                        data-size="M">M</div>
-                    <div class="section__form-size section__form-size--L"
-                        data-size="L">L</div>
-                    <div class="section__form-size section__form-size--XL"
-                        data-size="XL">XL</div>
+                    <div
+                        class="section__form-size section__form-size--S"
+                        data-size="S"
+                    >S</div>
+                    <div
+                        class="section__form-size section__form-size--M"
+                        data-size="M"
+                    >M</div>
+                    <div
+                        class="section__form-size section__form-size--L"
+                        data-size="L"
+                    >L</div>
+                    <div
+                        class="section__form-size section__form-size--XL"
+                        data-size="XL"
+                    >XL</div>
                 </div>
 
                 <!-- btn add to cart & buy now -->
                 <div class="section_btn-detail">
-                <div class="btn section__btn-add" id="addToCartBtn"
-                    onclick="addToCartDetail()">ADD TO CART - M</div>
-                <div class="btn section__btn-buy" id="buyNowBtn">BUY NOW</div>
-                <div class="btn section_btn-advise">GET ADVISE</div>
-                <p class="section__label section__label--other">OTHER COLORS</p>
+                    <div
+                        class="btn section__btn-add"
+                        id="addToCartBtn"
+                        onclick="addToCartDetail()"
+                    >ADD TO CART - M</div>
+                    <div class="btn section__btn-buy" id="buyNowBtn">BUY NOW</div>
+                    <button
+                        type="button"
+                        class="btn section_btn-advise btn-consult"
+                    >GET ADVISE</button>
+                    <p class="section__label section__label--other">OTHER COLORS</p>
                 </div>
-                    <div class="section__other-color">
-                        <img class="section__other-color--opption" src="./assets/img/ortherColor1.svg" alt="">
-                        <img class="section__other-color--opption" src="./assets/img/ortherColor2.svg" alt="">
-                        <img class="section__other-color--opption" src="./assets/img/ortherColor3.svg" alt="">
-                        <img class="section__other-color--opption" src="./assets/img/IMG_E5339.JPG" alt="">
-                    </div>
+                <div class="section__other-color">
+                    <img
+                        class="section__other-color--opption"
+                        src="./assets/img/ortherColor1.svg"
+                        alt=""
+                    />
+                    <img
+                        class="section__other-color--opption"
+                        src="./assets/img/ortherColor2.svg"
+                        alt=""
+                    />
+                    <img
+                        class="section__other-color--opption"
+                        src="./assets/img/ortherColor3.svg"
+                        alt=""
+                    />
+                    <img
+                        class="section__other-color--opption"
+                        src="./assets/img/IMG_E5339.JPG"
+                        alt=""
+                    />
+                </div>
 
                 <!-- Description from backend -->
                 <div class="section__desc">
                     <p class="section__desc--inf">Korean niche brand,
-                        specialized in the manufacture of denim
-                        pieces,
-                        Demil MFG offers demanding creations, inspired by the
-                        reproduction of archival clothing and
-                        driven by a constant quest for excellence.
+                        specialized in the manufacture of denim pieces, Demil
+                        MFG offers demanding creations, inspired by the
+                        reproduction of archival clothing and driven by a
+                        constant quest for excellence.
                     </p>
                     <h3 class="section__desc--heading">WHAT CONVINDED US</h3>
                     <p class="section__desc--inf">Faithful reproduction of the
-                        legendary Type II Trucker Jacket,
-                        born in
-                        the early 50s, the Pioneer Jacket displays a boxy
-                        silhouette and a resolutely retro spirit.
+                        legendary Type II Trucker Jacket, born in the early 50s,
+                        the Pioneer Jacket displays a boxy silhouette and a
+                        resolutely retro spirit.
                     </p>
                     <p class="section__desc--inf">Crafted in a 13oz selvedge
-                        fabric developed exclusively by Demil
-                        MFG—from an archive of exceptional fabrics — it embodies
-                        all the know-how of old-fashioned
-                        manufacturing, combining high standards and tradition.
+                        fabric developed exclusively by Demil MFG—from an
+                        archive of exceptional fabrics — it embodies all the
+                        know-how of old-fashioned manufacturing, combining high
+                        standards and tradition.
                     </p>
                     <p class="section__desc--inf">With its raw color, authentic
-                        canvas and vintage fit, the Pioneer
-                        Jacket stands out as one of the best value for money in
-                        its class. A piece of character,
-                        designed to age with time and enhance your layering
-                        games, season after season.
+                        canvas and vintage fit, the Pioneer Jacket stands out as
+                        one of the best value for money in its class. A piece of
+                        character, designed to age with time and enhance your
+                        layering games, season after season.
                     </p>
                     <div class="section__desc--details">
                         <p class="section__desc--highlight">Available
@@ -92,50 +130,77 @@
                         <!-- item 1-->
                         <div class="section__desc--wrap">
                             <p class="section__desc--item">DETAIL</p>
-                            <svg width="16" height="9" viewBox="0 0 16 9"
+                            <svg
+                                width="16"
+                                height="9"
+                                viewBox="0 0 16 9"
                                 fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 1L8 8L1 1" stroke="currentColor"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    d="M15 1L8 8L1 1"
+                                    stroke="currentColor"
                                     stroke-width="2"
                                     stroke-linecap="round"
-                                    stroke-linejoin="round" />
+                                    stroke-linejoin="round"
+                                />
                             </svg>
                         </div>
                         <!-- item 2-->
                         <div class="section__desc--wrap">
                             <p class="section__desc--item">FIT</p>
-                            <svg width="16" height="9" viewBox="0 0 16 9"
+                            <svg
+                                width="16"
+                                height="9"
+                                viewBox="0 0 16 9"
                                 fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 1L8 8L1 1" stroke="currentColor"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    d="M15 1L8 8L1 1"
+                                    stroke="currentColor"
                                     stroke-width="2"
                                     stroke-linecap="round"
-                                    stroke-linejoin="round" />
+                                    stroke-linejoin="round"
+                                />
                             </svg>
                         </div>
                         <!-- item 3-->
                         <div class="section__desc--wrap">
-                            <p class="section__desc--item">DELIVERY AND
-                                RETURN</p>
-                            <svg width="16" height="9" viewBox="0 0 16 9"
+                            <p class="section__desc--item">DELIVERY AND RETURN</p>
+                            <svg
+                                width="16"
+                                height="9"
+                                viewBox="0 0 16 9"
                                 fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 1L8 8L1 1" stroke="currentColor"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    d="M15 1L8 8L1 1"
+                                    stroke="currentColor"
                                     stroke-width="2"
                                     stroke-linecap="round"
-                                    stroke-linejoin="round" />
+                                    stroke-linejoin="round"
+                                />
                             </svg>
                         </div>
                         <!-- item 4-->
                         <div class="section__desc--wrap">
                             <p class="section__desc--item">CARE GUIDE</p>
-                            <svg width="16" height="9" viewBox="0 0 16 9"
+                            <svg
+                                width="16"
+                                height="9"
+                                viewBox="0 0 16 9"
                                 fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 1L8 8L1 1" stroke="currentColor"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    d="M15 1L8 8L1 1"
+                                    stroke="currentColor"
                                     stroke-width="2"
                                     stroke-linecap="round"
-                                    stroke-linejoin="round" />
+                                    stroke-linejoin="round"
+                                />
                             </svg>
                         </div>
                     </div>
@@ -161,7 +226,8 @@
                         year....................................................................2018</p>
                     <p>City of
                         origin.....................................................................Seoul</p>
-                    <p>Founder(s).....................................................Ham
+                    <p
+                    >Founder(s).....................................................Ham
                         Dong-soo</p>
                 </div>
 
@@ -170,16 +236,13 @@
             <div class="about__inner-item">
                 <p class="about__desc about__desc-edit">
                     Confidential Korean label, Demil MFG is distinguished by its
-                    expertise in the
-                    manufacture of denim pieces with an assertive character.
-                    Nurtured by the study of archival
+                    expertise in the manufacture of denim pieces with an
+                    assertive character. Nurtured by the study of archival
                     clothing, the brand develops cutting-edge creations, guided
                     by a constant demand for quality.
                 </p>
                 <p class="about__desc about__desc-edit">With an approach that is
-                    both nerdy and meticulous, the
-                    brand strives to
-                    offer
+                    both nerdy and meticulous, the brand strives to offer
                     aesthetic and timeless pieces, shaped with particular
                     attention to detail.
                 </p>
@@ -188,62 +251,68 @@
             <div class="about__inner-item">
                 <h2 class="about__heading">Must read</h2>
                 <div class="about__guide-link">
-                    <img class="about__guide-link--img"
-                        src="./assets/icons/youtube.png" alt="Youtube">
-                    <div class="about__guide-slogan clamp-text"
-                        style="--content-slogan: 'Youtube'; --line-count: 4">
-                        Gucci
-                        guide to everyone
-                        [matching with your styles]
+                    <img
+                        class="about__guide-link--img"
+                        src="./assets/icons/youtube.png"
+                        alt="Youtube"
+                    />
+                    <div
+                        class="about__guide-slogan clamp-text"
+                        style="--content-slogan: 'Youtube'; --line-count: 4"
+                    >
+                        Gucci guide to everyone [matching with your styles]
                     </div>
                     <div class="about__guide-link--btn">EN</div>
                 </div>
-                <h2 class="about__heading about__heading-other">Best
-                    sellers</h2>
+                <h2 class="about__heading about__heading-other">Best sellers</h2>
                 <!-- Best sellers -->
                 <div class="about__list-aside">
                     <!-- item sub 1-->
                     <div class="about__list-item">
-                        <div class="about__list-item__number"
-                            style="--number-bestSeller:'1'"></div>
+                        <div
+                            class="about__list-item__number"
+                            style="--number-bestSeller:'1'"
+                        ></div>
                         <div class="about__list-item--wrap">
-                            <p class="about__list-item__name">Jean
-                                'Pioneer Pants' - Raw</p>
-                            <p class="about__list-item__desc">Raw Selvedge
-                                Denim</p>
+                            <p class="about__list-item__name">Jean 'Pioneer
+                                Pants' - Raw</p>
+                            <p class="about__list-item__desc">Raw Selvedge Denim</p>
                         </div>
                     </div>
                     <!-- item sub 2-->
                     <div class="about__list-item">
-                        <div class="about__list-item__number"
-                            style="--number-bestSeller:'2'"></div>
+                        <div
+                            class="about__list-item__number"
+                            style="--number-bestSeller:'2'"
+                        ></div>
                         <div class="about__list-item--wrap">
-                            <p class="about__list-item__name">Jean
-                                'Pioneer Pants' - Raw</p>
-                            <p class="about__list-item__desc">Raw Selvedge
-                                Denim</p>
+                            <p class="about__list-item__name">Jean 'Pioneer
+                                Pants' - Raw</p>
+                            <p class="about__list-item__desc">Raw Selvedge Denim</p>
                         </div>
                     </div>
                     <!-- item sub 3-->
                     <div class="about__list-item">
-                        <div class="about__list-item__number"
-                            style="--number-bestSeller:'3'"></div>
+                        <div
+                            class="about__list-item__number"
+                            style="--number-bestSeller:'3'"
+                        ></div>
                         <div class="about__list-item--wrap">
-                            <p class="about__list-item__name">Jean
-                                'Pioneer Pants' - Raw</p>
-                            <p class="about__list-item__desc">Raw Selvedge
-                                Denim</p>
+                            <p class="about__list-item__name">Jean 'Pioneer
+                                Pants' - Raw</p>
+                            <p class="about__list-item__desc">Raw Selvedge Denim</p>
                         </div>
                     </div>
                     <!-- item sub 4-->
                     <div class="about__list-item">
-                        <div class="about__list-item__number"
-                            style="--number-bestSeller:'4'"></div>
+                        <div
+                            class="about__list-item__number"
+                            style="--number-bestSeller:'4'"
+                        ></div>
                         <div class="about__list-item--wrap">
-                            <p class="about__list-item__name">Jean
-                                'Pioneer Pants' - Raw</p>
-                            <p class="about__list-item__desc">Raw Selvedge
-                                Denim</p>
+                            <p class="about__list-item__name">Jean 'Pioneer
+                                Pants' - Raw</p>
+                            <p class="about__list-item__desc">Raw Selvedge Denim</p>
                         </div>
                     </div>
                 </div>
@@ -251,91 +320,82 @@
             <!-- Item 4 -->
             <div class="about__inner-item"></div>
             {{#if relatedProducts}}
-            {{#each relatedProducts}}
-            <div class="about__inner-wrap">
-                          <a href="/products/detail/{{this.ID}}" style="text-decoration: none; color: inherit; cursor: pointer;">
-                <div class="about__inner-item">
-                    <div class="about__item-bottom">
-                        <div class="about__item-bottom-img">
-                            <div class="about__item-bottom-img-main ">
-                                <img src="{{this.ImgPath}}"
-                                    alt="{{this.ProductName}}">
-                                <div class="about__item-bottom-list">
-                                    <div
-                                        class="about__item-bottom-list-edit">u</div>
-                                    <div>u</div>
-                                    <div>u</div>
+                {{#each relatedProducts}}
+                    <div class="about__inner-wrap">
+                        <a
+                            href="/products/detail/{{this.ID}}"
+                            style="text-decoration: none; color: inherit; cursor: pointer;"
+                        >
+                            <div class="about__inner-item">
+                                <div class="about__item-bottom">
+                                    <div class="about__item-bottom-img">
+                                        <div
+                                            class="about__item-bottom-img-main"
+                                        >
+                                            <img
+                                                src="{{this.ImgPath}}"
+                                                alt="{{this.ProductName}}"
+                                            />
+                                            <div
+                                                class="about__item-bottom-list"
+                                            >
+                                                <div
+                                                    class="about__item-bottom-list-edit"
+                                                >u</div>
+                                                <div>u</div>
+                                                <div>u</div>
+                                            </div>
+                                            <div
+                                                class="about__item-bottom--new"
+                                            >{{this.IsNew}}</div>
+                                        </div>
+                                    </div>
+                                    <div class="about__item-bottom-aside">
+                                        <div class="about__item-bottom-label">
+                                            <h2
+                                                class="about__item-bottom-heading"
+                                            >{{this.ProductName}}</h2>
+                                            <div
+                                                class="about__item-bottom-price"
+                                            >${{this.Price}}</div>
+                                        </div>
+                                        <div class="about__item-bottom-desc">
+                                            {{#if
+                                                this.ShortDesc
+                                            }}{{this.ShortDesc}}{{else}}Type II
+                                                Trucker Jacket 'Pioneer Jacket'
+                                                - Raw Selvedge Denim{{/if}}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div
-                                    class="about__item-bottom--new">{{this.IsNew}}</div>
                             </div>
-                        </div>
-                        <div class="about__item-bottom-aside">
-                            <div class="about__item-bottom-label">
-                                <h2
-                                    class="about__item-bottom-heading">{{this.ProductName}}</h2>
-                                <div
-                                    class="about__item-bottom-price">${{this.Price}}</div>
-                            </div>
-                            <div class="about__item-bottom-desc">
-                                {{#if
-                                this.ShortDesc}}{{this.ShortDesc}}{{else}}Type
-                                II Trucker Jacket 'Pioneer Jacket' - Raw
-                                Selvedge Denim{{/if}}
-                            </div>
-                        </div>
+                        </a>
                     </div>
-                </div> 
-                          </a>
-            </div>
-            {{/each}}
+                {{/each}}
             {{/if}}
         </div>
     </div>
 </section>
 
 <script>
-  const productId = '{{product.ID}}'
-  const productName = '{{product.ProductName}}'
-  const productPrice = {{product.Price}}
-  const productImg = '{{product.ImgPath}}'
-  let selectedSize = 'M'
-
-  // Size selection
-  document.querySelectorAll('.section__form-size').forEach(btn => {
-    btn.addEventListener('click', function() {
-      document.querySelectorAll('.section__form-size').forEach(b => b.classList.remove('active'))
-      this.classList.add('active')
-      selectedSize = this.dataset.size || 'M'
-      document.getElementById('addToCartBtn').textContent = `ADD TO CART - ${selectedSize}`
-    })
-  })
-
-  // Set M as default selected
-  setTimeout(() => {
-    document.querySelector('[data-size="M"]')?.classList.add('active')
-  }, 100)
-
-  // Add to cart
-  function addToCartDetail() {
-    if (!selectedSize) {
-      alert('Please select a size')
-      return
-    }
-
-    addToCart({
-      id: productId,
-      name: productName,
-      price: productPrice,
-      img: productImg,
-      size: selectedSize,
-      quantity: 1
-    })
-  }
-
-  // Buy now
-  document.getElementById('buyNowBtn')?.addEventListener('click', () => {
-    addToCartDetail()
-    setTimeout(() => window.location.href = '/checkout', 500)
-  })
+    (function () { const productId = '{{product.ID}}' const productName = '{{product.ProductName}}'
+    const productPrice =
+    {{product.Price}}
+    const productImg = '{{product.ImgPath}}' let selectedSize = 'M' // Size
+    selection document.querySelectorAll('.section__form-size').forEach(btn => {
+    btn.addEventListener('click', function () {
+    document.querySelectorAll('.section__form-size').forEach(b =>
+    b.classList.remove('active')) this.classList.add('active') selectedSize =
+    this.dataset.size || 'M' const addBtn =
+    document.getElementById('addToCartBtn') if (addBtn) addBtn.textContent =
+    `ADD TO CART - ${selectedSize}` }) }) // Set default size setTimeout(() => {
+    document.querySelector('[data-size="M"]')?.classList.add('active') }, 100)
+    // Add to cart helper used by Buy Now and Add To Cart window.addToCartDetail
+    = function () { if (!selectedSize) { alert('Please select a size') return }
+    // assumes global addToCart exists if (typeof addToCart === 'function') {
+    addToCart({ id: productId, name: productName, price: productPrice, img:
+    productImg, size: selectedSize, quantity: 1 }) } } // Buy now handler
+    document.getElementById('buyNowBtn')?.addEventListener('click', () => {
+    addToCartDetail() setTimeout(() => window.location.href = '/checkout', 300)
+    }) })()
 </script>
