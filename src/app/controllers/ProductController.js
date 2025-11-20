@@ -277,22 +277,32 @@ class ProductController {
     }
 
     // Chi tiết sản phẩm
+
     async detail(req, res) {
         try {
             const productId = req.params.id
-            const product = await Product.getProductById(productId)
-            const relatedProducts = await Product.getRelatedProducts(
-                product.TypeID,
-                4
-            )
+            console.log('[DEBUG] productId:', productId)
 
-            res.render("products/detail", {
-                product: product,
-                relatedProducts: relatedProducts,
-            })
+            if (!productId) {
+                console.warn('[DEBUG] no productId')
+                return res.render('404', { message: 'Product ID not provided' })
+            }
+
+            const product = await Product.getProductById(productId)
+            console.log('[DEBUG] product:', product)
+
+            if (!product) {
+                console.warn('[DEBUG] product not found for id', productId)
+                return res.render('404', { message: 'Product not found' })
+            }
+
+            const relatedProducts = await Product.getProductsByType(product.TypeName)
+            const related = relatedProducts.filter(p => String(p.ID) !== String(productId)).slice(0, 4)
+
+            return res.render('products/detail', { product, relatedProducts: related })
         } catch (error) {
-            console.log(error)
-            res.status(404).render("404")
+            console.error('Detail error:', error)
+            return res.render('404', { message: 'Error loading product' })
         }
     }
 }

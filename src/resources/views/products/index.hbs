@@ -69,13 +69,10 @@
     <div class="best-container" id="product-list">
       {{#each products}}
         <div class="best-item" data-category="{{this.TypeName}}" data-price="{{this.Price}}">
+          <a href="/products/detail/{{this.ID}}" style="text-decoration: none; color: inherit; cursor: pointer;">
           <div class="image-wrapper">      
-            <img src="/img/{{this.ImgPath}}" 
-                 alt="{{this.ProductName}}"
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            <div class="alt-text" style="display:none; align-items:center; justify-content:center; width:100%; height:300px; background:#f0f0f0; border:1px solid #ddd; font-size:16px; color:#666;">
-              {{this.ProductName}}
-            </div>
+            <img src="{{this.ImgPath}}" 
+                 alt="{{this.ProductName}}">
             <span class="new-label">{{this.Label}}</span>
           </div>   
           <div class="Name-price">
@@ -84,8 +81,8 @@
           </div>
           <div class="info">
             <p class="desc">{{this.Descriptions}}</p>
-            <div class="bottom"></div>
           </div>
+          </a>
         </div>
       {{else}}
         <p style="grid-column: 1/-1; text-align: center; padding: 40px; font-size: 18px; color: #999;">

@@ -1,7 +1,3 @@
-{{#contentFor "styles"}}
-  <link rel="stylesheet" href="/css/products.css" />
-{{/contentFor}}
-
 <!-- CHAT DRAWER -->
 <div class="chat-overlay"></div>
 
@@ -17,38 +13,44 @@
         </div>
         <div class="chat-messages" id="chatMessages">
             <!-- messages rendered by chat.js -->
-            <div class="message received"
-              style="width: 100% !important; max-width: 100% !important;">
-              <div class="product-message">
-                <div class="product-image"></div>
-                <div class="product-info">
-                  <div class="product-name">Type II Trucker Jacket
-                    'Pioneeracket' - Raw Selvedge Denimxsg <br> <br> <div class="chat-price">333.032$</div></div>
+            <div
+                class="message received"
+                style="width: 100% !important; max-width: 100% !important;"
+            >
+                <div class="product-message">
+                    <div class="product-image"></div>
+                    <div class="product-info">
+                        <div class="product-name">Type II Trucker Jacket
+                            'Pioneeracket' - Raw Selvedge Denimxsg
+                            <br />
+                            <br />
+                            <div class="chat-price">333.032$</div></div>
+                    </div>
+                    <button class="Buy">Buy now</button>
                 </div>
-                <button class="Buy">Buy now</button>
-              </div>
 
             </div>
 
             <div class="message received">
-              <div class="message-content">
-                can you give me some advise about this product
-              </div>
+                <div class="message-content">
+                    can you give me some advise about this product
+                </div>
             </div>
 
             <div class="message sent">
-              <div class="message-content">
-                Hi sir how can i help you
-              </div>
+                <div class="message-content">
+                    Hi sir how can i help you
+                </div>
             </div>
-          </div>
+        </div>
     </div>
     <div class="chat-footer">
         <input
             type="text"
             id="chatInput"
             placeholder="Type your message..."
-            class="chat-input" />
-        <button id="sendMessage" class="btn-send">Send</button>
+            class="chat-input"
+        />
+        <button id="sendMessage" class="btn-send chat-icon">Send</button>
     </div>
 </div>

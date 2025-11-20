@@ -20,19 +20,22 @@
         <link rel="stylesheet" href="/css/styleAdmin.css" />
         {{{block "styleadmin"}}}
         {{!-- Ngăn transitions khi tải trang để tránh giựt --}}
-        <style>
+        {{!-- <style>
             body.sidebar-loading .dashboard_menu,
             body.sidebar-loading .dashboard-icon,
             body.sidebar-loading .dashboard_item {
                 transition: none !important;
             }
-        </style>
+        </style> --}}
     </head>
     <body class="sidebar-loading">
         <div class="Listproduct_container">
             {{> sidebar}}
             {{{body}}}
         </div>
+
+    <!-- Socket.IO Admin -->
+    <script src="/socket.io/socket.io.js"></script>
 
     {{{block "sidebar"}}}
     {{{block "scriptAdmin"}}}
