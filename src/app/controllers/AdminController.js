@@ -179,7 +179,17 @@ class AdminController {
 
   // [GET] /admin/users - Quản lý users
   async users(req, res) {
-    res.render('admin/users', { layout: 'admin' });
+    try {
+      const users = await AdminSite.getAllUsers();
+
+      res.render('admin/users', {
+        layout: 'admin',
+        users,
+      });
+    } catch (error) {
+      console.error('Error loading users:', error);
+      res.status(500).send('Internal Server Error');
+    }
   }
 
   // [GET] /admin/show?type=TypeName

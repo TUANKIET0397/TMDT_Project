@@ -162,6 +162,8 @@ class AdminSite {
     return result.affectedRows;
   }
 
+  
+
   // ===== CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG =====
   static async updateInvoiceStatus(invoiceID, statusID) {
     try {
@@ -809,6 +811,42 @@ class AdminSite {
       return 0;
     }
   }
+
+// ===== LẤY DANH SÁCH USER + SỐ ĐƠN + TỔNG TIỀN =====
+static async getAllUsers() {
+  try {
+    const [rows] = await db.query(`
+      SELECT 
+        u.ID,
+        u.FirstName,
+        u.LastName,
+        u.Email,
+        u.PhoneNumber,
+        u.Address,
+        u.Region,
+        -- Số đơn (số Invoice)
+        COUNT(i.ID) AS TotalOrders,
+        -- Tổng tiền tất cả đơn (sum CartItem.TotalPrice từ các cart của user)
+        COALESCE(SUM(ci.TotalPrice), 0) AS TotalAmount
+      FROM Users u
+      LEFT JOIN Invoice i ON u.ID = i.UserID
+      LEFT JOIN Cart c ON i.CartID = c.ID
+      LEFT JOIN CartItem ci ON c.ID = ci.CartID
+      GROUP BY u.ID
+      ORDER BY u.ID DESC;
+    `);
+
+    return rows; // trả thẳng mảng user
+  } catch (error) {
+    console.error("Error in getAllUsers:", error);
+    throw error;
+  }
+}
+
+
+
+
+
 
   // --- tính growth YoY cho doanh thu ---
   static async getRevenueGrowthYoY(currentYear) {
