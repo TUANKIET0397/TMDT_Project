@@ -490,36 +490,20 @@ class AdminSite {
   static async getProductCountsByType() {
     try {
       const [rows] = await db.query(`
-      SELECT tp.TypeName, COUNT(p.ID) as cnt
-      FROM Product p
-      LEFT JOIN TypeProduct tp ON p.TypeID = tp.ID
-      GROUP BY tp.TypeName
-      ORDER BY cnt DESC
+    SELECT tp.TypeName, IFNULL(SUM(ci.Volume),0) AS totalSold
+    FROM TypeProduct tp
+    LEFT JOIN Product p ON p.TypeID = tp.ID
+    LEFT JOIN CartItem ci ON ci.ProductID = p.ID
+    LEFT JOIN Cart c ON ci.CartID = c.ID
+    LEFT JOIN Invoice i ON c.ID = i.CartID AND i.StatusID = 2 -- chỉ Delivered
+    GROUP BY tp.TypeName
+    ORDER BY totalSold DESC;
+
     `);
-      // returns [{ TypeName, cnt }, ...]
       return rows;
     } catch (err) {
-      console.error('Error in getProductCountsByType:', err);
+      console.error('Error in getProductsSoldByType:', err);
       throw err;
-    }
-  }
-
-  // ===== THỐNG KÊ ĐơN HÀNG =====
-  static async getInvoiceStats() {
-    try {
-      const [stats] = await db.query(`
-                SELECT 
-                    COUNT(*) as TotalInvoices,
-                    SUM(CASE WHEN si.StatusName = 'Delivered' THEN 1 ELSE 0 END) as DeliveredCount,
-                    SUM(CASE WHEN si.StatusName = 'Cancelled' THEN 1 ELSE 0 END) as CancelledCount,
-                    SUM(CASE WHEN si.StatusName = 'Pending' THEN 1 ELSE 0 END) as PendingCount
-                FROM Invoice i
-                LEFT JOIN StatusInvoice si ON i.StatusID = si.ID
-            `);
-      return stats[0];
-    } catch (error) {
-      console.error('Error in getInvoiceStats:', error);
-      throw error;
     }
   }
 
@@ -534,22 +518,6 @@ class AdminSite {
     } catch (error) {
       console.error('Error in getTotalPageViews:', error);
       // Nếu bảng chưa tồn tại, trả về 0
-      return 0;
-    }
-  }
-
-  // ===== LẤY SỐ UNIQUE VISITORS THÁNG NÀY =====
-  static async getMonthlyUsers() {
-    try {
-      const [result] = await db.query(`
-        SELECT COUNT(DISTINCT VisitorID) as monthlyUsers
-        FROM PageView
-        WHERE YEAR(ViewTime) = YEAR(CURRENT_DATE)
-          AND MONTH(ViewTime) = MONTH(CURRENT_DATE)
-      `);
-      return result[0]?.monthlyUsers || 0;
-    } catch (error) {
-      console.error('Error in getMonthlyUsers:', error);
       return 0;
     }
   }
@@ -578,10 +546,10 @@ class AdminSite {
       // --- 1. Total Page Views ---
       const [pageViewsResult] = await db.query(
         `
-        SELECT COUNT(DISTINCT VisitorID) AS count
-        FROM PageView
-        WHERE YEAR(ViewTime) = ? AND MONTH(ViewTime) = ?
-      `,
+      SELECT COUNT(DISTINCT VisitorID) AS count
+      FROM PageView
+      WHERE YEAR(ViewTime) = ? AND MONTH(ViewTime) = ?
+    `,
         [currentYear, currentMonth]
       );
       const totalPageViews = pageViewsResult[0]?.count || 0;
@@ -593,14 +561,14 @@ class AdminSite {
         'ViewTime'
       );
 
-      // --- 2. Monthly Users (số người login tháng này) ---
+      // --- 2. Monthly Users ---
       const [monthlyUsersResult] = await db.query(
         `
-        SELECT COUNT(DISTINCT a.UserID) AS count
-        FROM Accounts a
-        WHERE a.Statuses = 1
-          AND YEAR(a.CreatedTime) = ? AND MONTH(a.CreatedTime) = ?
-      `,
+      SELECT COUNT(DISTINCT a.UserID) AS count
+      FROM Accounts a
+      WHERE a.Statuses = 1
+        AND YEAR(a.CreatedTime) = ? AND MONTH(a.CreatedTime) = ?
+    `,
         [currentYear, currentMonth]
       );
       const monthlyUsers = monthlyUsersResult[0]?.count || 0;
@@ -612,13 +580,13 @@ class AdminSite {
         'CreatedTime'
       );
 
-      // --- 3. New SignUps (Users mới) ---
+      // --- 3. New SignUps ---
       const [signUpsResult] = await db.query(
         `
-        SELECT COUNT(*) AS count
-        FROM Users
-        WHERE YEAR(CreatedAt) = ? AND MONTH(CreatedAt) = ?
-      `,
+      SELECT COUNT(*) AS count
+      FROM Users
+      WHERE YEAR(CreatedAt) = ? AND MONTH(CreatedAt) = ?
+    `,
         [currentYear, currentMonth]
       );
       const newSignUps = signUpsResult[0]?.count || 0;
@@ -633,10 +601,10 @@ class AdminSite {
       // --- 4. Total Invoices ---
       const [invoicesResult] = await db.query(
         `
-        SELECT COUNT(*) AS count
-        FROM Invoice
-        WHERE YEAR(DateCreated) = ? AND MONTH(DateCreated) = ?
-      `,
+      SELECT COUNT(*) AS count
+      FROM Invoice
+      WHERE YEAR(DateCreated) = ? AND MONTH(DateCreated) = ?
+    `,
         [currentYear, currentMonth]
       );
       const totalInvoices = invoicesResult[0]?.count || 0;
@@ -648,53 +616,109 @@ class AdminSite {
         'DateCreated'
       );
 
-      // --- 5. Clothes category (ví dụ TypeName = 'Clothes') ---
-      const [clothesResult] = await db.query(
+      // --- 5. Products Sold (tháng hiện tại) ---
+      const [thisMonth] = await db.query(`
+      SELECT IFNULL(SUM(ci.Volume),0) AS total
+      FROM CartItem ci
+      JOIN Cart c ON ci.CartID = c.ID
+      JOIN Invoice i ON c.ID = i.CartID
+      WHERE i.StatusID = 2
+        AND YEAR(i.DateCreated) = YEAR(CURRENT_DATE)
+        AND MONTH(i.DateCreated) = MONTH(CURRENT_DATE)
+    `);
+      const totalProductsSold = Number(thisMonth[0]?.total || 0);
+
+      // Products sold tháng trước
+      const [lastMonth] = await db.query(`
+      SELECT IFNULL(SUM(ci.Volume),0) AS total
+      FROM CartItem ci
+      JOIN Cart c ON ci.CartID = c.ID
+      JOIN Invoice i ON c.ID = i.CartID
+      WHERE i.StatusID = 2
+        AND YEAR(i.DateCreated) = YEAR(DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH))
+        AND MONTH(i.DateCreated) = MONTH(DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH))
+    `);
+      const previousMonthProductsSold = Number(lastMonth[0]?.total || 0);
+
+      let totalProductsGrowth = 0;
+      if (previousMonthProductsSold > 0) {
+        totalProductsGrowth =
+          Math.round(
+            ((totalProductsSold - previousMonthProductsSold) /
+              previousMonthProductsSold) *
+              100 *
+              10
+          ) / 10;
+      }
+
+      // --- 6. Total Revenue (năm hiện tại) ---
+      const [revenueThisYear] = await db.query(
         `
-        SELECT SUM(ci.Volume) AS soldQty
-        FROM CartItem ci
-        JOIN Product p ON ci.ProductID = p.ID
-        JOIN TypeProduct tp ON p.TypeID = tp.ID
-        JOIN Cart c ON ci.CartID = c.ID
-        JOIN Invoice i ON c.ID = i.CartID
-        WHERE tp.TypeName = 'Clothes'
-          AND YEAR(i.DateCreated) = ? AND MONTH(i.DateCreated) = ?
-      `,
-        [currentYear, currentMonth]
+      SELECT IFNULL(SUM(ci.Volume * ci.UnitPrice), 0) AS totalRevenue
+      FROM CartItem ci
+      JOIN Cart c ON ci.CartID = c.ID
+      JOIN Invoice i ON c.ID = i.CartID
+      WHERE YEAR(i.DateCreated) = ?
+        AND i.StatusID = 2
+    `,
+        [currentYear]
       );
-      const clothesSold = clothesResult[0]?.soldQty || 0;
+      const totalRevenue = Number(revenueThisYear[0]?.totalRevenue || 0);
 
-      const clothesGrowth = await this.getGrowthPercentage(
-        clothesSold,
-        `(
-          SELECT ci.ID, ci.Volume
-          FROM CartItem ci
-          JOIN Product p ON ci.ProductID = p.ID
-          JOIN TypeProduct tp ON p.TypeID = tp.ID
-          JOIN Cart c ON ci.CartID = c.ID
-          JOIN Invoice i ON c.ID = i.CartID
-          WHERE tp.TypeName = 'Clothes'
-        ) AS sub`,
-        'Volume',
-        'DateCreated'
+      // Total Revenue năm trước
+      const [revenueLastYear] = await db.query(
+        `
+      SELECT IFNULL(SUM(ci.Volume * ci.UnitPrice), 0) AS totalRevenue
+      FROM CartItem ci
+      JOIN Cart c ON ci.CartID = c.ID
+      JOIN Invoice i ON c.ID = i.CartID
+      WHERE YEAR(i.DateCreated) = ?
+        AND i.StatusID = 2
+    `,
+        [currentYear - 1]
       );
+      const lastYearRevenue = Number(revenueLastYear[0]?.totalRevenue || 0);
 
-      // --- Trả về object tổng hợp giống json.stats ---
+      let totalRevenueGrowthYoY = 0;
+      if (lastYearRevenue > 0) {
+        totalRevenueGrowthYoY =
+          Math.round(
+            ((totalRevenue - lastYearRevenue) / lastYearRevenue) * 100 * 10
+          ) / 10;
+      }
+
+      // --- Return object ---
       return {
-        totalPageViews,
-        pageViewsGrowth,
-        monthlyUsers,
-        monthlyUsersGrowth,
-        newSignUps,
-        signUpsGrowth,
-        totalInvoices,
-        totalInvoicesGrowth,
-        clothesSold,
-        clothesGrowth,
+        totalPageViews: Number(totalPageViews),
+        pageViewsGrowth: Number(pageViewsGrowth),
+        monthlyUsers: Number(monthlyUsers),
+        monthlyUsersGrowth: Number(monthlyUsersGrowth),
+        newSignUps: Number(newSignUps),
+        signUpsGrowth: Number(signUpsGrowth),
+        totalInvoices: Number(totalInvoices),
+        totalInvoicesGrowth: Number(totalInvoicesGrowth),
+        totalProductsSold: Number(totalProductsSold),
+        totalProductsGrowth: Number(totalProductsGrowth),
+        totalRevenue: Number(totalRevenue),
+        totalRevenueGrowthYoY: Number(totalRevenueGrowthYoY),
       };
     } catch (error) {
       console.error('getAllGrowthMetrics error:', error);
-      return {};
+      // Return default values nếu có lỗi
+      return {
+        totalPageViews: 0,
+        pageViewsGrowth: 0,
+        monthlyUsers: 0,
+        monthlyUsersGrowth: 0,
+        newSignUps: 0,
+        signUpsGrowth: 0,
+        totalInvoices: 0,
+        totalInvoicesGrowth: 0,
+        totalProductsSold: 0,
+        totalProductsGrowth: 0,
+        totalRevenue: 0,
+        totalRevenueGrowthYoY: 0,
+      };
     }
   }
 
@@ -734,20 +758,19 @@ class AdminSite {
   }
 
   // Lấy tổng số sản phẩm bán ra theo type "Clothes"
-  static async getClothesSoldCount() {
+  static async getTotalProductsSold() {
     try {
       const [rows] = await db.query(`
-        SELECT SUM(ci.Volume) AS total
-        FROM CartItem ci
-        JOIN Product p ON ci.ProductID = p.ID
-        JOIN TypeProduct tp ON p.TypeID = tp.ID
-        JOIN Cart c ON ci.CartID = c.ID
-        JOIN Invoice i ON c.ID = i.CartID
-        WHERE tp.TypeName = 'Clothes'
-      `);
+      SELECT SUM(ci.Volume) AS total
+      FROM CartItem ci
+      JOIN Cart c ON ci.CartID = c.ID
+      JOIN Invoice i ON c.ID = i.CartID
+      JOIN StatusInvoice si ON i.StatusID = si.ID
+      WHERE si.StatusName = 'Delivered'
+    `);
       return rows[0]?.total || 0;
     } catch (err) {
-      console.error('Error in getClothesSoldCount:', err);
+      console.error('Error in getTotalProductsSold:', err);
       return 0;
     }
   }
@@ -821,6 +844,74 @@ class AdminSite {
     } catch (err) {
       console.error('Error in getRevenueGrowthYoY:', err);
       return 0;
+    }
+  }
+
+  // Lấy revenue theo TypeName và năm
+  static async getMonthlyRevenueByType(
+    typeName,
+    year = new Date().getFullYear()
+  ) {
+    try {
+      const [rows] = await db.query(
+        `
+      SELECT MONTH(i.DateCreated) as month, 
+             COALESCE(SUM(ci.Volume * ci.UnitPrice), 0) as amount
+      FROM Invoice i
+      LEFT JOIN CartItem ci ON i.CartID = ci.CartID
+      LEFT JOIN Product p ON ci.ProductID = p.ID
+      LEFT JOIN TypeProduct tp ON p.TypeID = tp.ID
+      WHERE YEAR(i.DateCreated) = ? 
+        AND tp.TypeName = ?
+        AND i.StatusID = 2
+      GROUP BY MONTH(i.DateCreated)
+      ORDER BY MONTH(i.DateCreated)
+      `,
+        [year, typeName]
+      );
+
+      // Ensure months 1..12 all present
+      const months = Array.from({ length: 12 }, (_, i) => ({
+        month: i + 1,
+        amount: 0,
+      }));
+
+      for (const r of rows) {
+        const idx = r.month - 1;
+        months[idx].amount = Number(r.amount || 0);
+      }
+
+      return months;
+    } catch (err) {
+      console.error('Error in getMonthlyRevenueByType:', err);
+      throw err;
+    }
+  }
+
+  // Lấy tổng revenue theo TypeName và năm
+  static async getTotalRevenueByType(
+    typeName,
+    year = new Date().getFullYear()
+  ) {
+    try {
+      const [rows] = await db.query(
+        `
+      SELECT COALESCE(SUM(ci.Volume * ci.UnitPrice), 0) as totalRevenue
+      FROM Invoice i
+      LEFT JOIN CartItem ci ON i.CartID = ci.CartID
+      LEFT JOIN Product p ON ci.ProductID = p.ID
+      LEFT JOIN TypeProduct tp ON p.TypeID = tp.ID
+      WHERE YEAR(i.DateCreated) = ? 
+        AND tp.TypeName = ?
+        AND i.StatusID = 2
+      `,
+        [year, typeName]
+      );
+
+      return Number(rows[0]?.totalRevenue || 0);
+    } catch (err) {
+      console.error('Error in getTotalRevenueByType:', err);
+      throw err;
     }
   }
 }
