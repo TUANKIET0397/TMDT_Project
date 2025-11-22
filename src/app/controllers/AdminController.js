@@ -61,7 +61,7 @@ class AdminController {
         // tổng số invoices trong tháng
         AdminSite.getTotalInvoices(),
         // tổng sản phẩm bán ra của category "Clothes" (tháng)
-        AdminSite.getClothesSoldCount(),
+        AdminSite.getTotalProductsSold(),
       ]);
 
       // 2) Monthly revenue (dạng mảng 12 phần tử cho chart)
@@ -129,7 +129,7 @@ class AdminController {
       if (Array.isArray(typeData)) {
         typeData.forEach((item) => {
           const key = item.TypeName || 'Unknown';
-          productsByType[key] = Number(item.cnt || 0);
+          productsByType[key] = Number(item.totalSold || 0);
         });
       }
 
@@ -179,8 +179,62 @@ class AdminController {
 
   // [GET] /admin/users - Quản lý users
   async users(req, res) {
-    res.render('admin/users', { layout: 'admin' });
+    try {
+      const users = await AdminSite.getAllUsers();
+
+      res.render('admin/users', {
+        layout: 'admin',
+        users,
+      });
+    } catch (error) {
+      console.error('Error loading users:', error);
+      res.status(500).send('Internal Server Error');
+    }
   }
+
+  // [POST] /admin/users/:id/delete
+async deleteUser(req, res) {
+  try {
+    const userId = req.params.id;
+    const result = await AdminSite.deleteUser(userId);
+
+    if (result && result > 0) {
+      return res.redirect('/admin/users');
+    }
+    return res.status(404).send('User not found');
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).send('Internal Server Error: ' + error.message);
+  }
+}
+
+// [POST] /admin/users/delete/selected
+async deleteSelectedUsers(req, res) {
+  try {
+    const ids = req.body && req.body.ids;
+
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No user IDs provided',
+      });
+    }
+
+    const result = await AdminSite.deleteUsersByIds(ids);
+
+    if (result && result > 0) {
+      return res.json({ success: true, deleted: result });
+    }
+
+    return res
+      .status(404)
+      .json({ success: false, message: 'No users deleted' });
+  } catch (error) {
+    console.error('Error deleting selected users:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+}
+
 
   // [GET] /admin/show?type=TypeName
   async show(req, res) {
@@ -440,6 +494,324 @@ class AdminController {
     } catch (error) {
       console.error('Error deleting selected invoices:', error);
       return res.status(500).json({ success: false, message: error.message });
+    }
+  }
+
+  // [GET] /admin/dashboard/revenue-by-type - Lấy revenue theo TypeName
+  async getRevenueByType(req, res) {
+    try {
+      const typeName = req.query.type;
+      const year = parseInt(req.query.year, 10) || new Date().getFullYear();
+
+      if (!typeName) {
+        return res.status(400).json({
+          success: false,
+          message: 'TypeName is required',
+        });
+      }
+
+      const [monthlyRevenue, totalRevenue] = await Promise.all([
+        AdminSite.getMonthlyRevenueByType(typeName, year),
+        AdminSite.getTotalRevenueByType(typeName, year),
+      ]);
+
+      return res.json({
+        success: true,
+        monthlyRevenue,
+        totalRevenue,
+      });
+    } catch (err) {
+      console.error('Error in getRevenueByType:', err);
+      return res.status(500).json({
+        success: false,
+        error: err.message || String(err),
+      });
+    }
+  }
+
+  // [GET] /admin/export/csv - Export dashboard data as CSV
+  async exportCSV(req, res) {
+    try {
+      const year = parseInt(req.query.year, 10) || new Date().getFullYear();
+
+      // Lấy tất cả dữ liệu cần thiết
+      const [stats, monthlyRevenue, invoices, productsByType] =
+        await Promise.all([
+          AdminSite.getAllGrowthMetrics(),
+          AdminSite.getMonthlyRevenueByYear(year),
+          AdminSite.getInvoicesWithProducts(),
+          AdminSite.getProductCountsByType(),
+        ]);
+
+      // Debug logging
+      console.log('📊 Export Stats:', {
+        totalPageViews: stats.totalPageViews,
+        monthlyUsers: stats.monthlyUsers,
+        totalRevenue: stats.totalRevenue,
+        invoicesCount: invoices.length,
+      });
+
+      // Tạo CSV content
+      let csv = '';
+
+      // 1. Overview Stats Section
+      csv += '=== OVERVIEW STATISTICS ===\n';
+      csv += 'Metric,Value,Growth (%)\n';
+      csv += `Total Page Views,"${(
+        stats.totalPageViews || 0
+      ).toLocaleString()}",${(stats.pageViewsGrowth || 0).toFixed(1)}%\n`;
+      csv += `Monthly Users,"${(stats.monthlyUsers || 0).toLocaleString()}",${(
+        stats.monthlyUsersGrowth || 0
+      ).toFixed(1)}%\n`;
+      csv += `New Sign Ups,"${(stats.newSignUps || 0).toLocaleString()}",${(
+        stats.signUpsGrowth || 0
+      ).toFixed(1)}%\n`;
+      csv += `Total Invoices,"${(
+        stats.totalInvoices || 0
+      ).toLocaleString()}",${(stats.totalInvoicesGrowth || 0).toFixed(1)}%\n`;
+      csv += `Products Sold,"${(
+        stats.totalProductsSold || 0
+      ).toLocaleString()}",${(stats.totalProductsGrowth || 0).toFixed(1)}%\n`;
+      csv += `Total Revenue (${year}),"${(
+        stats.totalRevenue || 0
+      ).toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}",${(stats.totalRevenueGrowthYoY || 0).toFixed(1)}%\n`;
+      csv += '\n';
+
+      // 2. Monthly Revenue Section
+      csv += '=== MONTHLY REVENUE ===\n';
+      csv += 'Month,Revenue\n';
+      monthlyRevenue.forEach((m) => {
+        const monthName = new Date(0, m.month - 1).toLocaleString('en', {
+          month: 'long',
+        });
+        const revenue = Number(m.amount || 0).toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+        csv += `${monthName},"${revenue}"\n`;
+      });
+      csv += '\n';
+
+      // 3. Products by Type Section
+      csv += '=== PRODUCTS SOLD BY TYPE ===\n';
+      csv += 'Type,Total Sold\n';
+      productsByType.forEach((p) => {
+        csv += `${p.TypeName},${p.totalSold}\n`;
+      });
+      csv += '\n';
+
+      // 4. Recent Invoices Section
+      csv += '=== RECENT INVOICES ===\n';
+      csv +=
+        'Invoice ID,Date,Customer Name,Email,Status,Country,Total Amount\n';
+      invoices.slice(0, 50).forEach((inv) => {
+        const date = new Date(inv.DateCreated).toLocaleDateString();
+        const name = `${inv.FirstName} ${inv.LastName}`.replace(/,/g, '');
+        const email = inv.Email || 'N/A';
+        const total = Number(inv.TotalAmount || 0).toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+        csv += `#${inv.InvoiceID},${date},"${name}",${email},${
+          inv.StatusName
+        },${inv.Region || 'N/A'},"${total}"\n`;
+      });
+
+      // Set headers và gửi file
+      const filename = `dashboard_export_${year}_${Date.now()}.csv`;
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="${filename}"`
+      );
+      res.send('\uFEFF' + csv); // UTF-8 BOM for Excel compatibility
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+      res.status(500).json({ success: false, message: 'Export failed' });
+    }
+  }
+
+  // [GET] /admin/export/json - Export dashboard data as JSON
+  async exportJSON(req, res) {
+    try {
+      const year = parseInt(req.query.year, 10) || new Date().getFullYear();
+
+      const [stats, monthlyRevenue, invoices, productsByType] =
+        await Promise.all([
+          AdminSite.getAllGrowthMetrics(),
+          AdminSite.getMonthlyRevenueByYear(year),
+          AdminSite.getInvoicesWithProducts(),
+          AdminSite.getProductCountsByType(),
+        ]);
+
+      const exportData = {
+        exportDate: new Date().toISOString(),
+        year: year,
+        stats: {
+          totalPageViews: stats.totalPageViews || 0,
+          pageViewsGrowth: stats.pageViewsGrowth || 0,
+          monthlyUsers: stats.monthlyUsers || 0,
+          monthlyUsersGrowth: stats.monthlyUsersGrowth || 0,
+          newSignUps: stats.newSignUps || 0,
+          signUpsGrowth: stats.signUpsGrowth || 0,
+          totalInvoices: stats.totalInvoices || 0,
+          totalInvoicesGrowth: stats.totalInvoicesGrowth || 0,
+          totalProductsSold: stats.totalProductsSold || 0,
+          totalProductsGrowth: stats.totalProductsGrowth || 0,
+          totalRevenue: stats.totalRevenue || 0,
+          totalRevenueGrowthYoY: stats.totalRevenueGrowthYoY || 0,
+        },
+        monthlyRevenue,
+        productsByType: productsByType.map((p) => ({
+          type: p.TypeName,
+          totalSold: p.totalSold,
+        })),
+        recentInvoices: invoices.slice(0, 50).map((inv) => ({
+          id: inv.InvoiceID,
+          date: inv.DateCreated,
+          customer: `${inv.FirstName} ${inv.LastName}`,
+          email: inv.Email,
+          status: inv.StatusName,
+          country: inv.Region,
+          total: inv.TotalAmount,
+          products: inv.Products,
+        })),
+      };
+
+      const filename = `dashboard_export_${year}_${Date.now()}.json`;
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="${filename}"`
+      );
+      res.json(exportData);
+    } catch (error) {
+      console.error('Error exporting JSON:', error);
+      res.status(500).json({ success: false, message: 'Export failed' });
+    }
+  }
+
+  // [GET] /admin/export/excel - Export as Excel (XLSX)
+  async exportExcel(req, res) {
+    try {
+      const year = parseInt(req.query.year, 10) || new Date().getFullYear();
+
+      // Lấy dữ liệu
+      const [stats, monthlyRevenue, invoices, productsByType] =
+        await Promise.all([
+          AdminSite.getAllGrowthMetrics(),
+          AdminSite.getMonthlyRevenueByYear(year),
+          AdminSite.getInvoicesWithProducts(),
+          AdminSite.getProductCountsByType(),
+        ]);
+
+      // Tạo workbook (cần cài thư viện xlsx: npm install xlsx)
+      const XLSX = require('xlsx');
+      const workbook = XLSX.utils.book_new();
+
+      // Sheet 1: Overview
+      const overviewData = [
+        ['Metric', 'Value', 'Growth (%)'],
+        [
+          'Total Page Views',
+          (stats.totalPageViews || 0).toLocaleString(),
+          `${(stats.pageViewsGrowth || 0).toFixed(1)}%`,
+        ],
+        [
+          'Monthly Users',
+          (stats.monthlyUsers || 0).toLocaleString(),
+          `${(stats.monthlyUsersGrowth || 0).toFixed(1)}%`,
+        ],
+        [
+          'New Sign Ups',
+          (stats.newSignUps || 0).toLocaleString(),
+          `${(stats.signUpsGrowth || 0).toFixed(1)}%`,
+        ],
+        [
+          'Total Invoices',
+          (stats.totalInvoices || 0).toLocaleString(),
+          `${(stats.totalInvoicesGrowth || 0).toFixed(1)}%`,
+        ],
+        [
+          'Products Sold',
+          (stats.totalProductsSold || 0).toLocaleString(),
+          `${(stats.totalProductsGrowth || 0).toFixed(1)}%`,
+        ],
+        [
+          `Total Revenue (${year})`,
+          `${(stats.totalRevenue || 0).toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+          })}`,
+          `${(stats.totalRevenueGrowthYoY || 0).toFixed(1)}%`,
+        ],
+      ];
+      const overviewSheet = XLSX.utils.aoa_to_sheet(overviewData);
+      XLSX.utils.book_append_sheet(workbook, overviewSheet, 'Overview');
+
+      // Sheet 2: Monthly Revenue
+      const revenueData = [['Month', 'Revenue']];
+      monthlyRevenue.forEach((m) => {
+        const monthName = new Date(0, m.month - 1).toLocaleString('en', {
+          month: 'long',
+        });
+        const revenue = `${Number(m.amount || 0).toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+        })}`;
+        revenueData.push([monthName, revenue]);
+      });
+      const revenueSheet = XLSX.utils.aoa_to_sheet(revenueData);
+      XLSX.utils.book_append_sheet(workbook, revenueSheet, 'Monthly Revenue');
+
+      // Sheet 3: Products by Type
+      const productsData = [['Type', 'Total Sold']];
+      productsByType.forEach((p) => {
+        productsData.push([p.TypeName, p.totalSold]);
+      });
+      const productsSheet = XLSX.utils.aoa_to_sheet(productsData);
+      XLSX.utils.book_append_sheet(workbook, productsSheet, 'Products by Type');
+
+      // Sheet 4: Invoices
+      const invoicesData = [
+        ['ID', 'Date', 'Customer', 'Email', 'Status', 'Country', 'Total'],
+      ];
+      invoices.slice(0, 100).forEach((inv) => {
+        const date = new Date(inv.DateCreated).toLocaleDateString();
+        const total = `${Number(inv.TotalAmount || 0).toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+        })}`;
+        invoicesData.push([
+          `#${inv.InvoiceID}`,
+          date,
+          `${inv.FirstName} ${inv.LastName}`,
+          inv.Email,
+          inv.StatusName,
+          inv.Region || 'N/A',
+          total,
+        ]);
+      });
+      const invoicesSheet = XLSX.utils.aoa_to_sheet(invoicesData);
+      XLSX.utils.book_append_sheet(workbook, invoicesSheet, 'Invoices');
+
+      // Tạo buffer
+      const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+      // Gửi file
+      const filename = `dashboard_export_${year}_${Date.now()}.xlsx`;
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      );
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="${filename}"`
+      );
+      res.send(buffer);
+    } catch (error) {
+      console.error('Error exporting Excel:', error);
+      res.status(500).json({ success: false, message: 'Export failed' });
     }
   }
 }

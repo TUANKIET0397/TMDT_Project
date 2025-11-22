@@ -2,17 +2,17 @@
 const AuthSite = require('../models/AuthSite');
 
 class AuthController {
-  // ===== [GET] /authSite - Trang chủ auth (index) =====
+  // ===== [GET] /auth - Trang chủ auth (index) =====
   async index(req, res) {
     res.render('auth/index', { layout: 'Auth' });
   }
 
-  // ===== [GET] /authSite/register - Hiển thị trang đăng ký =====
+  // ===== [GET] /auth/register - Hiển thị trang đăng ký =====
   async register(req, res) {
     res.render('auth/register', { layout: 'Auth' });
   }
 
-  // ===== [POST] /authSite/register - Xử lý đăng ký =====
+  // ===== [POST] /auth/register - Xử lý đăng ký =====
   async registerPost(req, res) {
     try {
       const result = await AuthSite.register(req.body);
@@ -20,7 +20,7 @@ class AuthController {
       res.status(201).json({
         success: true,
         message: result.message,
-        redirect: '/authSite',
+        redirect: '/auth',
       });
     } catch (error) {
       console.error('Register error:', error);
@@ -32,12 +32,12 @@ class AuthController {
     }
   }
 
-  // ===== [GET] /authSite/login - Hiển thị trang đăng nhập =====
+  // ===== [GET] /auth/login - Hiển thị trang đăng nhập =====
   async login(req, res) {
     res.render('auth/login', { layout: 'Auth' });
   }
 
-  // ===== [POST] /authSite/login - Xử lý đăng nhập =====
+  // ===== [POST] /auth/login - Xử lý đăng nhập =====
   async loginPost(req, res) {
     try {
       const { username, password } = req.body;
@@ -86,28 +86,28 @@ class AuthController {
     }
   }
 
-  // ===== [GET] /authSite/logout - Đăng xuất =====
+  // ===== [GET] /auth/logout - Đăng xuất =====
   logout(req, res) {
     req.session.destroy((err) => {
       if (err) {
         console.error('Logout error:', err);
       }
-      res.redirect('/authSite');
+      res.redirect('/auth');
     });
   }
 
-  // ===== [GET] /authSite/profile - Xem profile =====
+  // ===== [GET] /auth/profile - Xem profile =====
   async profile(req, res) {
     try {
       if (!req.session.userId) {
-        return res.redirect('/authSite');
+        return res.redirect('/auth');
       }
 
       const user = await AuthSite.getUserById(req.session.userId);
       const account = await AuthSite.getAccountByUserId(req.session.userId);
 
       if (!user) {
-        return res.redirect('/authSite');
+        return res.redirect('/auth');
       }
 
       res.render('auth/profile', {
@@ -124,7 +124,7 @@ class AuthController {
     }
   }
 
-  // ===== [POST] /authSite/profile/update - Cập nhật profile =====
+  // ===== [POST] /auth/profile/update - Cập nhật profile =====
   async updateProfile(req, res) {
     try {
       if (!req.session.userId) {
@@ -157,7 +157,7 @@ class AuthController {
     }
   }
 
-  // ===== [POST] /authSite/change-password - Đổi mật khẩu =====
+  // ===== [POST] /auth/change-password - Đổi mật khẩu =====
   async changePassword(req, res) {
     try {
       if (!req.session.userId) {
@@ -199,7 +199,7 @@ class AuthController {
     }
   }
 
-  // ===== [POST] /authSite/update-username - Đổi username =====
+  // ===== [POST] /auth/update-username - Đổi username =====
   async updateUsername(req, res) {
     try {
       if (!req.session.userId) {

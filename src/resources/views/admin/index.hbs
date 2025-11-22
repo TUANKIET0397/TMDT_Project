@@ -12,9 +12,38 @@
             <p>All your data have recorded in dashboard</p>
           </div>
 
-          <button class="export-btn">
-            Export data <i class="fa-solid fa-download"></i>
-          </button>
+          <div class="export-wrapper">
+            <button class="export-btn" id="exportBtn">
+              Export data <i class="fa-solid fa-download"></i>
+            </button>
+            
+            <!-- Dropdown menu -->
+            <div class="export-dropdown" id="exportDropdown">
+              <button class="export-option" data-format="csv">
+                <i class="fa-solid fa-file-csv"></i>
+                <div>
+                  <span class="export-title">CSV File</span>
+                  <span class="export-desc">Excel compatible format</span>
+                </div>
+              </button>
+              
+              <button class="export-option" data-format="excel">
+                <i class="fa-solid fa-file-excel"></i>
+                <div>
+                  <span class="export-title">Excel File</span>
+                  <span class="export-desc">Full formatted workbook</span>
+                </div>
+              </button>
+              
+              <button class="export-option" data-format="json">
+                <i class="fa-solid fa-file-code"></i>
+                <div>
+                  <span class="export-title">JSON File</span>
+                  <span class="export-desc">Raw data format</span>
+                </div>
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- Stats cards -->
@@ -29,9 +58,9 @@
             </div>
 
             <div class="card-bottom">
-              <div class="card-value">50.8K</div>
+              <div class="card-value"></div>
               <div class="card-growth positive">
-                <span>28.4%</span>
+                <span></span>
                 <i class="fa-solid fa-arrow-trend-up"></i>
               </div>
             </div>
@@ -47,9 +76,9 @@
             </div>
 
             <div class="card-bottom">
-              <div class="card-value">23.6K</div>
+              <div class="card-value"></div>
               <div class="card-growth negative">
-                <span>12.6%</span>
+                <span></span>
                 <i class="fa-solid fa-arrow-trend-down"></i>
               </div>
             </div>
@@ -65,9 +94,9 @@
             </div>
 
             <div class="card-bottom">
-              <div class="card-value">756</div>
+              <div class="card-value"></div>
               <div class="card-growth positive">
-                <span>3.1%</span>
+                <span></span>
                 <i class="fa-solid fa-arrow-trend-up"></i>
               </div>
             </div>
@@ -83,9 +112,9 @@
             </div>
 
             <div class="card-bottom">
-              <div class="card-value">2.3K</div>
+              <div class="card-value"></div>
               <div class="card-growth positive">
-                <span>11.3%</span>
+                <span></span>
                 <i class="fa-solid fa-arrow-trend-up"></i>
               </div>
             </div>
@@ -101,12 +130,9 @@
                 <h3>Total revenue</h3>
                 <div class="chart-stats">
                   <span class="chart-value"></span>
-                  <p class="growth positive">
-                    +24.6% <i class="fa-solid fa-arrow-trend-up"></i>
-                  </p>
                 </div>
               </div>
-              <input type="date" class="date-picker" id="revenueDatePicker" value="2025-10-20" />
+              <input type="date" class="date-picker" id="revenueDatePicker" value="2025-11-20" />
             </div>
             <div class="chart-date-display" id="chartDateDisplay" style="font-size: 14px; color: #a0aec0; margin-bottom: 10px;"></div>
             <canvas id="revenueChart"></canvas>
@@ -119,30 +145,32 @@
                 <div class="chart-title">
                   <h3>Clothes category</h3>
                   <div class="chart-stats">
-                    <span class="chart-value">3,652</span>
-                    <p class="growth positive">
-                      +28.5% <i class="fa-solid fa-arrow-trend-up"></i>
-                    </p>
+                    <span class="chart-value"></span>
                   </div>
                 </div>
               </div>
               <canvas id="clothesChart"></canvas>
             </div>
 
+            
             <div class="chart-small">
               <div class="chart-header">
                 <div class="chart-title">
                   <h3>Product revenue</h3>
                   <div class="chart-stats">
-                    <span class="chart-value">$400.875</span>
-                    <p class="growth negative">
-                      -3.2% <i class="fa-solid fa-arrow-trend-down"></i>
+                    <span class="chart-value"></span>
+                    <p class="growth positive">
+                      <span class="growth-percent"></span>
+                      <i class="fa-solid fa-arrow-trend-up"></i>
                     </p>
                   </div>
                 </div>
+                <select id="productTypeSelect" class="product-type-select">
+                </select>
               </div>
               <canvas id="productChart"></canvas>
             </div>
+
           </div>
         </div>
 

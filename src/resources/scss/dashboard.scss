@@ -600,3 +600,146 @@ body {
     cursor: pointer;
     transform: scale(1.2);
 }
+
+.product-type-select {
+  padding: 8px 12px;
+  border: 1px solid #2d3748;
+  background: #1a202c;
+  color: #a0aec0;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.product-type-select:hover {
+  border-color: #CB3CFF;
+}
+
+.product-type-select:focus {
+  border-color: #CB3CFF;
+  box-shadow: 0 0 0 3px rgba(203, 60, 255, 0.1);
+}
+
+.product-type-select option {
+  background: #1a202c;
+  color: #a0aec0;
+  padding: 8px;
+}
+.export-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.export-btn {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #CB3CFF 0%, #9333EA 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(203, 60, 255, 0.3);
+}
+
+.export-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(203, 60, 255, 0.4);
+}
+
+.export-btn:active {
+  transform: translateY(0);
+}
+
+.export-btn i {
+  font-size: 16px;
+}
+
+.export-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #1a202c;
+  border: 1px solid #2d3748;
+  border-radius: 8px;
+  min-width: 250px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.export-dropdown.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.export-option {
+  width: 100%;
+  padding: 14px 16px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #e2e8f0;
+  text-align: left;
+}
+
+.export-option:hover {
+  background: #2d3748;
+}
+
+.export-option:active {
+  background: #374151;
+}
+
+.export-option i {
+  font-size: 24px;
+  color: #CB3CFF;
+  min-width: 24px;
+}
+
+.export-option div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.export-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f7fafc;
+}
+
+.export-desc {
+  font-size: 12px;
+  color: #a0aec0;
+}
+
+/* Loading state */
+.export-btn.loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.export-btn.loading i {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
