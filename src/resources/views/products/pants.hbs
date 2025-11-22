@@ -40,6 +40,7 @@
     {{#each products}}
       <div class="best-item" data-category="{{this.TypeName}}" data-price="{{this.Price}}">
         <a href="/products/detail/{{this.ID}}" style="text-decoration: none; color: inherit; cursor: pointer;">
+        <div class="image-wrapper"> 
           <img src="{{this.ImgPath}}" alt="{{this.ProductName}}">
         </div>
         <div class="Name-price">

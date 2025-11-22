@@ -294,18 +294,17 @@ function addProductMessage(data, type = "received") {
               data.timestamp
           )}</div>`
         : ""
-    const productImage = data.productImage || "/img/default.jpg"
     productDiv.innerHTML = `
         ${timeHTML}
-        <div class="product-message" style="width: 100%; display: flex; gap: 10px; padding: 10px; background-color: #f5f5f5; border-radius: 8px;">
-            <div class="product-image" style="width: 100px; height: 100px; flex-shrink: 0; background-image: url('${escapeHtml(
-                productImage
+        <div class="product-message">
+            <div class="product-image" style="background-image: url('${escapeHtml(
+                data.productImage
             )}'); background-size: cover; background-position: center; background-repeat: no-repeat; border-radius: 8px;"></div>
-            <div class="product-info" style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
-                <div class="product-name" style="font-weight: bold; margin-bottom: 5px; font-size: 14px;">${escapeHtml(
+            <div class="product-info">
+                <div class="product-name">${escapeHtml(
                     data.productName || "Product"
                 )}</div>
-                <div class="chat-price" style="color: #e74c3c; font-weight: bold; font-size: 14px;">${escapeHtml(
+                <div class="chat-price">${escapeHtml(
                     data.productPrice || "0"
                 )}$</div>
             </div>

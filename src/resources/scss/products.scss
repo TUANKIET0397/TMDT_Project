@@ -184,6 +184,13 @@ section p {
     margin-top: 12px;
     box-sizing: border-box;
 }
+.Name-price h4 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;   /* số dòng tối đa */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
 .Name-price .price {
     font-size: 20px;
     font-weight: 500;

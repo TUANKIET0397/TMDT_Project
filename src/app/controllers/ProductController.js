@@ -277,32 +277,42 @@ class ProductController {
     }
 
     // Chi tiết sản phẩm
-
     async detail(req, res) {
         try {
-            const productId = req.params.id
-            console.log('[DEBUG] productId:', productId)
+            const rawId = req.params.id
+            console.log('[DEBUG] req.params:', req.params)
+            console.log('[DEBUG] rawId:', rawId)
 
-            if (!productId) {
-                console.warn('[DEBUG] no productId')
-                return res.render('404', { message: 'Product ID not provided' })
-            }
+            const productId = (() => {
+                const n = Number(rawId)
+                return Number.isNaN(n) ? rawId : n
+            })()
+
+            console.log('[DEBUG] productId (normalized):', productId)
 
             const product = await Product.getProductById(productId)
-            console.log('[DEBUG] product:', product)
+            console.log('[DEBUG] product from model:', product)
 
             if (!product) {
                 console.warn('[DEBUG] product not found for id', productId)
-                return res.render('404', { message: 'Product not found' })
+                return res.status(404).send('Product not found')
             }
 
-            const relatedProducts = await Product.getProductsByType(product.TypeName)
-            const related = relatedProducts.filter(p => String(p.ID) !== String(productId)).slice(0, 4)
+            // debug images
+            console.log('[DEBUG] product.Images6:', product.Images6)
+            console.log('[DEBUG] product.ImagesByColorList:', product.ImagesByColorList)
+
+            // Related products (safe: if TypeName undefined, fallback to empty array)
+            let related = []
+            if (product.TypeName) {
+                const relatedProducts = await Product.getProductsByType(product.TypeName)
+                related = relatedProducts.filter(p => String(p.ID) !== String(productId)).slice(0, 4)
+            }
 
             return res.render('products/detail', { product, relatedProducts: related })
         } catch (error) {
             console.error('Detail error:', error)
-            return res.render('404', { message: 'Error loading product' })
+            return res.status(500).send('Error loading product')
         }
     }
 }
