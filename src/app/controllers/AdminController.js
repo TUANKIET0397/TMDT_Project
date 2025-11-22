@@ -192,6 +192,50 @@ class AdminController {
     }
   }
 
+  // [POST] /admin/users/:id/delete
+async deleteUser(req, res) {
+  try {
+    const userId = req.params.id;
+    const result = await AdminSite.deleteUser(userId);
+
+    if (result && result > 0) {
+      return res.redirect('/admin/users');
+    }
+    return res.status(404).send('User not found');
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).send('Internal Server Error: ' + error.message);
+  }
+}
+
+// [POST] /admin/users/delete/selected
+async deleteSelectedUsers(req, res) {
+  try {
+    const ids = req.body && req.body.ids;
+
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No user IDs provided',
+      });
+    }
+
+    const result = await AdminSite.deleteUsersByIds(ids);
+
+    if (result && result > 0) {
+      return res.json({ success: true, deleted: result });
+    }
+
+    return res
+      .status(404)
+      .json({ success: false, message: 'No users deleted' });
+  } catch (error) {
+    console.error('Error deleting selected users:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+}
+
+
   // [GET] /admin/show?type=TypeName
   async show(req, res) {
     try {

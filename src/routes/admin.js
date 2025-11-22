@@ -107,6 +107,16 @@ router.post('/invoice/delete/selected', (req, res) => {
   adminController.deleteSelectedInvoices(req, res);
 });
 
+// Xóa 1 user 
+router.post('/users/:id/delete', (req, res) => {
+  adminController.deleteUser(req, res);
+});
+
+// Xóa nhiều user 
+router.post('/users/delete/selected', (req, res) => {
+  adminController.deleteSelectedUsers(req, res);
+});
+
 // Lấy revenue theo product type
 router.get('/dashboard/revenue-by-type', (req, res) => {
   adminController.getRevenueByType(req, res);

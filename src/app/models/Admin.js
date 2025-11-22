@@ -844,6 +844,39 @@ static async getAllUsers() {
 }
 
 
+// XÓA 1 USER
+static async deleteUser(userId) {
+  try {
+    const [result] = await db.query(
+      `DELETE FROM Users WHERE ID = ?`,
+      [userId]
+    );
+    return result.affectedRows;
+  } catch (error) {
+    console.error('Error in deleteUser:', error);
+    throw error;
+  }
+}
+
+// XÓA NHIỀU USER
+static async deleteUsersByIds(ids = []) {
+  if (!Array.isArray(ids) || ids.length === 0) return 0;
+
+  const placeholders = ids.map(() => '?').join(',');
+  try {
+    const [result] = await db.query(
+      `DELETE FROM Users WHERE ID IN (${placeholders})`,
+      ids
+    );
+    return result.affectedRows;
+  } catch (error) {
+    console.error('Error in deleteUsersByIds:', error);
+    throw error;
+  }
+}
+
+
+
 
 
 

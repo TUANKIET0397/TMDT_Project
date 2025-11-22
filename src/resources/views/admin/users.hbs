@@ -2,7 +2,7 @@
   <link rel="stylesheet" href="/css/users.css" />
 {{/contentFor}}
 
-<div class="main-content">
+<div class="main-content" data-user-base="/admin/users">
   <section class="section__status">
     <!-- Header -->
     <div class="section__inner-heading">
@@ -16,7 +16,7 @@
           id="delete-all-btn"
           type="button"
           class="section-item section-icon__trash"
-          title="Delete selected orders or all"
+          title="Delete selected users"
           style="background: none; border: none; cursor: pointer; color: inherit;"
         >
           <i class="fa-solid fa-trash"></i>
@@ -91,13 +91,13 @@
             for="section-checkbox-{{this.ID}}"
             class="section__custom-checkbox"
           >
-<input
-  type="checkbox"
-  id="section-checkbox-{{this.ID}}"
-  class="section-checkbox"
-  name="user"
-  value="{{this.ID}}"
-/>
+            <input
+              type="checkbox"
+              id="section-checkbox-{{this.ID}}"
+              class="section-checkbox"
+              name="user"
+              value="{{this.ID}}"
+            />
             <span
               class="section-checkmark section-item__title"
             >#{{this.ID}}</span>
@@ -110,8 +110,7 @@
             class="section__info-name section-item__title clamp-text"
             style="--line-content: 1"
           >
-            {{this.FirstName}}
-            {{this.LastName}}
+            {{this.FirstName}} {{this.LastName}}
           </p>
           <p
             class="section__info-mail section-item__title clamp-text"
@@ -145,29 +144,26 @@
         <!-- Total spent -->
         <div class="section-item">
           <div class="section-item__total section-item__title">
-            $
-            {{this.TotalAmount}}
+            $ {{this.TotalAmount}}
           </div>
         </div>
 
-        <!-- Setting -->
-<!-- Setting -->
-<div class="section-item section-icon__trash">
-  <form
-    method="POST"
-    action="/admin/users/{{this.ID}}/delete"
-    style="display: inline;"
-    onsubmit="return confirm('Are you sure you want to delete user #{{this.ID}}?')"
-  >
-    <button
-      type="submit"
-      style="background: none; border: none; cursor: pointer; color: #dc3545; padding: 0;"
-    >
-      <i class="fa-solid fa-trash"></i>
-    </button>
-  </form>
-</div>
-
+        <!-- Setting: delete từng user -->
+        <div class="section-item section-icon__trash">
+          <form
+            method="POST"
+            action="/admin/users/{{this.ID}}/delete"
+            style="display: inline;"
+            onsubmit="return confirm('Are you sure you want to delete user #{{this.ID}}?')"
+          >
+            <button
+              type="submit"
+              style="background: none; border: none; cursor: pointer; color: #dc3545; padding: 0;"
+            >
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </form>
+        </div>
       </div>
     {{/each}}
 
@@ -180,6 +176,8 @@
     {{/unless}}
   </section>
 </div>
+
+
 {{#contentFor "scriptAdmin"}}
-    <script src="/js/scriptAdmin.js"></script>
+  <script src="/js/adminUsers.js"></script>
 {{/contentFor}}
