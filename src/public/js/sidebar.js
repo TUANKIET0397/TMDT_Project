@@ -92,6 +92,30 @@ window.addEventListener("load", () => {
     }
 })
 
+// Click outside sidebar to reset state
+document.addEventListener("click", function (e) {
+    // Check if click is outside sidebar
+    const sidebar = document.querySelector(".Listproduct_sidebar")
+    if (sidebar && !sidebar.contains(e.target)) {
+        // Collapse dashboard menu
+        if (dashboardMenu) {
+            dashboardMenu.style.maxHeight = "0"
+            dashboardMenu.style.opacity = "0"
+        }
+        if (dashboardIcon) dashboardIcon.style.transform = "rotate(0deg)"
+        isMenuOpen = false
+
+        // Remove active from all menu items
+        menuItems.forEach((item) => {
+            const c = item.querySelector(".item_container")
+            if (c) c.classList.remove("menu-item--active")
+        })
+        dashboardItems.forEach((item) => {
+            item.classList.remove("dashboard_item--active")
+        })
+    }
+})
+
 // Active menu item
 menuItems.forEach((item) => {
     const container = item.querySelector(".item_container")
@@ -104,6 +128,15 @@ menuItems.forEach((item) => {
             if (c) c.classList.remove("menu-item--active")
         })
         if (!isActive) container.classList.add("menu-item--active")
+
+        // // Check if there's a data-route attribute on any child element
+        // const routeElement = item.querySelector("[data-route]")
+        // if (routeElement) {
+        //     const route = routeElement.getAttribute("data-route")
+        //     if (route) {
+        //         window.location.href = route
+        //     }
+        // }
     })
 })
 

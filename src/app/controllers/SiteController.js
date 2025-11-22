@@ -1,5 +1,6 @@
 // src/app/controllers/SiteController.js
 const Site = require("../models/Site")
+const { createPayment } = require("../../config/momo")
 
 class SiteController {
     async index(req, res, next) {
@@ -61,13 +62,71 @@ class SiteController {
     async checkout(req, res) {
         res.render("checkout", {
             layout: "payment",
+            user: req.session?.user || null,
         })
     }
 
     async payment(req, res) {
         try {
-            // cartData is a JSON string posted from the cart form
-            const cartData = req.body && req.body.cartData
+            const { paymentType, amount, cartData } = req.body
+
+            console.log("=== POST /payment ===")
+            console.log("paymentType:", paymentType)
+            console.log("amount:", amount)
+
+            // If MoMo payment is selected, initiate payment
+            if (paymentType === "momo" && amount) {
+                try {
+                    // Generate a unique order ID (timestamp + random)
+                    const orderId = `ORDER_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+                    const parsedAmount = parseInt(amount)
+
+                    console.log("Creating MoMo payment...")
+                    console.log("orderId:", orderId)
+                    console.log("amount:", parsedAmount)
+
+                    // Callback URLs (adjust domain if in production)
+                    const returnUrl = `${req.protocol}://${req.get("host")}/return`
+                    const ipnUrl = `${req.protocol}://${req.get("host")}/ipn`
+
+                    console.log("returnUrl:", returnUrl)
+                    console.log("ipnUrl:", ipnUrl)
+
+                    // Call MoMo payment service
+                    const paymentResult = await createPayment(
+                        orderId,
+                        parsedAmount,
+                        returnUrl,
+                        ipnUrl
+                    )
+
+                    console.log("MoMo response:", paymentResult)
+
+                    // If payUrl exists, redirect to MoMo gateway
+                    if (paymentResult.payUrl) {
+                        console.log("✓ Redirecting to MoMo payUrl:", paymentResult.payUrl)
+                        return res.redirect(paymentResult.payUrl)
+                    } else {
+                        console.error("MoMo payment failed:", paymentResult)
+                        return res.status(400).render("error", {
+                            layout: "payment",
+                            message: "Lỗi cổng thanh toán. Vui lòng thử lại.",
+                            error: paymentResult.message || "Failed to create payment",
+                        })
+                    }
+                } catch (momoError) {
+                    console.error("MoMo payment error:", momoError.message)
+                    console.error("Error details:", momoError)
+                    return res.status(500).render("error", {
+                        layout: "payment",
+                        message: "Lỗi khi xử lý thanh toán.",
+                        error: momoError.message,
+                    })
+                }
+            }
+
+            // For non-MoMo payment (future implementations) or default checkout view
+            // Parse cartData if present
             let items = []
             if (cartData) {
                 try {
@@ -92,7 +151,7 @@ class SiteController {
                 0
             )
             const itemCount = cartItems.reduce((c, it) => c + it.quantity, 0)
-            const total = subtotal // extendable: add tax/shipping if needed
+            const total = subtotal
 
             return res.render("checkout", {
                 layout: "payment",
@@ -100,9 +159,10 @@ class SiteController {
                 subtotal: subtotal.toFixed(2),
                 total: total.toFixed(2),
                 itemCount,
+                user: req.session?.user || null,
             })
         } catch (error) {
-            console.error("Error in postCheckout:", error)
+            console.error("Error in payment:", error)
             return res.status(500).send("Internal Server Error")
         }
     }
