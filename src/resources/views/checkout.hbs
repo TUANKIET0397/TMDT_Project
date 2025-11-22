@@ -1,10 +1,57 @@
 {{#contentFor "payment"}}
     <link rel="stylesheet" href="/css/checkout.css" />
+    <script>
+        // MoMo payment handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const momoBtn = document.querySelector('.checkout__btn')
+            if (momoBtn) {
+                momoBtn.addEventListener('click', function(e) {
+                    e.preventDefault()
+                    const form = document.querySelector('.checkout__form')
+                    
+                    // Show loading status
+                    const statusDiv = document.createElement('div')
+                    statusDiv.id = 'paymentStatus'
+                    statusDiv.style.cssText = 'position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#667eea; color:white; padding:15px 30px; border-radius:8px; z-index:9999; font-weight:600; box-shadow:0 4px 12px rgba(0,0,0,0.15);'
+                    statusDiv.textContent = '⏳ Đang kết nối với MoMo...'
+                    document.body.appendChild(statusDiv)
+                    
+                    // Get total amount from price display
+                    const totalAmount = document.querySelector('.checkout__total-price')?.textContent?.replace('$', '').trim() || '0'
+                    
+                    // Remove any existing hidden inputs for payment (to avoid duplicates)
+                    const existingPaymentType = form.querySelector('input[name="paymentType"]')
+                    if (existingPaymentType) existingPaymentType.remove()
+                    const existingAmount = form.querySelector('input[name="amount"]')
+                    if (existingAmount) existingAmount.remove()
+                    
+                    // Create hidden input for payment type
+                    const paymentTypeInput = document.createElement('input')
+                    paymentTypeInput.type = 'hidden'
+                    paymentTypeInput.name = 'paymentType'
+                    paymentTypeInput.value = 'momo'
+                    form.appendChild(paymentTypeInput)
+                    
+                    // Create hidden input for amount
+                    const amountInput = document.createElement('input')
+                    amountInput.type = 'hidden'
+                    amountInput.name = 'amount'
+                    amountInput.value = totalAmount
+                    form.appendChild(amountInput)
+                    
+                    // Change form action and submit
+                    form.action = '/payment'
+                    form.method = 'POST'
+                    form.submit()
+                })
+            }
+        })
+    </script>
 {{/contentFor}}
 {{! Checkout }}
 <main class="checkout">
 
-    <form class="checkout__form" action="#!" method="post">
+    <form class="checkout__form" action="/checkout" method="get">
 
         <div class="checkout-wrap">
             <!-- Form Sign Up Delivery -->
@@ -18,7 +65,7 @@
                     />
                 </div>
                 <div class="checkout__aside">Or</div>
-                <p class="checkout__info">minhthuann2604@gmail.com</p>
+                <p class="checkout__info">{{#if user}}{{user.Email}}{{else}}Not logged in{{/if}}</p>
                 <h2 class="checkout__heading">Delivery</h2>
                 <select
                     class="checkout__country"
@@ -29,19 +76,19 @@
                     <option
                         value=""
                         disabled
-                        selected
+                        {{#unless user}}selected{{/unless}}
                         hidden
                     >Country/Region</option>
-                    <option value="1">TP Hồ Chí Minh</option>
-                    <option value="2">Cà Mau</option>
-                    <option value="3">Hà Nội</option>
-                    <option value="4">Hà Nội</option>
-                    <option value="5">Hà Nội</option>
-                    <option value="6">Hà Nội</option>
-                    <option value="7">Hà Nội</option>
-                    <option value="8">Hà Nội</option>
-                    <option value="9">Hà Nội</option>
-                    <option value="10">Hà Nội</option>
+                    <option value="1" {{#if (eq user.Region "1")}}selected{{/if}}>TP Hồ Chí Minh</option>
+                    <option value="2" {{#if (eq user.Region "2")}}selected{{/if}}>Cà Mau</option>
+                    <option value="3" {{#if (eq user.Region "3")}}selected{{/if}}>Hà Nội</option>
+                    <option value="4" {{#if (eq user.Region "4")}}selected{{/if}}>Hà Nội</option>
+                    <option value="5" {{#if (eq user.Region "5")}}selected{{/if}}>Hà Nội</option>
+                    <option value="6" {{#if (eq user.Region "6")}}selected{{/if}}>Hà Nội</option>
+                    <option value="7" {{#if (eq user.Region "7")}}selected{{/if}}>Hà Nội</option>
+                    <option value="8" {{#if (eq user.Region "8")}}selected{{/if}}>Hà Nội</option>
+                    <option value="9" {{#if (eq user.Region "9")}}selected{{/if}}>Hà Nội</option>
+                    <option value="10" {{#if (eq user.Region "10")}}selected{{/if}}>Hà Nội</option>
                 </select>
                 <div class="checkout__fullname">
                     <input
@@ -49,6 +96,7 @@
                         type="text"
                         name="first_name"
                         placeholder="First Name"
+                        value="{{#if user}}{{user.FirstName}}{{/if}}"
                         required
                     />
                     <input
@@ -56,6 +104,7 @@
                         type="text"
                         name="last_name"
                         placeholder="Last Name"
+                        value="{{#if user}}{{user.LastName}}{{/if}}"
                         required
                     />
                 </div>
@@ -64,6 +113,7 @@
                     type="text"
                     name="address"
                     placeholder="Address"
+                    value="{{#if user}}{{user.Address}}{{/if}}"
                     required
                 />
                 <div class="checkout__zipcode">
@@ -87,6 +137,7 @@
                     type="text"
                     name="phone_number"
                     placeholder="Phone number"
+                    value="{{#if user}}{{user.PhoneNumber}}{{/if}}"
                     required
                 />
                 <h3 class="checkout__title-payment">Direct payment</h3>

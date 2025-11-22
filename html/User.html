@@ -1,240 +1,580 @@
 <!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Dashboard</title>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add - Product</title>
     <!-- Reset css -->
-    <link rel="stylesheet" href="./assets/css/reset.css">
+    <link rel="stylesheet" href="./assets/css/reset.css" />
     <!-- font Embed -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
-        rel="stylesheet">
-     <!-- Style css -->
-    <link rel="stylesheet" href="./assets/css/User.css">
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Style checkout -->
+    <link rel="stylesheet" href="../css/User.css" />
+  </head>
 
-</head>
-<body>
+  <body>
     <div class="Listproduct_container">
-        <!-- Sidebar -->
-        <aside class="Listproduct_sidebar">
-            <div class="sidebar_content">
-                <div class="Listproduct_logo">Shoppmall</div>
-                <div class="sidebar_search-box">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" class="sidebar_search-input" placeholder=" Search for...">
-                </div>
-                
-                <nav class="menu">
-                    <div class="menu-item dashboard-btn">
-                        <div class="item_container">
-                            <i class="fa-solid fa-house"></i>
-                            <div class="item_title">Dashboard</div>
-                        </div>
-                        <i class="fa-solid fa-chevron-right dashboard-icon"></i>
-                    </div>
-                    <div class="dashboard_menu">
-                        <div class="dashboard_item">
-                            Reports
-                        </div>
-                        <div class="dashboard_item">
-                            Products
-                        </div><div class="dashboard_item">
-                            Invoices
-                        </div>
-                    </div>                
-                    <div class="menu-item">
-                        <div class="item_container">
-                            <i class="fa-solid fa-comment"></i>
-                            <div class="item_title">Chat</div>
-                        </div>
-                        <i class="fa-solid fa-chevron-right"></i>
+      <aside class="Listproduct_sidebar">
+        <div class="sidebar_content">
+          <div class="Listproduct_logo">Shoppmall</div>
+          <div class="sidebar_search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input
+              type="text"
+              class="sidebar_search-input"
+              placeholder=" Search for..."
+            />
+          </div>
 
-                    </div>
-                    <div class="menu-item">
-                        <div class="item_container">
-                            <i class="fa-solid fa-user"></i>
-                            <div class="item_title">Users</div>
-                        </div>
-                        <i class="fa-solid fa-chevron-right"></i>
-                    </div>
-                </nav>
+          <nav class="menu">
+            <div class="menu-item dashboard-btn">
+              <div class="item_container">
+                <i class="fa-solid fa-house"></i>
+                <div class="item_title">Dashboard</div>
+              </div>
+              <i class="fa-solid fa-chevron-right dashboard-icon"></i>
             </div>
-
-            <div class="user-section">
-                <div class="user-info">
-                    <div class="user-avatar"></div>
-                    <div>
-                        <div class="user-name">Nemo</div>
-                        <div class="user_sub">
-                            <div class="user-subtitle">Account settings</div>
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </div>
-                        
-                    </div>
-                </div>
+            <div class="dashboard_menu">
+              <div class="dashboard_item">Reports</div>
+              <div class="dashboard_item">Products</div>
+              <div class="dashboard_item dashboard_item--active">Invoices</div>
             </div>
-        </aside>
+            <div class="menu-item">
+              <div class="item_container">
+                <i class="fa-solid fa-comment"></i>
+                <div class="item_title">Chat</div>
+              </div>
+              <i class="fa-solid fa-chevron-right"></i>
+            </div>
+            <div class="menu-item">
+              <div class="item_container">
+                <i class="fa-solid fa-user"></i>
+                <div class="item_title">Users</div>
+              </div>
+              <i class="fa-solid fa-chevron-right"></i>
+            </div>
+          </nav>
+        </div>
 
-        <!-- Main Content -->
-        <main class="main-content">
-  <div class="user-header">
-    <h2>User information</h2>
-    <div class="search-box">
-      <i class="fa fa-search"></i>
-      <input type="text" placeholder="Search User">
-    </div>
-  </div>
+        <div class="user-section">
+          <div class="user-info">
+            <div class="user-avatar"></div>
+            <div>
+              <div class="user-name">Nemo</div>
+              <div class="user_sub">
+                <div class="user-subtitle">Account settings</div>
+                <i class="fa-solid fa-chevron-right"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+      <div class="main-content">
+        <section class="section__status">
+          <!-- Header -->
+          <div class="section__inner-heading">
+            <h1 class="section__heading">User information</h1>
+            <div class="section__headeing-wrap--small">
+              <div class="user-search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Search user..." />
+              </div>
+            </div>
+          </div>
+          <!-- Label - user list -->
+          <div class="section__inner-label--other">
+            <!-- ID -->
+            <div class="section-item">
+              <div class="section-item__check">
+                <svg
+                  width="6"
+                  height="7"
+                  viewBox="0 0 6 7"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g clip-path="url(#clip0_287_8843)">
+                    <path
+                      d="M0.673828 3.36328H4.71539"
+                      stroke="white"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </g>
+                  <defs>
+                    <clipPath id="clip0_287_8843">
+                      <rect width="5.38875" height="6.93388" fill="white" />
+                    </clipPath>
+                  </defs>
+                </svg>
+              </div>
+              <label class="section-item__title">ID</label>
+            </div>
+            <!-- Client -->
+            <div class="section-item">
+              <i class="fa-solid fa-user"></i>
+              <label class="section-item__title">Client</label>
+            </div>
+            <!-- Phone number -->
+            <div class="section-item">
+              <i class="fa-solid fa-phone"></i>
+              <label class="section-item__title">phone number</label>
+            </div>
+            <!-- Invoice -->
+            <div class="section-item">
+              <i class="fa-regular fa-file-lines"></i>
+              <label class="section-item__title">Invoice</label>
+            </div>
+            <!-- Country -->
+            <div class="section-item">
+              <i class="fa-solid fa-location-dot"></i>
+              <label class="section-item__title">Country</label>
+            </div>
+            <!-- Total -->
+            <div class="section-item">
+              <label class="section-item__title">Total</label>
+            </div>
+            <!-- Setting -->
+            <div class="section-item">
+              <label class="section-item__title">Setting</label>
+            </div>
+          </div>
 
-  <div class="user-table">
-    <div class="table-header">
-      <div class="col-id"><i class="fa-solid fa-minus"></i> ID</div>
-      <div class="col-client"><i class="fa-solid fa-user"></i> Client</div>
-      <div class="col-phone"><i class="fa-solid fa-phone"></i> Phone number</div>
-      <div class="col-invoice"><i class="fa-solid fa-file-invoice"></i> Invoice</div>
-      <div class="col-country"><i class="fa-solid fa-location-dot"></i> Country</div>
-      <div class="col-total">Total</div>
-      <div class="col-setting">Setting</div>
-    </div>
+          <!-- ROW 1 -->
+          <div class="section__inner-label">
+            <!-- ID -->
+            <div class="section-item">
+              <label
+                for="section-checkbox-1532"
+                class="section__custom-checkbox"
+              >
+                <input
+                  type="checkbox"
+                  id="section-checkbox-1532"
+                  class="section-checkbox"
+                  name="status"
+                />
+                <span class="section-checkmark section-item__title">#1532</span>
+              </label>
+            </div>
+            <!-- Client -->
+            <div class="section-item section__info-wrap">
+              <p
+                class="section__info-name section-item__title clamp-text"
+                style="--line-content: 1"
+              >
+                John Carter
+              </p>
+              <p
+                class="section__info-mail section-item__title clamp-text"
+                style="--line-content: 1"
+              >
+                hello@johncarter.com
+              </p>
+            </div>
+            <!-- Phone -->
+            <div class="section-item">
+              <p class="section-item__date section-item__title">
+                (+84) 123 456 789
+              </p>
+            </div>
+            <!-- Invoice -->
+            <div class="section-item">
+              <p class="section-item__date section-item__title">12531</p>
+            </div>
+            <!-- Country -->
+            <div class="section-item">
+              <p class="section-item__location section-item__title">
+                District 7
+              </p>
+            </div>
+            <!-- Total -->
+            <div class="section-item">
+              <div class="section-item__total section-item__title">
+                $ 1,009.24
+              </div>
+            </div>
+            <!-- Setting -->
+            <div class="section-item section-icon__trash">
+              <i class="fa-solid fa-trash"></i>
+            </div>
+          </div>
 
-    <div class="table-row">
-      <div class="col-id"><input type="checkbox" > #1532</div>
-      <div class="col-client">
-        <p class="name">John Carter</p>
-        <p class="email">hello@johncarter.com</p>
+          <!-- ROW 2 -->
+          <div class="section__inner-label">
+            <div class="section-item">
+              <label
+                for="section-checkbox-1531"
+                class="section__custom-checkbox"
+              >
+                <input
+                  type="checkbox"
+                  id="section-checkbox-1531"
+                  class="section-checkbox"
+                  name="status"
+                />
+                <span class="section-checkmark section-item__title">#1531</span>
+              </label>
+            </div>
+            <div class="section-item section__info-wrap">
+              <p
+                class="section__info-name section-item__title clamp-text"
+                style="--line-content: 1"
+              >
+                Sophie Moore
+              </p>
+              <p
+                class="section__info-mail section-item__title clamp-text"
+                style="--line-content: 1"
+              >
+                contact@sophiemoore.com
+              </p>
+            </div>
+            <div class="section-item">
+              <p class="section-item__date section-item__title">
+                (+84) 888 111 222
+              </p>
+            </div>
+            <div class="section-item">
+              <p class="section-item__date section-item__title">12531</p>
+            </div>
+            <div class="section-item">
+              <p class="section-item__location section-item__title">
+                District 1
+              </p>
+            </div>
+            <div class="section-item">
+              <div class="section-item__total section-item__title">
+                $ 5,870.32
+              </div>
+            </div>
+            <div class="section-item section-icon__trash">
+              <i class="fa-solid fa-trash"></i>
+            </div>
+          </div>
+
+          <!-- ROW 3 -->
+          <div class="section__inner-label">
+            <div class="section-item">
+              <label
+                for="section-checkbox-1530"
+                class="section__custom-checkbox"
+              >
+                <input
+                  type="checkbox"
+                  id="section-checkbox-1530"
+                  class="section-checkbox"
+                  name="status"
+                />
+                <span class="section-checkmark section-item__title">#1530</span>
+              </label>
+            </div>
+            <div class="section-item section__info-wrap">
+              <p
+                class="section__info-name section-item__title clamp-text"
+                style="--line-content: 1"
+              >
+                Matt Cannon
+              </p>
+              <p
+                class="section__info-mail section-item__title clamp-text"
+                style="--line-content: 1"
+              >
+                info@mattcannon.com
+              </p>
+            </div>
+            <div class="section-item">
+              <p class="section-item__date section-item__title">
+                (+84) 234 555 666
+              </p>
+            </div>
+            <div class="section-item">
+              <p class="section-item__date section-item__title">12531</p>
+            </div>
+            <div class="section-item">
+              <p class="section-item__location section-item__title">
+                Binh Thanh
+              </p>
+            </div>
+            <div class="section-item">
+              <div class="section-item__total section-item__title">
+                $ 13,899.48
+              </div>
+            </div>
+            <div class="section-item section-icon__trash">
+              <i class="fa-solid fa-trash"></i>
+            </div>
+          </div>
+
+          <div class="section__inner-label">
+            <div class="section-item">
+              <label
+                for="section-checkbox-1530"
+                class="section__custom-checkbox"
+              >
+                <input
+                  type="checkbox"
+                  id="section-checkbox-1530"
+                  class="section-checkbox"
+                  name="status"
+                />
+                <span class="section-checkmark section-item__title">#1530</span>
+              </label>
+            </div>
+            <div class="section-item section__info-wrap">
+              <p
+                class="section__info-name section-item__title clamp-text"
+                style="--line-content: 1"
+              >
+                Matt Cannon
+              </p>
+              <p
+                class="section__info-mail section-item__title clamp-text"
+                style="--line-content: 1"
+              >
+                info@mattcannon.com
+              </p>
+            </div>
+            <div class="section-item">
+              <p class="section-item__date section-item__title">
+                (+84) 234 555 666
+              </p>
+            </div>
+            <div class="section-item">
+              <p class="section-item__date section-item__title">12531</p>
+            </div>
+            <div class="section-item">
+              <p class="section-item__location section-item__title">
+                Binh Thanh
+              </p>
+            </div>
+            <div class="section-item">
+              <div class="section-item__total section-item__title">
+                $ 13,899.48
+              </div>
+            </div>
+            <div class="section-item section-icon__trash">
+              <i class="fa-solid fa-trash"></i>
+            </div>
+          </div>
+
+          <div class="section__inner-label">
+            <div class="section-item">
+              <label
+                for="section-checkbox-1530"
+                class="section__custom-checkbox"
+              >
+                <input
+                  type="checkbox"
+                  id="section-checkbox-1530"
+                  class="section-checkbox"
+                  name="status"
+                />
+                <span class="section-checkmark section-item__title">#1530</span>
+              </label>
+            </div>
+            <div class="section-item section__info-wrap">
+              <p
+                class="section__info-name section-item__title clamp-text"
+                style="--line-content: 1"
+              >
+                Matt Cannon
+              </p>
+              <p
+                class="section__info-mail section-item__title clamp-text"
+                style="--line-content: 1"
+              >
+                info@mattcannon.com
+              </p>
+            </div>
+            <div class="section-item">
+              <p class="section-item__date section-item__title">
+                (+84) 234 555 666
+              </p>
+            </div>
+            <div class="section-item">
+              <p class="section-item__date section-item__title">12531</p>
+            </div>
+            <div class="section-item">
+              <p class="section-item__location section-item__title">
+                Binh Thanh
+              </p>
+            </div>
+            <div class="section-item">
+              <div class="section-item__total section-item__title">
+                $ 13,899.48
+              </div>
+            </div>
+            <div class="section-item section-icon__trash">
+              <i class="fa-solid fa-trash"></i>
+            </div>
+          </div>
+
+          <div class="section__inner-label">
+            <div class="section-item">
+              <label
+                for="section-checkbox-1530"
+                class="section__custom-checkbox"
+              >
+                <input
+                  type="checkbox"
+                  id="section-checkbox-1530"
+                  class="section-checkbox"
+                  name="status"
+                />
+                <span class="section-checkmark section-item__title">#1530</span>
+              </label>
+            </div>
+            <div class="section-item section__info-wrap">
+              <p
+                class="section__info-name section-item__title clamp-text"
+                style="--line-content: 1"
+              >
+                Matt Cannon
+              </p>
+              <p
+                class="section__info-mail section-item__title clamp-text"
+                style="--line-content: 1"
+              >
+                info@mattcannon.com
+              </p>
+            </div>
+            <div class="section-item">
+              <p class="section-item__date section-item__title">
+                (+84) 234 555 666
+              </p>
+            </div>
+            <div class="section-item">
+              <p class="section-item__date section-item__title">12531</p>
+            </div>
+            <div class="section-item">
+              <p class="section-item__location section-item__title">
+                Binh Thanh
+              </p>
+            </div>
+            <div class="section-item">
+              <div class="section-item__total section-item__title">
+                $ 13,899.48
+              </div>
+            </div>
+            <div class="section-item section-icon__trash">
+              <i class="fa-solid fa-trash"></i>
+            </div>
+          </div>
+
+          <div class="section__inner-label">
+            <div class="section-item">
+              <label
+                for="section-checkbox-1530"
+                class="section__custom-checkbox"
+              >
+                <input
+                  type="checkbox"
+                  id="section-checkbox-1530"
+                  class="section-checkbox"
+                  name="status"
+                />
+                <span class="section-checkmark section-item__title">#1530</span>
+              </label>
+            </div>
+            <div class="section-item section__info-wrap">
+              <p
+                class="section__info-name section-item__title clamp-text"
+                style="--line-content: 1"
+              >
+                Matt Cannon
+              </p>
+              <p
+                class="section__info-mail section-item__title clamp-text"
+                style="--line-content: 1"
+              >
+                info@mattcannon.com
+              </p>
+            </div>
+            <div class="section-item">
+              <p class="section-item__date section-item__title">
+                (+84) 234 555 666
+              </p>
+            </div>
+            <div class="section-item">
+              <p class="section-item__date section-item__title">12531</p>
+            </div>
+            <div class="section-item">
+              <p class="section-item__location section-item__title">
+                Binh Thanh
+              </p>
+            </div>
+            <div class="section-item">
+              <div class="section-item__total section-item__title">
+                $ 13,899.48
+              </div>
+            </div>
+            <div class="section-item section-icon__trash">
+              <i class="fa-solid fa-trash"></i>
+            </div>
+          </div>
+        </section>
       </div>
-      <div class="col-phone">(208) 555-0112</div>
-      <div class="col-invoice">12531</div>
-      <div class="col-country">District 7</div>
-      <div class="col-total">$ 1,099.24</div>
-      <div class="col-setting">
-        <i class="fa-solid fa-trash"></i>
-        <span class="tooltip">Xóa tài khoản</span>
-      </div>
     </div>
-
-    <div class="table-row">
-      <div class="col-id"><input type="checkbox"> #1531</div>
-      <div class="col-client">
-        <p class="name">Sophie Moore</p>
-        <p class="email">contact@sophiemoore.com</p>
-      </div>
-      <div class="col-phone">(252) 555-0126</div>
-      <div class="col-invoice">12531</div>
-      <div class="col-country">District 1</div>
-      <div class="col-total">$ 5,870.32</div>
-      <div class="col-setting"><i class="fa-solid fa-trash"></i><span class="tooltip">Xóa tài khoản</span></div>
-    </div>
-
-    <div class="table-row">
-      <div class="col-id"><input type="checkbox" > #1530</div>
-      <div class="col-client">
-        <p class="name">Matt Cannon</p>
-        <p class="email">info@mattcannon.com</p>
-      </div>
-      <div class="col-phone">(319) 555-0115</div>
-      <div class="col-invoice">12531</div>
-      <div class="col-country">Bình Thạnh</div>
-      <div class="col-total">$ 13,899.48</div>
-      <div class="col-setting"><i class="fa-solid fa-trash"></i><span class="tooltip">Xóa tài khoản</span></div>
-    </div>
-
-    <div class="table-row">
-      <div class="col-id"><input type="checkbox"> #1529</div>
-      <div class="col-client">
-        <p class="name">Graham Hills</p>
-        <p class="email">hi@grahamhills.com</p>
-      </div>
-      <div class="col-phone">(803) 555-0111</div>
-      <div class="col-invoice">12531</div>
-      <div class="col-country">Gò Vấp</div>
-      <div class="col-total">$ 1,569.12</div>
-      <div class="col-setting"><i class="fa-solid fa-trash"></i><span class="tooltip">Xóa tài khoản</span></div>
-    </div>
-
-    <div class="table-row">
-      <div class="col-id"><input type="checkbox" > #1528</div>
-      <div class="col-client">
-        <p class="name">Sandy Houston</p>
-        <p class="email">contact@sandyhouston.com</p>
-      </div>
-      <div class="col-phone">(270) 555-0117</div>
-      <div class="col-invoice">12531</div>
-      <div class="col-country">Tân Bình</div>
-      <div class="col-total">$ 899.16</div>
-      <div class="col-setting"><i class="fa-solid fa-trash"></i><span class="tooltip">Xóa tài khoản</span></div>
-    </div>
-
-    <div class="table-row">
-      <div class="col-id"><input type="checkbox"> #1527</div>
-      <div class="col-client">
-        <p class="name">Andy Smith</p>
-        <p class="email">hello@andysmith.com</p>
-      </div>
-      <div class="col-phone">(217) 555-0113</div>
-      <div class="col-invoice">12531</div>
-      <div class="col-country">District 4</div>
-      <div class="col-total">$ 2,449.64</div>
-      <div class="col-setting"><i class="fa-solid fa-trash"></i><span class="tooltip">Xóa tài khoản</span></div>
-    </div>
-  </div>
-        </main> 
-    </div>  
-
-
     <script>
-        const dashboardBtn = document.querySelector('.dashboard-btn');
-        const dashboardMenu = document.querySelector('.dashboard_menu');
-        const dashboardIcon = document.querySelector('.dashboard-icon');
-        const menuItems = document.querySelectorAll('.menu-item');
+      const dashboardBtn = document.querySelector(".dashboard-btn");
+      const dashboardMenu = document.querySelector(".dashboard_menu");
+      const dashboardIcon = document.querySelector(".dashboard-icon");
+      const menuItems = document.querySelectorAll(".menu-item");
 
-        // Ẩn menu
-        dashboardMenu.style.maxHeight = '0';
-        dashboardMenu.style.opacity = '0';
-        dashboardMenu.style.overflow = 'hidden';
-        dashboardMenu.style.transition = 'max-height 0.5s ease, opacity 0.5s ease';
+      // Ẩn menu
+      dashboardMenu.style.maxHeight = "0";
+      dashboardMenu.style.opacity = "0";
+      dashboardMenu.style.overflow = "hidden";
+      dashboardMenu.style.transition =
+        "max-height 0.5s ease, opacity 0.5s ease";
 
-        // Biến theo dõi trạng thái menu
-        let isMenuOpen = false;
+      // Biến theo dõi trạng thái menu
+      let isMenuOpen = false;
 
-        dashboardBtn.addEventListener('click', function() {
+      dashboardBtn.addEventListener("click", function () {
         isMenuOpen = !isMenuOpen;
-        
+
         if (isMenuOpen) {
-            dashboardMenu.style.maxHeight = dashboardMenu.scrollHeight + 'px';
-            dashboardMenu.style.opacity = '1';
-            dashboardIcon.style.transform = 'rotate(90deg)';
-            dashboardIcon.style.transition = 'transform 0.3s ease';
+          dashboardMenu.style.maxHeight = dashboardMenu.scrollHeight + "px";
+          dashboardMenu.style.opacity = "1";
+          dashboardIcon.style.transform = "rotate(90deg)";
+          dashboardIcon.style.transition = "transform 0.3s ease";
         } else {
-            dashboardMenu.style.maxHeight = '0';
-            dashboardMenu.style.opacity = '0';
-            dashboardIcon.style.transform = 'rotate(0deg)';
+          dashboardMenu.style.maxHeight = "0";
+          dashboardMenu.style.opacity = "0";
+          dashboardIcon.style.transform = "rotate(0deg)";
         }
+      });
+
+      // Xử lý active menu item
+      menuItems.forEach((item) => {
+        const container = item.querySelector(".item_container");
+        if (!container) return;
+
+        item.addEventListener("click", function (e) {
+          e.stopPropagation();
+
+          const isActive = container.classList.contains("menu-item--active");
+
+          menuItems.forEach((i) => {
+            const c = i.querySelector(".item_container");
+            if (c) c.classList.remove("menu-item--active");
+          });
+
+          if (!isActive) container.classList.add("menu-item--active");
         });
-        
-        // Xử lý active menu item
-        menuItems.forEach(item => {
-            const container = item.querySelector('.item_container');
-            if (!container) return;
-
-            item.addEventListener('click', function(e) {
-                e.stopPropagation();
-
-                const isActive = container.classList.contains('menu-item--active');
-
-                menuItems.forEach(i => {
-                const c = i.querySelector('.item_container');
-                if (c) c.classList.remove('menu-item--active');
-                });
-
-                if (!isActive) container.classList.add('menu-item--active');
-            });
-            });
-
+      });
     </script>
-</body> 
-</html> 
+  </body>
+</html>

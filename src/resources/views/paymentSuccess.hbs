@@ -1,0 +1,166 @@
+<div class="payment-result payment-success">
+    <div class="payment-result__container">
+        <div class="payment-result__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </div>
+
+        <h1 class="payment-result__title">✓ Thanh toán thành công!</h1>
+
+        <p class="payment-result__message">
+            Đơn hàng của bạn đã được xác nhận. Cảm ơn bạn đã mua hàng!
+        </p>
+
+        {{#if orderId}}
+        <div class="payment-result__info">
+            <p><strong>Mã đơn hàng:</strong> {{orderId}}</p>
+            <p><strong>Thời gian:</strong> <span id="currentTime"></span></p>
+            <p><strong>Trạng thái:</strong> <span style="color: #10b981; font-weight: bold;">✓ Đã thanh toán</span></p>
+        </div>
+        {{/if}}
+        <script>
+            document.getElementById('currentTime').textContent = new Date().toLocaleString('vi-VN')
+        </script>
+
+        <div class="payment-result__actions">
+            <a href="/" class="payment-result__btn payment-result__btn--primary">← Tiếp tục mua sắm</a>
+            <a href="/profile" class="payment-result__btn payment-result__btn--secondary">Xem đơn hàng</a>
+        </div>
+
+        <div class="payment-result__notice">
+            <p>📧 Xác nhận đơn hàng sẽ được gửi đến email của bạn trong vài phút.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .payment-result {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .payment-result__container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        padding: 60px 40px;
+        text-align: center;
+        max-width: 500px;
+        width: 100%;
+    }
+
+    .payment-result__icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 30px;
+        background: #10b981;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 40px;
+        animation: scaleIn 0.5s ease-out;
+    }
+
+    @keyframes scaleIn {
+        from {
+            transform: scale(0);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .payment-result__icon svg {
+        width: 100%;
+        height: 100%;
+    }
+
+    .payment-result__title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 15px;
+    }
+
+    .payment-result__message {
+        font-size: 16px;
+        color: #6b7280;
+        margin-bottom: 25px;
+        line-height: 1.6;
+    }
+
+    .payment-result__info {
+        background: #ecfdf5;
+        border-left: 4px solid #10b981;
+        padding: 20px;
+        margin-bottom: 30px;
+        border-radius: 4px;
+        text-align: left;
+    }
+
+    .payment-result__info p {
+        margin: 8px 0;
+        font-size: 14px;
+        color: #065f46;
+    }
+
+    .payment-result__notice {
+        background: #fef3c7;
+        border: 1px solid #fcd34d;
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        color: #78350f;
+    }
+
+    .payment-result__actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .payment-result__btn {
+        padding: 12px 30px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .payment-result__btn--primary {
+        background: #667eea;
+        color: white;
+    }
+
+    .payment-result__btn--primary:hover {
+        background: #5568d3;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .payment-result__btn--secondary {
+        background: #f3f4f6;
+        color: #667eea;
+        border: 1px solid #e5e7eb;
+    }
+
+    .payment-result__btn--secondary:hover {
+        background: #e5e7eb;
+        transform: translateY(-2px);
+    }
+</style>
+
