@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     try {
       // Gửi request đến server
-      const response = await fetch('/authSite/register', {
+      const response = await fetch('/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (data.success) {
         alert('Registration successful! Redirecting to login...');
         // Redirect đến trang login
-        window.location.href = data.redirect || '/authSite';
+        window.location.href = data.redirect || '/auth';
       } else {
         alert(data.message || 'Registration failed!');
         submitButton.disabled = false;
