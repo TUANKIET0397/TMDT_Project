@@ -2,42 +2,59 @@
     <link rel="stylesheet" href="/css/login.css" />
 {{/contentFor}}
 {{! Login }}
-    <div class="bg-animation" aria-hidden="true">
-        <div class="color-blob blob1"></div>
-        <div class="color-blob blob2"></div>
-        <div class="color-blob blob3"></div>
-        <div class="color-blob blob4"></div>
+<div class="bg-animation" aria-hidden="true">
+    <div class="color-blob blob1"></div>
+    <div class="color-blob blob2"></div>
+    <div class="color-blob blob3"></div>
+    <div class="color-blob blob4"></div>
+</div>
+
+<!-- Login Form -->
+<div class="login_container">
+    <div class="login_box">
+        <h1 class="login_title">Login</h1>
+        <form id="loginForm">
+            <div class="login_info">
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Username"
+                    autocomplete="username"
+                    required
+                />
+            </div>
+
+            <div class="login_info">
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Password"
+                    autocomplete="current-password"
+                    required
+                />
+            </div>
+
+            <div class="login_options">
+                <label class="remember-me">
+                    <input type="checkbox" id="rememberMe" name="rememberMe" />
+                    Remember me
+                </label>
+                <a
+                    href="/authSite/forgot-password"
+                    class="forget-password"
+                >Forgot password?</a>
+            </div>
+
+            <button type="submit" class="login-button">Login</button>
+
+            <div class="register-link">
+                Don't have an account?
+                <a href="/auth/register" class="switch">Register</a>
+            </div>
+        </form>
     </div>
+</div>
 
-    
-    <!-- Login Form -->
-    <div class="login_container">
-        <div class="login_box">
-            <h1 class="login_title">Login</h1>
-            <form id="loginForm">
-                <div class="login_info">
-                    <input type="text" id="username" name="username" placeholder="Username" autocomplete="username" required>
-                </div>
-
-                <div class="login_info">
-                    <input type="password" id="password" name="password" placeholder="Password" autocomplete="current-password" required>
-                </div>
-
-                <div class="login_options">
-                    <label class="remember-me">
-                        <input type="checkbox" id="rememberMe" name="rememberMe">
-                        Remember me
-                    </label>
-                    <a href="/authSite/forgot-password" class="forget-password">Forgot password?</a>
-                </div>
-
-                <button type="submit" class="login-button">Login</button>
-
-                <div class="register-link">
-                    Don't have an account? <a href="/auth/register" class="switch">Register</a>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script src="/js/login.js"></script>
+<script src="/js/login.js"></script>

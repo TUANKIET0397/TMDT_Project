@@ -22,7 +22,10 @@
 
         <div class="error-actions">
             <a href="/" class="error-btn error-btn--primary">Back to Home</a>
-            <a href="/checkout" class="error-btn error-btn--secondary">Return to Checkout</a>
+            {{! ✅ Fixed retry button - sử dụng retryUrl nếu có, không thì /checkout }}
+            <a href="{{#if retryUrl}}{{retryUrl}}{{else}}/checkout{{/if}}" class="error-btn error-btn--secondary">
+                🔄 Thử lại thanh toán
+            </a>
         </div>
     </div>
 </div>
@@ -61,8 +64,8 @@
     }
 
     .error-icon svg {
-        width: 100%;
-        height: 100%;
+        width: 50px;
+        height: 50px;
     }
 
     .error-title {
@@ -87,6 +90,7 @@
         margin-bottom: 30px;
         text-align: left;
         overflow-x: auto;
+        max-height: 200px;
     }
 
     .error-details pre {
@@ -94,6 +98,8 @@
         font-size: 12px;
         color: #78350f;
         font-family: 'Courier New', monospace;
+        white-space: pre-wrap;
+        word-wrap: break-word;
     }
 
     .error-actions {
@@ -112,6 +118,7 @@
         border: none;
         cursor: pointer;
         font-size: 14px;
+        display: inline-block;
     }
 
     .error-btn--primary {
@@ -126,13 +133,14 @@
     }
 
     .error-btn--secondary {
-        background: #f3f4f6;
-        color: #374151;
-        border: 1px solid #e5e7eb;
+        background: #f97316;
+        color: white;
+        border: 1px solid #ea580c;
     }
 
     .error-btn--secondary:hover {
-        background: #e5e7eb;
+        background: #ea580c;
         transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(249, 115, 22, 0.3);
     }
 </style>

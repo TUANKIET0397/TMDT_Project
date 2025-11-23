@@ -1,22 +1,38 @@
+// src/routes/site.js
 const express = require("express")
 const router = express.Router()
 const crypto = require("crypto")
 
 const siteController = require("../app/controllers/SiteController")
 const Transaction = require("../app/models/Transaction")
+const Invoice = require("../app/models/Invoice")
+const {
+    requireAuth,
+    requireCompleteProfile,
+} = require("../middlewares/requireAuth")
 
 // MoMo Payment Callback Handler
 const momoConfig = {
     secretKey: "SetA5RDnLHvt51AULf51DyauxUo3kDU6",
 }
 
-// GET /site
-router.get("/checkout", siteController.checkout) //lúc làm thêm post
-router.post("/payment", siteController.payment)
-router.get("/profile", siteController.profile) //lúc làm thêm post
+// ✅ Protected routes - Bắt buộc đăng nhập + thông tin đầy đủ
+router.get(
+    "/checkout",
+    requireAuth,
+    requireCompleteProfile,
+    siteController.checkout
+)
+router.post(
+    "/payment",
+    requireAuth,
+    requireCompleteProfile,
+    siteController.payment
+)
+router.get("/profile", siteController.profile)
 router.get("/about", siteController.about)
 
-// MoMo Return Callback - User is redirected here after payment
+// ✅ MoMo Return Callback - User is redirected here after payment
 router.get("/return", async (req, res) => {
     try {
         const { resultCode, message, orderId, transId } = req.query
@@ -27,24 +43,57 @@ router.get("/return", async (req, res) => {
         console.log("orderId:", orderId)
         console.log("transId:", transId)
 
-        // Save transaction to database
+        // Lấy thông tin pending payment từ session
+        const pendingPayment = req.session.pendingPayment
+
+        if (!pendingPayment) {
+            console.warn("⚠️ No pending payment found in session")
+            return res.render("error", {
+                layout: "payment",
+                message: "Không tìm thấy thông tin thanh toán.",
+                error: "Session expired or invalid payment",
+                retryUrl: "/checkout",
+            })
+        }
+
+        const { invoiceId, amount } = pendingPayment
+
+        // ✅ Lưu transaction vào database với InvoiceID
         try {
             await Transaction.saveTransaction({
+                InvoiceID: invoiceId, // ← Quan trọng!
                 orderId,
-                transId,
+                transId: transId || `TRANS_${Date.now()}`,
+                amount: parseInt(amount),
                 resultCode: parseInt(resultCode),
-                message,
+                message: message || "OK",
                 payType: "momo",
+                partnerCode: "MOMOLRJZ20181206",
+                requestId: orderId,
                 responseTime: Date.now(),
                 extraData: "",
             })
+
+            console.log("✓ Transaction saved to database")
+
+            // Cập nhật trạng thái Invoice
+            if (resultCode === "0") {
+                await Invoice.updateInvoiceStatus(invoiceId, "completed")
+                console.log("✓ Invoice marked as completed")
+            } else {
+                await Invoice.updateInvoiceStatus(invoiceId, "failed")
+                console.log("✗ Invoice marked as failed")
+            }
         } catch (dbError) {
             console.error("Failed to save transaction:", dbError.message)
-            // Continue anyway - don't block the user
+            // Không block user, vẫn hiển thị kết quả
         }
 
+        // Xóa pending payment khỏi session
+        delete req.session.pendingPayment
+
         if (resultCode === "0") {
-            // Payment successful
+            // ✅ Payment successful
             console.log("✓ Payment successful")
             res.render("paymentSuccess", {
                 layout: "payment",
@@ -54,7 +103,7 @@ router.get("/return", async (req, res) => {
                 message: message || "Thanh toán thành công",
             })
         } else {
-            // Payment failed
+            // ❌ Payment failed
             console.log("✗ Payment failed with code:", resultCode)
             res.render("paymentFailed", {
                 layout: "payment",
@@ -69,15 +118,26 @@ router.get("/return", async (req, res) => {
             layout: "payment",
             message: "Lỗi khi xử lý kết quả thanh toán.",
             error: error.message,
+            retryUrl: "/checkout",
         })
     }
 })
 
-// MoMo IPN Callback - Async notification from MoMo server
+// ✅ MoMo IPN Callback - Async notification from MoMo server
 router.post("/ipn", async (req, res) => {
     try {
         const data = req.body
-        const { signature, orderId, resultCode, amount, transId, partnerCode, requestId, responseTime, extraData, orderInfo } = data
+        const {
+            signature,
+            orderId,
+            resultCode,
+            amount,
+            transId,
+            partnerCode,
+            requestId,
+            responseTime,
+            extraData,
+        } = data
 
         console.log("=== MoMo IPN Callback ===")
         console.log("orderId:", orderId)
@@ -85,61 +145,70 @@ router.post("/ipn", async (req, res) => {
         console.log("transId:", transId)
         console.log("amount:", amount)
 
-        // Verify signature using the same logic as payment creation
-        let rawSignature = `accessKey=${data.accessKey}&amount=${data.amount}&extraData=${data.extraData || ""}&ipnUrl=${data.ipnUrl}&orderId=${data.orderId}&orderInfo=${data.orderInfo}&partnerCode=${data.partnerCode}&requestId=${data.requestId}&responseTime=${data.responseTime}&resultCode=${data.resultCode}&transId=${data.transId}`
+        // Verify signature
+        let rawSignature = `accessKey=${data.accessKey}&amount=${
+            data.amount
+        }&extraData=${data.extraData || ""}&message=${data.message}&orderId=${
+            data.orderId
+        }&orderInfo=${data.orderInfo}&orderType=${data.orderType}&partnerCode=${
+            data.partnerCode
+        }&payType=${data.payType}&requestId=${data.requestId}&responseTime=${
+            data.responseTime
+        }&resultCode=${data.resultCode}&transId=${data.transId}`
 
         const calculatedSignature = crypto
             .createHmac("sha256", momoConfig.secretKey)
             .update(rawSignature)
             .digest("hex")
 
-        // Verify signature
         if (signature !== calculatedSignature) {
             console.warn("✗ Invalid MoMo IPN signature")
-            return res.status(400).json({
-                resultCode: 1,
-                message: "Invalid signature",
+            return res.status(200).json({
+                resultCode: 0, // MoMo yêu cầu trả về 0 ngay cả khi có lỗi
+                message: "Signature verification failed",
             })
         }
 
         console.log("✓ Signature verified")
 
-        // Save transaction to database
-        try {
-            const existingTrans = await Transaction.getTransactionByTransId(transId)
-            if (!existingTrans) {
-                // Only save if transaction doesn't already exist
-                await Transaction.saveTransaction({
-                    orderId,
-                    requestId,
-                    partnerCode,
-                    transId,
-                    amount: parseInt(amount),
-                    resultCode: parseInt(resultCode),
-                    message: data.message || "OK",
-                    payType: "momo",
-                    responseTime: parseInt(responseTime),
-                    extraData: extraData || "",
-                })
-                console.log(`✓ Transaction saved from IPN: transId=${transId}`)
-            } else {
-                console.log(`ℹ Transaction already exists: transId=${transId}`)
-            }
-        } catch (dbError) {
-            console.error("Failed to save transaction from IPN:", dbError.message)
-            // Still return success to MoMo to acknowledge receipt
+        // Kiểm tra xem transaction đã tồn tại chưa
+        const existingTrans = await Transaction.getTransactionByTransId(transId)
+
+        if (!existingTrans) {
+            console.log("ℹ Transaction not found in DB, will save from IPN")
+
+            // Tìm Invoice theo orderId (nếu có lưu trong extraData hoặc logic khác)
+            // Tạm thời set InvoiceID = NULL nếu không tìm thấy
+            await Transaction.saveTransaction({
+                InvoiceID: null, // ← IPN thường không có InvoiceID, xử lý sau
+                orderId,
+                requestId,
+                partnerCode,
+                transId,
+                amount: parseInt(amount),
+                resultCode: parseInt(resultCode),
+                message: data.message || "OK",
+                payType: data.payType || "momo",
+                responseTime: parseInt(responseTime),
+                extraData: extraData || "",
+            })
+
+            console.log(`✓ Transaction saved from IPN: transId=${transId}`)
+        } else {
+            console.log(`ℹ Transaction already exists: transId=${transId}`)
         }
 
-        // Always return 200 to acknowledge receipt
+        // Luôn trả về success cho MoMo
         res.status(200).json({
             resultCode: 0,
-            message: "IPN received",
+            message: "IPN received successfully",
         })
     } catch (error) {
         console.error("Error in /ipn route:", error)
-        res.status(500).json({
-            resultCode: 1,
-            message: "Server error processing IPN",
+        // Vẫn trả về success để MoMo không retry
+        res.status(200).json({
+            resultCode: 0,
+            message: "IPN processed with errors",
         })
     }
 })

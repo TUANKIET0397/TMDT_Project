@@ -1,103 +1,109 @@
-document.addEventListener('DOMContentLoaded', function () {
-  const form = document.getElementById('registerForm');
+// src/public/js/register.js
 
-  form.addEventListener('submit', async function (e) {
-    e.preventDefault();
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("registerForm")
 
-    // Lấy dữ liệu từ form
-    const formData = {
-      firstname: document.getElementById('firstname').value.trim(),
-      lastname: document.getElementById('lastname').value.trim(),
-      Gender: document.getElementById('Gender').value,
-      birthday: document.getElementById('birthday').value,
-      address: document.getElementById('address').value.trim(),
-      email: document.getElementById('email').value.trim(),
-      password: document.getElementById('password').value,
-      repassword: document.getElementById('repassword').value,
-    };
-
-    // Validate phía client
-    if (
-      !formData.firstname ||
-      !formData.lastname ||
-      !formData.Gender ||
-      !formData.birthday ||
-      !formData.address ||
-      !formData.email ||
-      !formData.password ||
-      !formData.repassword
-    ) {
-      alert('Please fill in all fields!');
-      return;
+    if (!form) {
+        console.error("Register form not found")
+        return
     }
 
-    if (formData.password !== formData.repassword) {
-      alert('Passwords do not match!');
-      return;
-    }
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault()
 
-    if (formData.password.length < 6) {
-      alert('Password must be at least 6 characters!');
-      return;
-    }
+        // Lấy dữ liệu từ form
+        const formData = {
+            firstname: document.getElementById("firstname").value.trim(),
+            lastname: document.getElementById("lastname").value.trim(),
+            Gender: document.getElementById("Gender").value,
+            birthday: document.getElementById("birthday").value,
+            address: document.getElementById("address").value.trim(),
+            email: document.getElementById("email").value.trim(),
+            password: document.getElementById("password").value,
+            repassword: document.getElementById("repassword").value,
+        }
 
-    // Disable button để tránh submit nhiều lần
-    const submitButton = form.querySelector('button[type="submit"]');
-    const originalText = submitButton.textContent;
-    submitButton.disabled = true;
-    submitButton.textContent = 'Processing...';
+        console.log("📝 Form data:", formData)
 
-    try {
-      // Gửi request đến server
-      const response = await fetch('/authSite/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+        // Validate client-side
+        if (!formData.firstname || !formData.lastname) {
+            alert("Please enter your first name and last name")
+            return
+        }
 
-      const data = await response.json();
+        if (!formData.Gender) {
+            alert("Please select your gender")
+            return
+        }
 
-      if (data.success) {
-        alert('Registration successful! Redirecting to login...');
-        // Redirect đến trang login
-        window.location.href = data.redirect || '/authSite';
-      } else {
-        alert(data.message || 'Registration failed!');
-        submitButton.disabled = false;
-        submitButton.textContent = originalText;
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      alert('An error occurred. Please try again!');
-      submitButton.disabled = false;
-      submitButton.textContent = originalText;
-    }
-  });
+        if (!formData.birthday) {
+            alert("Please select your birthday")
+            return
+        }
 
-  // Validate email real-time
-  const emailInput = document.getElementById('email');
-  emailInput.addEventListener('blur', function () {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (this.value && !emailRegex.test(this.value)) {
-      this.setCustomValidity('Please enter a valid email address');
-      this.reportValidity();
-    } else {
-      this.setCustomValidity('');
-    }
-  });
+        if (!formData.address) {
+            alert("Please enter your address")
+            return
+        }
 
-  // Validate password match real-time
-  const passwordInput = document.getElementById('password');
-  const repasswordInput = document.getElementById('repassword');
+        // Validate email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(formData.email)) {
+            alert("Please enter a valid email address")
+            return
+        }
 
-  repasswordInput.addEventListener('input', function () {
-    if (this.value && this.value !== passwordInput.value) {
-      this.setCustomValidity('Passwords do not match');
-      this.reportValidity();
-    } else {
-      this.setCustomValidity('');
-    }
-  });
-});
+        // Validate password
+        if (formData.password.length < 8) {
+            alert("Password must be at least 8 characters long")
+            return
+        }
+
+        if (formData.password !== formData.repassword) {
+            alert("Passwords do not match")
+            return
+        }
+
+        // Disable submit button
+        const submitBtn = form.querySelector('button[type="submit"]')
+        const originalText = submitBtn.textContent
+        submitBtn.disabled = true
+        submitBtn.textContent = "Registering..."
+
+        try {
+            console.log("🚀 Sending registration request...")
+
+            const response = await fetch("/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            })
+
+            console.log("📥 Response status:", response.status)
+
+            const result = await response.json()
+            console.log("📥 Response data:", result)
+
+            if (response.ok && result.success) {
+                alert("✅ " + result.message)
+                console.log("✅ Redirecting to:", result.redirect)
+                window.location.href = result.redirect || "/"
+            } else {
+                alert(
+                    "❌ Registration failed: " +
+                        (result.message || "Unknown error")
+                )
+                console.error("Registration failed:", result)
+            }
+        } catch (error) {
+            console.error("❌ Registration error:", error)
+            alert("❌ Error: " + error.message)
+        } finally {
+            // Re-enable submit button
+            submitBtn.disabled = false
+            submitBtn.textContent = originalText
+        }
+    })
+})

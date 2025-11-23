@@ -15,7 +15,7 @@ router.get("/register", authController.register)
 router.post("/register", authController.registerPost)
 
 // GET /authSite/login - Hiển thị trang đăng nhập (nếu cần riêng)
-router.get("/login  ", authController.login)
+router.get("/login", authController.login)
 
 // POST /authSite/login - Xử lý đăng nhập
 router.post("/login", authController.loginPost)
