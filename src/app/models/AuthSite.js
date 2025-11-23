@@ -283,7 +283,7 @@ class AuthSite {
     static async getUserById(userId) {
         try {
             const [users] = await db.query(
-                `SELECT ID, FirstName, LastName, BirthDate, Gender, PhoneNumber, Email, Avt, Address, Region, Statuses, CreatedTime
+                `SELECT ID, FirstName, LastName, BirthDate, Gender, PhoneNumber, Email, Avt, Address, RegionID, Statuses, CreatedTime
                  FROM Users WHERE ID = ?`,
                 [userId]
             )

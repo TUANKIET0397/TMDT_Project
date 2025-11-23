@@ -85,8 +85,12 @@
 
             <div>
                 <div class="field-label">Region</div>
-                <select name="Region" class="field-select editable" disabled>
-                    <option selected>{{user.Region}}</option>
+                <select name="RegionID" class="field-select editable region-select" disabled>
+                    {{#each regions}}
+                    <option value="{{ID}}" {{#if selected}}selected{{/if}}>
+                        {{RegionName}}
+                    </option>
+                    {{/each}}
                 </select>
             </div>
         </form>
@@ -143,7 +147,7 @@
         </table>
     </div>
 </div>
-
+        
 <script>
 (function () {
   const editBtn = document.getElementById('editProfileBtn')
@@ -151,27 +155,39 @@
   const cancelBtn = document.getElementById('cancelEditBtn')
   const form = document.querySelector('.profile-form')
   const editables = Array.from(document.querySelectorAll('.profile-form .editable'))
+  const regionSelect = document.querySelector('.region-select')
 
   // store original values for cancel
-  const original = {}
   editables.forEach(el => {
-    original[el.name || el.dataset.name || Math.random()] = el.value
+    el.dataset._orig = el.value
   })
 
   function setEditable(enabled) {
     editables.forEach(el => {
+      // enable/disable inputs (select included)
       el.disabled = !enabled
     })
+
     editBtn.style.display = enabled ? 'none' : ''
     saveBtn.style.display = enabled ? '' : 'none'
     cancelBtn.style.display = enabled ? '' : 'none'
+
+    if (regionSelect) {
+      // khi bật edit, select được enable để chọn; khi tắt, disable để chỉ hiển thị tên
+      regionSelect.disabled = !enabled
+      if (!enabled) {
+        // remove focus khi tắt edit
+        regionSelect.blur()
+      } else {
+        regionSelect.focus()
+      }
+    }
   }
 
   editBtn && editBtn.addEventListener('click', function () {
     // snapshot current values for cancel
     editables.forEach(el => { el.dataset._orig = el.value })
     setEditable(true)
-    // focus first editable
     const first = editables.find(e => !e.disabled)
     if (first) first.focus()
   })
@@ -186,11 +202,17 @@
   })
 
   saveBtn && saveBtn.addEventListener('click', function () {
-    // optional: add client-side validation here
     form.submit()
   })
 
-  // order row toggle
+  // initial: select visible but disabled so chỉ hiện tên hiện tại
+  (function initRegionView() {
+    if (regionSelect) {
+      regionSelect.disabled = true
+    }
+  })()
+
+  // order row toggle (existing)
   document.querySelectorAll(".order-row").forEach(function (row) {
     row.addEventListener("click", function () {
       const targetId = row.getAttribute("data-detail");

@@ -3,11 +3,18 @@ const db = require("../../config/db")
 class User {
   static async getUserById(userId) {
     const [rows] = await db.query(
-      `SELECT ID, FirstName, LastName, BirthDate, Gender, PhoneNumber, Email, Avt, Address, Region
+      `SELECT ID, FirstName, LastName, BirthDate, Gender, PhoneNumber, Email, Avt, Address, RegionID
        FROM Users WHERE ID = ? LIMIT 1`,
       [userId]
     )
     return rows[0] || null
+  }
+
+  static async getUserRegions() {
+    const [rows] = await db.query(
+      `SELECT ID, RegionName FROM Region`
+    )
+    return rows
   }
 
   static async updateUser(userId, data) {
@@ -16,7 +23,7 @@ class User {
       const params = []
 
       // chỉ cập nhật những trường cho phép (không cập nhật ID và UserName)
-      const allowed = ['FirstName','LastName','BirthDate','Gender','PhoneNumber','Email','Avt','Address','Region']
+      const allowed = ['FirstName','LastName','BirthDate','Gender','PhoneNumber','Email','Avt','Address','RegionID']
       for (const k of allowed) {
         if (Object.prototype.hasOwnProperty.call(data, k)) {
           fields.push(`${k} = ?`)

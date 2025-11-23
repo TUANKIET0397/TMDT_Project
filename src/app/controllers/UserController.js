@@ -1,18 +1,37 @@
+// ...existing code...
 const User = require("../models/User")
 
 class ProfileController {
   // GET /profile
   async show(req, res) {
     try {
-      // lấy user id từ session / req.user; nếu test local dùng 1
-      const userId = (req.session && req.session.userId) || (req.user && req.user.ID) || 1
+      const userId = (req.session && req.session.userId) || (req.user && req.user.ID)
+      if (!userId) return res.status(401).redirect('/auth')
 
       const user = await User.getUserById(userId)
       if (!user) return res.status(404).render('profile', { user: null, orders: [] })
 
+      // format BirthDate for <input type="date">
+      if (user.BirthDate) {
+        const d = new Date(user.BirthDate)
+        user.BirthDate = isNaN(d.getTime()) ? '' : d.toISOString().slice(0,10)
+      } else {
+        user.BirthDate = ''
+      }
+
+      // load all regions (63 tỉnh) and mark selected one
+      const regions = await User.getUserRegions()
+      const matched = regions.find(r => String(r.ID) === String(user.RegionID))
+      user.RegionName = matched ? matched.RegionName : ''
+      // add selected flag so template dễ render
+      const regionsWithFlag = regions.map(r => ({
+        ...r,
+        selected: String(r.ID) === String(user.RegionID)
+      }))
+
       const orders = await User.getUserOrders(userId)
 
-      return res.render('profile', { user, orders })
+      return res.render('profile', { user, orders, regions: regionsWithFlag })
     } catch (err) {
       console.error('ProfileController.show error:', err)
       return res.status(500).send('Error loading profile')
@@ -22,11 +41,9 @@ class ProfileController {
   // POST /profile/update
   async update(req, res) {
     try {
-      // lấy user id từ session / req.user
       const userId = (req.session && req.session.userId) || (req.user && req.user.ID)
       if (!userId) return res.status(401).redirect('/login')
 
-      // lấy dữ liệu từ form — chỉ lấy các trường cho phép
       const payload = {
         FirstName: req.body.FirstName,
         LastName: req.body.LastName,
@@ -35,7 +52,7 @@ class ProfileController {
         PhoneNumber: req.body.PhoneNumber,
         Email: req.body.Email,
         Address: req.body.Address,
-        Region: req.body.Region
+        RegionID: req.body.RegionID // <-- gửi RegionID từ select
       }
 
       await User.updateUser(userId, payload)
@@ -48,3 +65,4 @@ class ProfileController {
 }
 
 module.exports = new ProfileController()
+// ...existing code...
