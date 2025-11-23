@@ -14,7 +14,7 @@ class AdminController {
         AdminSite.getInvoiceStats(),
       ]);
 
-      console.log('✅ Invoices loaded in dashboard:', invoices.length);
+      console.log(' Invoices loaded in dashboard:', invoices.length);
       const maxInvoices = 5;
       const invoicesLimited = invoices.slice(0, maxInvoices);
 
@@ -25,7 +25,7 @@ class AdminController {
         stats,
       });
     } catch (error) {
-      console.error('❌ Error loading dashboard invoices:', error);
+      console.error(' Error loading dashboard invoices:', error);
       res.status(500).send('Internal Server Error');
     }
   }
@@ -193,48 +193,47 @@ class AdminController {
   }
 
   // [POST] /admin/users/:id/delete
-async deleteUser(req, res) {
-  try {
-    const userId = req.params.id;
-    const result = await AdminSite.deleteUser(userId);
+  async deleteUser(req, res) {
+    try {
+      const userId = req.params.id;
+      const result = await AdminSite.deleteUser(userId);
 
-    if (result && result > 0) {
-      return res.redirect('/admin/users');
+      if (result && result > 0) {
+        return res.redirect('/admin/users');
+      }
+      return res.status(404).send('User not found');
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      res.status(500).send('Internal Server Error: ' + error.message);
     }
-    return res.status(404).send('User not found');
-  } catch (error) {
-    console.error('Error deleting user:', error);
-    res.status(500).send('Internal Server Error: ' + error.message);
   }
-}
 
-// [POST] /admin/users/delete/selected
-async deleteSelectedUsers(req, res) {
-  try {
-    const ids = req.body && req.body.ids;
+  // [POST] /admin/users/delete/selected
+  async deleteSelectedUsers(req, res) {
+    try {
+      const ids = req.body && req.body.ids;
 
-    if (!Array.isArray(ids) || ids.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'No user IDs provided',
-      });
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'No user IDs provided',
+        });
+      }
+
+      const result = await AdminSite.deleteUsersByIds(ids);
+
+      if (result && result > 0) {
+        return res.json({ success: true, deleted: result });
+      }
+
+      return res
+        .status(404)
+        .json({ success: false, message: 'No users deleted' });
+    } catch (error) {
+      console.error('Error deleting selected users:', error);
+      return res.status(500).json({ success: false, message: error.message });
     }
-
-    const result = await AdminSite.deleteUsersByIds(ids);
-
-    if (result && result > 0) {
-      return res.json({ success: true, deleted: result });
-    }
-
-    return res
-      .status(404)
-      .json({ success: false, message: 'No users deleted' });
-  } catch (error) {
-    console.error('Error deleting selected users:', error);
-    return res.status(500).json({ success: false, message: error.message });
   }
-}
-
 
   // [GET] /admin/show?type=TypeName
   async show(req, res) {
@@ -254,7 +253,7 @@ async deleteSelectedUsers(req, res) {
         selectedType,
       });
     } catch (error) {
-      console.error('❌ Error in show products:', error);
+      console.error(' Error in show products:', error);
       res.status(500).send('Internal Server Error');
     }
   }
@@ -272,8 +271,8 @@ async deleteSelectedUsers(req, res) {
         AdminSite.getInvoiceStats(),
       ]);
 
-      console.log('✅ Invoices loaded:', invoices.length);
-      console.log('✅ Stats:', stats);
+      console.log(' Invoices loaded:', invoices.length);
+      console.log(' Stats:', stats);
 
       // Render view với dữ liệu
       res.render('admin/invoice', {
@@ -283,7 +282,7 @@ async deleteSelectedUsers(req, res) {
         stats: stats,
       });
     } catch (error) {
-      console.error('❌ Error in invoice:', error);
+      console.error(' Error in invoice:', error);
       res.status(500).send('Internal Server Error: ' + error.message);
     }
   }
@@ -427,7 +426,7 @@ async deleteSelectedUsers(req, res) {
         });
       }
 
-      console.log('✅ Processed payload:', JSON.stringify(payload, null, 2));
+      console.log(' Processed payload:', JSON.stringify(payload, null, 2));
 
       // ===== Lưu vào database =====
       const result = await AdminSite.createProductWithColors(payload);
@@ -439,7 +438,7 @@ async deleteSelectedUsers(req, res) {
         message: 'Product created successfully',
       });
     } catch (err) {
-      console.error('❌ Create product error:', err);
+      console.error(' Create product error:', err);
       return res
         .status(500)
         .json({ success: false, message: 'Server error', error: err.message });
@@ -812,6 +811,237 @@ async deleteSelectedUsers(req, res) {
     } catch (error) {
       console.error('Error exporting Excel:', error);
       res.status(500).json({ success: false, message: 'Export failed' });
+    }
+  }
+
+  // [GET] /admin/ad_detail/:id - Xem chi tiết sản phẩm
+  async detail(req, res) {
+    try {
+      const productId = req.params.id;
+      console.log('=== LOADING PRODUCT DETAIL ===');
+      console.log('Product ID:', productId);
+
+      // Lấy chi tiết sản phẩm từ database
+      const product = await AdminSite.getProductByID(productId);
+
+      if (!product) {
+        return res.status(404).send('Product not found');
+      }
+
+      console.log(' Product loaded:', product.ProductName);
+      console.log('Colors:', product.colors?.length || 0);
+      console.log('Main Images:', product.mainImages?.length || 0);
+
+      // Render trang detail
+      res.render('admin/ad_detail', {
+        layout: 'admin',
+        title: `Edit ${product.ProductName} - Admin`,
+        product: product,
+      });
+    } catch (error) {
+      console.error(' Error loading product detail:', error);
+      res.status(500).send('Internal Server Error: ' + error.message);
+    }
+  }
+
+  // [POST] /admin/ad_detail/:id - Cập nhật sản phẩm
+  async updateProduct(req, res) {
+    try {
+      const productId = req.params.id;
+      console.log('--- updateProduct called ---');
+      console.log('Product ID:', productId);
+      console.log('req.files:', req.files);
+      console.log('req.body keys:', Object.keys(req.body || {}));
+
+      // ===== Helper lưu file (giống createPost) =====
+      const saveUploadedFiles = async (filesArray, prefix = 'file') => {
+        if (!Array.isArray(filesArray)) return [];
+        const savedPaths = [];
+        for (const f of filesArray) {
+          const name = `${prefix}_${Date.now()}_${f.originalname}`.replace(
+            /\s+/g,
+            '_'
+          );
+          const outDir = path.join(
+            __dirname,
+            '..',
+            '..',
+            'public',
+            'uploads',
+            'products'
+          );
+          await fs.mkdir(outDir, { recursive: true });
+          const outPath = path.join(outDir, name);
+
+          if (f.path) {
+            try {
+              await fs.rename(f.path, outPath);
+            } catch {
+              const data = await fs.readFile(f.path);
+              await fs.writeFile(outPath, data);
+              await fs.unlink(f.path);
+            }
+          } else if (f.buffer) {
+            await fs.writeFile(outPath, f.buffer);
+          } else {
+            console.warn('Unknown file object:', f);
+            continue;
+          }
+          savedPaths.push(`/uploads/products/${name}`);
+        }
+        return savedPaths;
+      };
+
+      // ===== Lấy mainImages mới (nếu có) =====
+      const mainFiles = Array.isArray(req.files)
+        ? req.files.filter((x) => x.fieldname === 'mainImages')
+        : req.files && req.files['mainImages']
+        ? req.files['mainImages']
+        : [];
+      const newMainImages = await saveUploadedFiles(mainFiles, 'main');
+
+      // ===== Lấy colorsData từ req.body =====
+      let colorsDataRaw = req.body.colors || {};
+      const colorsData = Array.isArray(colorsDataRaw)
+        ? colorsDataRaw
+        : Object.values(colorsDataRaw);
+
+      // ===== Chuẩn bị payload =====
+      const payload = {
+        ProductName: req.body.ProductName,
+        Descriptions: req.body.Descriptions,
+        TypeID: req.body.TypeID,
+        Price: Number(req.body.Price) || 0,
+        mainImages: newMainImages, // chỉ chứa ảnh mới upload
+        existingMainImages: req.body.existingMainImages || [], // ảnh cũ giữ lại
+        colors: [],
+      };
+
+      // Validate cơ bản
+      if (
+        !payload.ProductName ||
+        !payload.Descriptions ||
+        !payload.TypeID ||
+        !payload.Price
+      ) {
+        return res
+          .status(400)
+          .json({ success: false, message: 'Missing required fields' });
+      }
+
+      // ===== Xử lý màu và ảnh màu =====
+      const colorImagesGroups = {};
+      if (req.files) {
+        if (Array.isArray(req.files)) {
+          req.files.forEach((f) => {
+            const m =
+              f.fieldname && f.fieldname.match(/^colors\[(\d+)\]\[images\]$/);
+            if (m) {
+              const idx = m[1];
+              if (!colorImagesGroups[idx]) colorImagesGroups[idx] = [];
+              colorImagesGroups[idx].push(f);
+            }
+          });
+        } else {
+          Object.keys(req.files).forEach((k) => {
+            const m = k.match(/^colors\[(\d+)\]\[images\]$/);
+            if (m) colorImagesGroups[m[1]] = req.files[k];
+          });
+        }
+      }
+
+      // ===== Build colors array =====
+      for (const [index, colorData] of Object.entries(colorsData)) {
+        const groupFiles = colorImagesGroups[index] || [];
+        const newColorImgs = await saveUploadedFiles(
+          groupFiles,
+          `color_${index}`
+        );
+
+        // Ảnh cũ của màu này (từ form)
+        const existingColorImages = colorData.existingImages || [];
+
+        // Sizes
+        const rawSizes = colorData.sizes || [];
+        const sizes = Array.isArray(rawSizes)
+          ? rawSizes
+              .filter((s) => s && (s.size || s.quantity !== undefined))
+              .map((s) => ({
+                size: String(s.size || '').trim(),
+                quantity: Number(s.quantity) || 0,
+              }))
+          : Object.values(rawSizes)
+              .filter((s) => s && (s.size || s.quantity !== undefined))
+              .map((s) => ({
+                size: String(s.size || '').trim(),
+                quantity: Number(s.quantity) || 0,
+              }));
+
+        payload.colors.push({
+          colorId: colorData.colorId || null, // ID màu cũ (nếu đang edit)
+          colorName: colorData.colorName || 'Default',
+          images: newColorImgs, // ảnh mới upload
+          existingImages: existingColorImages, // ảnh cũ giữ lại
+          sizes: sizes,
+        });
+      }
+
+      console.log(
+        ' Processed update payload:',
+        JSON.stringify(payload, null, 2)
+      );
+
+      // ===== Cập nhật database =====
+      const result = await AdminSite.updateProductWithColors(
+        productId,
+        payload
+      );
+
+      if (result.success) {
+        return res.json({
+          success: true,
+          productID: productId,
+          message: 'Product updated successfully',
+        });
+      } else {
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to update product',
+        });
+      }
+    } catch (err) {
+      console.error(' Update product error:', err);
+      return res
+        .status(500)
+        .json({ success: false, message: 'Server error', error: err.message });
+    }
+  }
+
+  // [DELETE] /admin/color/:colorId - Xóa màu
+  async deleteColor(req, res) {
+    try {
+      const colorId = req.params.colorId;
+      console.log('🗑️ Deleting color:', colorId);
+
+      const result = await AdminSite.deleteColor(colorId);
+
+      if (result && result > 0) {
+        return res.json({
+          success: true,
+          message: 'Color deleted successfully',
+        });
+      }
+
+      return res.status(404).json({
+        success: false,
+        message: 'Color not found',
+      });
+    } catch (error) {
+      console.error(' Error deleting color:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Server error: ' + error.message,
+      });
     }
   }
 }

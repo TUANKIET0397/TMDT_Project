@@ -1,0 +1,757 @@
+/* Main Content */
+.main-content {
+    background: #081028;
+    flex: 1;
+    height: 100vh;
+    padding: 20px 30px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.header {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+}
+
+.header_search-box {
+    width: 244px;
+    height: 42px;
+    border: 1px solid #2a3040;
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 1.4rem;
+    background: #0b1739;
+    color: #aeb9e1;
+}
+
+.header_search-input {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    padding-left: 6px;
+    color: #aeb9e1;
+    font-size: 1.4rem;
+}
+
+.header_search-input::placeholder {
+    color: #aeb9e1;
+}
+
+.filer_box {
+    background: #0b1739;
+    border: 1px solid #343b4f;
+    border-radius: 6px;
+    height: 42px;
+    width: 119px;
+    color: #aeb9e1;
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.filer_box i {
+    font-size: 1.6rem;
+    margin-left: 6px;
+}
+
+#filter {
+    background: #0b1739;
+    border: 1px solid #343b4f;
+    border-radius: 6px;
+    color: #aeb9e1;
+    height: 40px;
+    font-size: 1.4rem;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+
+.add_page {
+    background: #0b1739;
+    border: 1px solid #343b4f;
+    border-radius: 6px;
+    color: #aeb9e1;
+    height: 42px;
+    width: 61px;
+    font-size: 1.4rem;
+    outline: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+}
+.add_page:hover {
+    background-color: #152043;
+}
+
+.header__save-box,
+.header__edit-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    margin-right: 50px;
+    border-radius: 6px;
+    padding: 12px;
+    height: 42px;
+    width: 90px;
+    font-size: 1.4rem;
+    background: #0b1739;
+    color: #aeb9e1;
+}
+
+.header__save-box:hover,
+.header__edit-box:hover {
+    cursor: pointer;
+    opacity: 0.9;
+    box-shadow: 0px 2px 4px 0px rgb(1 5 17 / 20%);
+}
+
+.active-hidden {
+    display: none;
+}
+
+/* Add product */
+.add-wrap {
+    display: flex;
+    justify-content: flex-start; /* align to left so content flows naturally */
+    align-items: flex-start;
+    margin-top: 40px;
+    /* allow the page to scroll vertically (avoid internal scroll traps) */
+    overflow-y: visible;
+    overflow-x: hidden;
+    width: 100%;
+    gap: 28px; /* spacing between left and right panes */
+}
+
+/* add card -- left */
+.add-left {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+    row-gap: 1px;
+    column-gap: 1px;
+    flex: 0 0 439px; /* fixed column so right panel doesn't get pushed */
+    max-width: 439px;
+    background: #d9d9d9;
+}
+
+.add-card__item {
+    position: relative;
+    width: 219px;
+    height: 269px;
+    background: #d9d9d9;
+    border: 1px solid #999898;
+}
+
+.add-card__plus {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #081028;
+    z-index: 1;
+}
+
+.add-card__plus:hover {
+    cursor: pointer;
+    opacity: 0.99;
+    box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px,
+        rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+}
+
+.preview-image:hover {
+    cursor: pointer;
+    opacity: 0.7;
+    box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px,
+        rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+}
+/* add card -- right */
+.add__info-wrap {
+    width: 465px;
+    margin-left: 66px;
+    padding-left: 22px;
+    padding-top: 8px;
+}
+
+.add__info-desc,
+.add__info-textarea {
+    background-color: transparent;
+    width: 100%;
+    font-size: 2.5rem;
+    outline: none;
+    border: none;
+    margin-bottom: 12px;
+    color: #fff;
+}
+
+.add__info-heading,
+.add__info-heading-other {
+    font-weight: 800;
+    font-size: 2rem;
+    color: #fff;
+    margin-top: 12px;
+}
+
+.add__info-heading-other {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.add__info--input {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 28px;
+}
+
+.add__input-cost {
+    background: transparent;
+    border: 1px solid transparent;
+    color: #e8ebbc;
+    font-size: 1.3rem;
+    padding-left: 1px;
+    width: 270px;
+}
+
+.add__input-cost:focus {
+    outline: none;
+}
+
+.filer_box {
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    border-radius: 8px;
+    background: #0b1739;
+    color: #aeb9e1;
+    cursor: pointer;
+}
+
+.add__info-filter {
+    // justify-content: space-between;
+    gap: 8px;
+}
+
+.add__info-edit {
+    font-size: 1.2rem;
+    font-weight: 500;
+    border: 1px solid #343b4f;
+    border-radius: 6px;
+    background: #0b1739;
+    color: #aeb9e1;
+    height: 40px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+
+/* hide number input spinners across browsers */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+/* header and save button layout */
+.header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 8px 16px;
+}
+.header__save-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #2b1b67, #1b3a8a);
+    color: #fff;
+    cursor: pointer;
+}
+.header__save-box i {
+    font-size: 1.1rem;
+}
+.header__save {
+    font-weight: 700;
+}
+
+/* prevent .add__info--input children being pushed out; prefer gap */
+.add__info--input {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+/* ensure Add Save button has stable size */
+.add-save-btn {
+    min-width: 78px;
+    padding: 8px 12px;
+}
+
+/* Form size */
+.section__form {
+    margin-top: 23px;
+    width: 100%;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+}
+
+.section__form-size {
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.471);
+    text-align: center;
+    white-space: nowrap;
+    font-weight: 300;
+    font-size: 2rem;
+    color: #fff;
+    cursor: pointer;
+}
+
+.section__form-size:hover {
+    outline: 1px solid #fff;
+}
+
+.active-form {
+    background-color: #fff;
+    color: #000;
+}
+
+.add_quantity {
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid #a1a1a1;
+    border-radius: 4px;
+}
+
+.add__quantity-input {
+    width: 100%;
+    padding: 10px 20px;
+    background: transparent;
+    color: #fff;
+    font-size: 1.8rem;
+    outline: none;
+    border: none;
+}
+
+.add-save-btn {
+    background: #30185d;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+}
+
+.add__info-heading-other {
+    font-weight: 700;
+}
+
+.add__info-card--wrap {
+    display: flex;
+    margin-top: 14px;
+    gap: 12px;
+}
+
+/* choose product color */
+
+.add__product-color {
+    position: relative;
+    width: 50px;
+    height: 65px;
+    border-radius: 2px;
+    background: #d9d9d9;
+    box-shadow: rgba(0, 0, 0, 0.09) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px,
+        rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px,
+        rgba(0, 0, 0, 0.09) 0px 32px 16px;
+}
+
+.add__product-plus {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background: #d9d9d9;
+    outline: 1px solid #000;
+    color: #000;
+}
+
+/* When a color card contains the active product marker, show the
+   plus block (we will render an <img> inside it). Remove hardcoded
+   background so uploaded thumbnails can be used instead. */
+.active__product-color {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+/* remove hardcoded background image; thumbnails will be displayed
+   via an <img> inside the .add__product-plus element */
+.add__product-color:has(.active__product-color) {
+    background-image: none;
+}
+
+/* Make the plus block fill the color card so the thumbnail image
+   covers the whole card area */
+.add__product-color .add__product-plus {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    outline: none;
+}
+
+/* Thumbnail image styling */
+.add__product-color .color-thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 2px;
+}
+
+.add__product-color:has(.active__product-color)::after:hover {
+    opacity: 0.9;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 999;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Modal Content */
+.modal-content {
+    background: #1a2039;
+    border-radius: 16px;
+    padding: 30px;
+    width: 630px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+/* Modal Left - Image Grid */
+.modal-left {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: #000;
+}
+
+.modal-image-item {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    background: #d9d9d9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-image-plus {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+}
+
+.modal-image-plus svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Modal Right - Info */
+.modal-right {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.modal-product-name {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.modal_color {
+    border: none;
+    outline: none;
+    background-color: transparent;
+    color: #fff;
+    font-size: 1.6rem;
+    text-transform: uppercase;
+}
+
+/* Modal Size Selector */
+.modal-size-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.modal-size-btn {
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: transparent;
+    color: #fff;
+    font-size: 1.8rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.modal-size-btn:hover {
+    border-color: #fff;
+}
+
+.modal-size-btn.active {
+    background: #fff;
+    color: #1a2039;
+    border-color: #fff;
+}
+
+/* Right column — improve card appearance and textarea appearance */
+.add__info-wrap {
+    background: linear-gradient(180deg, #0f1530 0%, #0b1124 100%);
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(2, 6, 23, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    width: 100%;
+    max-width: 540px;
+}
+
+.add__info-desc {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #f7fbff;
+    margin-bottom: 6px;
+}
+
+.add__info-textarea {
+    resize: none; /* remove default textarea handle */
+    min-height: 140px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    color: #e6eef8;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    outline: none;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.add__info-textarea::placeholder {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.add__info-textarea:focus {
+    box-shadow: 0 6px 18px rgba(9, 30, 66, 0.2),
+        inset 0 0 0 3px rgba(58, 123, 213, 0.06);
+}
+
+/* small label for color cards (injected by JS) */
+.color-card-label {
+    position: absolute;
+    left: 6px;
+    bottom: 6px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 4px 6px;
+    border-radius: 6px;
+    font-size: 12px;
+    z-index: 3;
+}
+
+/* modal right refinement */
+.modal-right .modal-product-name {
+    font-size: 1.6rem;
+}
+
+.modal-right .modal_color,
+.modal-quantity-input,
+.add__input-cost,
+.add__info-edit {
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+/* header save box */
+.header__save-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(90deg, #2b1b67, #1b3a8a);
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+}
+
+// /* responsive tweak: stack columns on narrow screens */
+// @media (max-width: 980px) {
+//     .add-wrap {
+//         flex-direction: column;
+//         gap: 10px;
+//     }
+//     .add-left {
+//         width: 100%;
+//     }
+//     .add__info-wrap {
+//         margin-left: 0;
+//         width: 100%;
+//     }
+// }
+
+/* Modal Quantity Input */
+.modal-quantity-wrap {
+    margin-top: 10px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+}
+
+.modal-quantity-input {
+    width: 100%;
+    padding: 12px 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.6rem;
+}
+
+.modal-quantity-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.modal-save-btn {
+    background: #4961cb;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+}
+
+.modal-save-btn i {
+    font-size: 1.8rem;
+}
+
+.modal-save-text {
+    font-size: 1.4rem;
+}
+
+/* Modal Done Button */
+.modal-done-btn {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 24px;
+    background: #4961cb;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+}
+
+.modal-done-btn:hover {
+    background: #aeb9e1;
+}
+
+.modal-done-btn i {
+    font-size: 1.4rem;
+}
+
+.modal-remove-btn {
+    position: absolute;
+    bottom: 20px;
+    right: 170px;
+    padding: 12px 24px;
+    background: #4961cb;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    z-index: 40;
+}
+
+.modal-remove-btn:hover {
+    background: #aeb9e1;
+}

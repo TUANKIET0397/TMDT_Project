@@ -215,10 +215,10 @@ class AdminSite {
     }
   }
 
-  // ===== LẤY CHI TIẾT SẢN PHẨM THEO ID (UPDATED) =====
+  // ===== LẤY CHI TIẾT SẢN PHẨM THEO ID (COMPLETELY FIXED) =====
   static async getProductByID(productID) {
     try {
-      // Get basic product info
+      // 1. Get basic product info
       const [products] = await db.query(
         `
       SELECT 
@@ -236,23 +236,50 @@ class AdminSite {
       );
 
       if (!products || !products[0]) return null;
-
       const product = products[0];
 
-      // Get all product images (main images)
-      const [mainImages] = await db.query(
+      // 2. Get ALL ImgIDs that belong to ANY color (to exclude from main images)
+      const [colorImageIds] = await db.query(
         `
+      SELECT cpi.ImgID
+      FROM ColorProductImage cpi
+      JOIN ColorProduct cp ON cpi.ColorProductID = cp.ID
+      WHERE cp.ProductID = ?
+      GROUP BY cpi.ImgID
+      `,
+        [productID]
+      );
+
+      const colorImgIdsList = colorImageIds.map((row) => row.ImgID);
+
+      // 3. Get ONLY main images (exclude color images)
+      let mainImagesQuery = `
       SELECT img.ImgPath
       FROM ProductImg pi
       LEFT JOIN Image img ON pi.ImgID = img.ID
       WHERE pi.ProductID = ?
-      ORDER BY pi.ID
-      `,
-        [productID]
-      );
+    `;
+
+      let mainImagesParams = [productID];
+
+      if (colorImgIdsList.length > 0) {
+        const placeholders = colorImgIdsList.map(() => '?').join(',');
+        mainImagesQuery += ` AND pi.ImgID NOT IN (${placeholders})`;
+        mainImagesParams = [productID, ...colorImgIdsList];
+      }
+
+      mainImagesQuery += ' ORDER BY pi.ID';
+
+      const [mainImages] = await db.query(mainImagesQuery, mainImagesParams);
       product.mainImages = mainImages.map((img) => img.ImgPath);
 
-      // Get colors with their images
+      console.log('📦 Main images loaded:', {
+        total: product.mainImages.length,
+        excludedColorImgIds: colorImgIdsList.length,
+        paths: product.mainImages,
+      });
+
+      // 4. Get colors with their images
       const [colors] = await db.query(
         `
       SELECT 
@@ -265,9 +292,9 @@ class AdminSite {
         [productID]
       );
 
-      // For each color, get its images and sizes
+      // 5. For each color, get its images and sizes
       for (const color of colors) {
-        // Get color images
+        // Get color-specific images (ONLY from ColorProductImage)
         const [colorImages] = await db.query(
           `
         SELECT img.ImgPath
@@ -280,6 +307,11 @@ class AdminSite {
         );
         color.images = colorImages.map((img) => img.ImgPath);
 
+        console.log(`🎨 Color "${color.ColorName}" images:`, {
+          colorId: color.ColorID,
+          imageCount: color.images.length,
+        });
+
         // Get sizes and quantities for this color
         const [sizes] = await db.query(
           `
@@ -289,6 +321,7 @@ class AdminSite {
         FROM Quantity q
         LEFT JOIN SizeProduct sp ON q.SizeID = sp.ID
         WHERE q.ColorID = ? AND q.ProductID = ?
+        ORDER BY sp.ID
         `,
           [color.ColorID, productID]
         );
@@ -296,9 +329,21 @@ class AdminSite {
       }
 
       product.colors = colors;
+
+      console.log(' Product loaded successfully:', {
+        id: product.ID,
+        name: product.ProductName,
+        mainImagesCount: product.mainImages.length,
+        colorsCount: product.colors.length,
+        totalColorImages: product.colors.reduce(
+          (sum, c) => sum + c.images.length,
+          0
+        ),
+      });
+
       return product;
     } catch (error) {
-      console.error('Error in getProductByID:', error);
+      console.error(' Error in getProductByID:', error);
       throw error;
     }
   }
@@ -434,11 +479,12 @@ class AdminSite {
         return imgRes.insertId;
       };
 
-      // 3) Main images -> Image + ProductImg
+      // 3) Main images → ONLY Image + ProductImg
       if (Array.isArray(payload.mainImages)) {
         for (const imgPath of payload.mainImages) {
           if (!imgPath) continue;
           const imgId = await insertImage(imgPath);
+
           await conn.query(
             'INSERT INTO ProductImg (ProductID, ImgID) VALUES (?, ?)',
             [productId, imgId]
@@ -446,35 +492,32 @@ class AdminSite {
         }
       }
 
+      console.log(` Saved ${payload.mainImages?.length || 0} main images`);
+
       // 4) Process colors with multiple images
       for (const color of payload.colors || []) {
-        // Insert ColorProduct (WITHOUT ImgID - just colorName)
+        // Insert ColorProduct (WITHOUT ImgID)
         const [colorRes] = await conn.query(
           'INSERT INTO ColorProduct (ProductID, ColorName) VALUES (?, ?)',
           [productId, color.colorName || 'Default']
         );
         const colorId = colorRes.insertId;
 
-        // Insert all images for this color into ColorProductImage
         if (Array.isArray(color.images)) {
           for (const imgPath of color.images) {
             if (!imgPath) continue;
 
-            // Insert image
             const imgId = await insertImage(imgPath);
 
-            // Link to ProductImg (for general product gallery)
-            await conn.query(
-              'INSERT INTO ProductImg (ProductID, ImgID) VALUES (?, ?)',
-              [productId, imgId]
-            );
-
-            // Link to ColorProductImage (specific to this color)
             await conn.query(
               'INSERT INTO ColorProductImage (ColorProductID, ImgID) VALUES (?, ?)',
               [colorId, imgId]
             );
           }
+
+          console.log(
+            ` Color "${color.colorName}": saved ${color.images.length} images to ColorProductImage`
+          );
         }
 
         // Insert sizes and quantities
@@ -510,10 +553,11 @@ class AdminSite {
       }
 
       await conn.commit();
+      console.log('Product created successfully:', productId);
       return { success: true, productId };
     } catch (err) {
       await conn.rollback();
-      console.error('createProductWithColors error:', err);
+      console.error(' createProductWithColors error:', err);
       throw err;
     } finally {
       conn.release();
@@ -1039,6 +1083,241 @@ class AdminSite {
     } catch (err) {
       console.error('Error in getTotalRevenueByType:', err);
       throw err;
+    }
+  }
+
+  // Thêm vào AdminSite model
+
+  // ===== CẬP NHẬT SẢN PHẨM VỚI MÀU SẮC VÀ KÍCH CỠ =====
+  static async updateProductWithColors(productId, payload) {
+    const conn = await db.getConnection();
+    try {
+      await conn.beginTransaction();
+
+      // 1) Update Product info
+      await conn.query(
+        'UPDATE Product SET ProductName = ?, Descriptions = ?, TypeID = ? WHERE ID = ?',
+        [payload.ProductName, payload.Descriptions, payload.TypeID, productId]
+      );
+
+      // 2) Update Price
+      await conn.query('UPDATE Price SET Price = ? WHERE ProductID = ?', [
+        payload.Price,
+        productId,
+      ]);
+
+      // Helper: insert image and return id
+      const insertImage = async (imgPath) => {
+        const [imgRes] = await conn.query(
+          'INSERT INTO Image (ImgPath) VALUES (?)',
+          [imgPath]
+        );
+        return imgRes.insertId;
+      };
+
+      // 3) Handle main images - CHỈ THÊM ẢNH MỚI VÀO ProductImg
+      if (Array.isArray(payload.mainImages) && payload.mainImages.length > 0) {
+        for (const imgPath of payload.mainImages) {
+          if (!imgPath) continue;
+          const imgId = await insertImage(imgPath);
+          await conn.query(
+            'INSERT IGNORE INTO ProductImg (ProductID, ImgID) VALUES (?, ?)',
+            [productId, imgId]
+          );
+        }
+      }
+
+      // 4) Handle colors
+      // Lấy danh sách màu hiện tại
+      const [existingColors] = await conn.query(
+        'SELECT ID, ColorName FROM ColorProduct WHERE ProductID = ?',
+        [productId]
+      );
+
+      const existingColorMap = {};
+      existingColors.forEach((c) => {
+        existingColorMap[c.ColorName] = c.ID;
+      });
+
+      const processedColorIds = new Set();
+
+      for (const color of payload.colors || []) {
+        let colorId;
+
+        // Kiểm tra xem màu đã tồn tại chưa
+        if (existingColorMap[color.colorName]) {
+          colorId = existingColorMap[color.colorName];
+          processedColorIds.add(colorId);
+        } else {
+          // Tạo màu mới
+          const [colorRes] = await conn.query(
+            'INSERT INTO ColorProduct (ProductID, ColorName) VALUES (?, ?)',
+            [productId, color.colorName || 'Default']
+          );
+          colorId = colorRes.insertId;
+          processedColorIds.add(colorId);
+        }
+
+        // Thêm ảnh mới cho màu này
+        // QUAN TRỌNG: CHỈ LƯU VÀO ColorProductImage, KHÔNG LƯU VÀO ProductImg
+        if (Array.isArray(color.images) && color.images.length > 0) {
+          for (const imgPath of color.images) {
+            if (!imgPath) continue;
+
+            const imgId = await insertImage(imgPath);
+
+            // CHỈ link to ColorProductImage (KHÔNG link to ProductImg)
+            await conn.query(
+              'INSERT IGNORE INTO ColorProductImage (ColorProductID, ImgID) VALUES (?, ?)',
+              [colorId, imgId]
+            );
+          }
+        }
+
+        // Xóa tất cả quantities cũ của màu này
+        await conn.query(
+          'DELETE FROM Quantity WHERE ColorID = ? AND ProductID = ?',
+          [colorId, productId]
+        );
+
+        // Insert sizes và quantities mới
+        for (const s of color.sizes || []) {
+          if (!s || !s.size) continue;
+          const sizeName = String(s.size).trim();
+
+          // Find or create size
+          const [rows] = await conn.query(
+            'SELECT ID FROM SizeProduct WHERE SizeName = ?',
+            [sizeName]
+          );
+          let sizeId;
+          if (rows && rows.length) {
+            sizeId = rows[0].ID;
+          } else {
+            const [sizeRes] = await conn.query(
+              'INSERT INTO SizeProduct (SizeName) VALUES (?)',
+              [sizeName]
+            );
+            sizeId = sizeRes.insertId;
+          }
+
+          // Insert into Quantity
+          const quantityVal = Number(s.quantity) || 0;
+          await conn.query(
+            'INSERT INTO Quantity (QuantityValue, SizeID, ColorID, ProductID) VALUES (?, ?, ?, ?)',
+            [quantityVal, sizeId, colorId, productId]
+          );
+        }
+      }
+
+      // Xóa các màu không còn tồn tại
+      const existingColorIds = existingColors.map((c) => c.ID);
+      const colorsToDelete = existingColorIds.filter(
+        (id) => !processedColorIds.has(id)
+      );
+
+      if (colorsToDelete.length > 0) {
+        const placeholders = colorsToDelete.map(() => '?').join(',');
+
+        // Xóa ColorProductImage trước
+        await conn.query(
+          `DELETE FROM ColorProductImage WHERE ColorProductID IN (${placeholders})`,
+          colorsToDelete
+        );
+
+        // Xóa Quantity
+        await conn.query(
+          `DELETE FROM Quantity WHERE ColorID IN (${placeholders})`,
+          colorsToDelete
+        );
+
+        // Xóa ColorProduct
+        await conn.query(
+          `DELETE FROM ColorProduct WHERE ID IN (${placeholders})`,
+          colorsToDelete
+        );
+      }
+
+      await conn.commit();
+      return { success: true, productId };
+    } catch (err) {
+      await conn.rollback();
+      console.error('updateProductWithColors error:', err);
+      throw err;
+    } finally {
+      conn.release();
+    }
+  }
+
+  // Xóa color và tất cả dữ liệu liên quan
+  static async deleteColor(colorId) {
+    const conn = await db.getConnection();
+    try {
+      await conn.beginTransaction();
+
+      // 1. Lấy tất cả ImgID của color này
+      const [colorImages] = await conn.query(
+        'SELECT ImgID FROM ColorProductImage WHERE ColorProductID = ?',
+        [colorId]
+      );
+
+      // 2. Xóa ColorProductImage
+      await conn.query(
+        'DELETE FROM ColorProductImage WHERE ColorProductID = ?',
+        [colorId]
+      );
+
+      // 3. Xóa Quantity
+      await conn.query('DELETE FROM Quantity WHERE ColorID = ?', [colorId]);
+
+      // 4. Xóa ColorProduct
+      const [result] = await conn.query(
+        'DELETE FROM ColorProduct WHERE ID = ?',
+        [colorId]
+      );
+
+      // 5. Xóa các ảnh không còn được sử dụng
+      if (colorImages.length > 0) {
+        for (const img of colorImages) {
+          // Check nếu ảnh không còn được dùng ở đâu khác
+          const [usageCheck] = await conn.query(
+            `
+          SELECT COUNT(*) as count FROM (
+            SELECT ImgID FROM ProductImg WHERE ImgID = ?
+            UNION ALL
+            SELECT ImgID FROM ColorProductImage WHERE ImgID = ?
+          ) as img_usage
+        `,
+            [img.ImgID, img.ImgID]
+          );
+
+          if (usageCheck[0].count === 0) {
+            // Ảnh không còn được dùng, xóa file path và record
+            const [imgData] = await conn.query(
+              'SELECT ImgPath FROM Image WHERE ID = ?',
+              [img.ImgID]
+            );
+
+            // Xóa record trong database
+            await conn.query('DELETE FROM Image WHERE ID = ?', [img.ImgID]);
+
+            // TODO: Xóa file vật lý trên server nếu cần
+            // const fs = require('fs');
+            // if (imgData[0] && imgData[0].ImgPath) {
+            //   fs.unlinkSync('./public' + imgData[0].ImgPath);
+            // }
+          }
+        }
+      }
+
+      await conn.commit();
+      return result.affectedRows;
+    } catch (error) {
+      await conn.rollback();
+      console.error(' Error in deleteColor:', error);
+      throw error;
+    } finally {
+      conn.release();
     }
   }
 }
