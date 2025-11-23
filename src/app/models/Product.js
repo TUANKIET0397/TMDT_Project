@@ -79,12 +79,12 @@ static async getProductById(productId) {
                  FROM ProductImg pi 
                  JOIN Image i ON pi.ImgID = i.ID 
                  WHERE pi.ProductID = p.ID) as Images,
-                -- only images that have a ColorProduct mapping (inner join)
+                -- images grouped by color via ColorProduct -> ColorProductImage -> Image
                 (SELECT GROUP_CONCAT(CONCAT(cp.ColorName, '::', i.ImgPath) SEPARATOR ',')
-                 FROM ProductImg pi2
-                 JOIN Image i ON pi2.ImgID = i.ID
-                 JOIN ColorProduct cp ON cp.ImgID = i.ID AND cp.ProductID = p.ID
-                 WHERE pi2.ProductID = p.ID) as ImagesByColor,
+                 FROM ColorProduct cp
+                 JOIN ColorProductImage cpi ON cpi.ColorProductID = cp.ID
+                 JOIN Image i ON cpi.ImgID = i.ID
+                 WHERE cp.ProductID = p.ID) as ImagesByColor,
                 COALESCE((SELECT i.ImgPath 
                  FROM ProductImg pi 
                  JOIN Image i ON pi.ImgID = i.ID 
@@ -108,7 +108,7 @@ static async getProductById(productId) {
             return `/uploads/products/${p}`
         }
 
-        // build ImagesArray (all product images)
+        // all images for product
         let imgsRaw = []
         if (product.Images && typeof product.Images === 'string') {
             imgsRaw = product.Images.split(',').map(s => s.trim()).filter(Boolean)
@@ -117,11 +117,9 @@ static async getProductById(productId) {
         }
         if (imgsRaw.length === 0) imgsRaw = [product.ImgPath || '/img/default.jpg']
         product.ImagesArray = imgsRaw.map(String)
-
-        // up to 6 images (general)
         product.Images6 = imgsRaw.slice(0, 6).map(normalize)
 
-        // parse ImagesByColor into map — ONLY real color mappings (no fallback)
+        // parse ImagesByColor into map — only real color entries (no fallback)
         const byColorMap = {}
         if (product.ImagesByColor && typeof product.ImagesByColor === 'string') {
             product.ImagesByColor.split(',').forEach(entry => {
@@ -129,14 +127,13 @@ static async getProductById(productId) {
                 if (parts.length >= 2) {
                     const colorRaw = parts[0].trim()
                     const path = parts.slice(1).join('::').trim()
-                    if (!colorRaw) return // skip empty color
+                    if (!colorRaw) return
                     if (!byColorMap[colorRaw]) byColorMap[colorRaw] = []
                     byColorMap[colorRaw].push(path)
                 }
             })
         }
 
-        // build list only for real colors; do NOT fallback to default group
         const byColorList = []
         for (const [color, arr] of Object.entries(byColorMap)) {
             const clean = arr.map(a => String(a).trim()).filter(Boolean)
