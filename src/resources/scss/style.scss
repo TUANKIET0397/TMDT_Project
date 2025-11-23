@@ -42,7 +42,7 @@ a {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 18px 80px;
+    padding: 12px 20px;
     background-color: #fff;
     border-bottom: 1px solid #e6e6e6;
     position: sticky;
@@ -65,9 +65,14 @@ a {
     text-transform: lowercase;
     letter-spacing: 1px;
     color: #000;
+    margin-right: 60px;
 }
 
 /* --- Menu --- */
+nav {
+    flex: 1;
+}
+
 .nav-links {
     list-style: none;
     display: flex;
@@ -114,6 +119,7 @@ a {
     align-items: center;
     gap: 20px;
     font-size: 18px;
+    margin-right: 20px;
 }
 
 .icons a {
@@ -527,7 +533,7 @@ h3 {
     position: fixed;
     right: -620px; /* ✅ âm giá trị = ẩn ngoài màn hình */
     height: 100px;
-    bottom: 15px;
+    bottom: 10px;
     width: 600px;
     height: 700px;
     background: #d9d9d9;
@@ -619,11 +625,11 @@ h3 {
 
 .message.sent {
     align-self: flex-end;
-    flex-direction: row-reverse;
 }
 
 .message.received {
     align-self: flex-start;
+    flex-direction: row-reverse;
 }
 
 .message-content {

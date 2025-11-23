@@ -42,7 +42,17 @@ router.post('/create', uploadProductImages, (req, res) => {
   adminController.createPost(req, res);
 });
 
-//
+// ===== DETAIL PRODUCT ROUTES =====
+// GET: xem chi tiết sản phẩm theo ID
+router.get('/detail/:id', (req, res) => {
+  adminController.detail(req, res);
+});
+
+// POST: cập nhật sản phẩm
+router.post('/detail/:id', uploadProductImages, (req, res) => {
+  adminController.updateProduct(req, res);
+});
+
 // ===== CHAT ROUTES =====
 router.get('/chat', (req, res) => {
   adminController.chat(req, res);
@@ -107,12 +117,12 @@ router.post('/invoice/delete/selected', (req, res) => {
   adminController.deleteSelectedInvoices(req, res);
 });
 
-// Xóa 1 user 
+// Xóa 1 user
 router.post('/users/:id/delete', (req, res) => {
   adminController.deleteUser(req, res);
 });
 
-// Xóa nhiều user 
+// Xóa nhiều user
 router.post('/users/delete/selected', (req, res) => {
   adminController.deleteSelectedUsers(req, res);
 });
@@ -133,6 +143,11 @@ router.get('/export/json', (req, res) => {
 
 router.get('/export/excel', (req, res) => {
   adminController.exportExcel(req, res);
+});
+
+// Delete color
+router.delete('/color/:colorId', (req, res) => {
+  adminController.deleteColor(req, res);
 });
 
 module.exports = router;

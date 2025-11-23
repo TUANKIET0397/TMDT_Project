@@ -27,6 +27,8 @@ const closeChat = document.getElementById("closeChat")
 const chatInput = document.getElementById("chatInput")
 const sendMessage = document.getElementById("sendMessage")
 const chatMessages = document.getElementById("chatMessages")
+  const chatIcon = document.getElementById('chatIcon')
+
 
 // Track last date to show separator
 let lastMessageDate = null
@@ -35,7 +37,8 @@ let lastMessageDate = null
 document.addEventListener("click", function (e) {
     if (e.target.closest(".btn-consult")) {
         e.preventDefault()
-        openChat()
+        chatDrawer.classList.toggle('active')
+        chatOverlay.classList.toggle('active')
 
         // Lấy thông tin sản phẩm
         const productCard = e.target.closest(".product-detail")
@@ -53,31 +56,21 @@ document.addEventListener("click", function (e) {
     }
 })
 
-// Mở chat từ header
-document.addEventListener("click", function (e) {
-    if (e.target.closest(".chat-icon")) {
-        e.preventDefault()
-        openChat()
-    }
-})
+ // Mở/đóng chat
+  chatIcon.addEventListener('click', () => {
+    chatDrawer.classList.toggle('active')
+    chatOverlay.classList.toggle('active')
+  })
 
-// Đóng chat
-closeChat.addEventListener("click", () => {
-    chatDrawer.classList.remove("open")
-    chatOverlay.classList.remove("active")
-})
+  closeChat.addEventListener('click', () => {
+    chatDrawer.classList.remove('active')
+    chatOverlay.classList.remove('active')
+  })
 
-chatOverlay.addEventListener("click", () => {
-    chatDrawer.classList.remove("open")
-    chatOverlay.classList.remove("active")
-})
-
-// Mở chat
-function openChat() {
-    chatDrawer.classList.add("open")
-    chatOverlay.classList.add("active")
-    scrollToBottom()
-}
+  chatOverlay.addEventListener('click', () => {
+    chatDrawer.classList.remove('active')
+    chatOverlay.classList.remove('active')
+  })
 
 // Gửi tin nhắn thông thường
 sendMessage.addEventListener("click", sendTextMessage)
@@ -216,7 +209,7 @@ function addProductToChat(product, timestamp) {
     productDiv.style.maxWidth = "none"
     productDiv.style.padding = "0"
     const timeHTML = timestamp
-        ? `<div class="message-time" style="font-size: 12px; color: #999; margin-bottom: 10px;">${formatTimestamp(
+        ? `<div class="message-time" style="font-size: 12px; color: #999; margin-bottom: 10px; text-align: right;">${formatTimestamp(
               timestamp
           )}</div>`
         : ""
@@ -226,14 +219,16 @@ function addProductToChat(product, timestamp) {
             <div class="product-image" style="width: 100px; height: 100px; flex-shrink: 0; background-image: url('${escapeHtml(
                 product.productImage
             )}'); background-size: cover; background-position: center; background-repeat: no-repeat; border-radius: 8px;"></div>
-            <div class="product-info" style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
-                <div class="product-name" style="font-weight: bold; margin-bottom: 5px; font-size: 14px;">${escapeHtml(
+            <div class="product-info" style="flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: center;">
+                <div class="product-name" style="font-weight: bold; flex: 1; margin-bottom: 5px; font-size: 20px; display: -webkit-box;
+  -webkit-line-clamp: 3; /* số dòng tối đa */
+  -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 15px;">${escapeHtml(
                     product.productName
                 )}</div>
-                <div class="chat-price" style="color: #e74c3c; font-weight: bold; font-size: 14px; margin-bottom: 8px;">${escapeHtml(
+                <div class="chat-price" style="color: #e74c3c; font-weight: bold; font-size: 20px; margin-bottom: 8px;">${escapeHtml(
                     product.productPrice
                 )}$</div>
-                <button class="Buy" style="width: 100%; padding: 6px; background-color: #000; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">Buy now</button>
+                <button class="Buy" style="; padding: 6px; background-color: #000; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 20px;">Buy now</button>
             </div>
         </div>
     `

@@ -1,0 +1,637 @@
+document.addEventListener('DOMContentLoaded', () => {
+  // ===== DATA =====
+  const productData = window.productData || {
+    id: null,
+    name: '',
+    description: '',
+    type: '',
+    cost: '',
+    mainImages: [],
+    colors: [],
+  };
+
+  let tempColorData = { colorName: '', images: [], sizes: [] };
+
+  // ===== ELEMENTS =====
+  const mainImageItems = document.querySelectorAll('.add-left .add-card__item');
+  const modalImageItems = document.querySelectorAll('.modal-image-item');
+  const colorCardsContainer = document.getElementById('colorCardsContainer');
+  const modal = document.getElementById('colorModal');
+  const modalColorInput = modal.querySelector('.modal_color');
+  const modalQtyInput = modal.querySelector('.modal-quantity-input');
+  const modalSizeBtns = modal.querySelectorAll('.modal-size-btn');
+  const modalSaveBtn = modal.querySelector(
+    '.modal-quantity-wrap .modal-save-btn'
+  );
+  const closeModalBtn = document.getElementById('closeModalBtn');
+  const editUpdateBtn = document.getElementById('editUpdateBtn');
+  let modalRemoveBtn = null;
+
+  const sizeOptions = document.querySelectorAll('.section__form-size');
+  const addQuantity = document.querySelector('.add_quantity');
+  const qtyInput = document.querySelector('.add__quantity-input');
+  const saveQtyBtn = addQuantity.querySelector('.add-save-btn');
+
+  const costInput = document.getElementById('add__input-cost');
+  const typeSelect = document.getElementById('typeSelect');
+  const productNameInput = document.getElementById('productName');
+  const descriptionInput = document.getElementById('description');
+
+  addQuantity.style.display = 'none';
+  qtyInput.disabled = true;
+  let selectedSizeInMain = null;
+  let selectedSizeInModal = null;
+  let editingColorIndex = null;
+  let isEditMode = false;
+
+  // ===== DISABLE/ENABLE FUNCTIONS =====
+  function disableAllInputs() {
+    productNameInput.disabled = true;
+    descriptionInput.disabled = true;
+    costInput.disabled = true;
+    typeSelect.disabled = true;
+
+    // Disable main image uploads
+    mainImageItems.forEach((item) => {
+      const input = item.querySelector('.image-input');
+      input.disabled = true;
+      item.style.pointerEvents = 'none';
+      item.style.opacity = '0.6';
+      item.style.cursor = 'not-allowed';
+    });
+
+    // Disable size selection
+    sizeOptions.forEach((opt) => {
+      opt.style.pointerEvents = 'none';
+      opt.style.opacity = '0.6';
+      opt.style.cursor = 'not-allowed';
+    });
+
+    // Disable color cards
+    const colorCards = colorCardsContainer.querySelectorAll(
+      '.add__product-color'
+    );
+    colorCards.forEach((card) => {
+      card.style.pointerEvents = 'none';
+      card.style.opacity = '0.6';
+      card.style.cursor = 'not-allowed';
+    });
+
+    // Disable save buttons
+    saveQtyBtn.disabled = true;
+    saveQtyBtn.style.opacity = '0.5';
+    saveQtyBtn.style.cursor = 'not-allowed';
+  }
+
+  function enableAllInputs() {
+    productNameInput.disabled = false;
+    descriptionInput.disabled = false;
+    costInput.disabled = false;
+    typeSelect.disabled = false;
+
+    // Enable main image uploads
+    mainImageItems.forEach((item) => {
+      const input = item.querySelector('.image-input');
+      input.disabled = false;
+      item.style.pointerEvents = 'auto';
+      item.style.opacity = '1';
+      item.style.cursor = 'pointer';
+    });
+
+    // Enable size selection
+    sizeOptions.forEach((opt) => {
+      opt.style.pointerEvents = 'auto';
+      opt.style.opacity = '1';
+      opt.style.cursor = 'pointer';
+    });
+
+    // Enable color cards
+    const colorCards = colorCardsContainer.querySelectorAll(
+      '.add__product-color'
+    );
+    colorCards.forEach((card) => {
+      card.style.pointerEvents = 'auto';
+      card.style.opacity = '1';
+      card.style.cursor = 'pointer';
+    });
+
+    // Enable save buttons
+    saveQtyBtn.disabled = false;
+    saveQtyBtn.style.opacity = '1';
+    saveQtyBtn.style.cursor = 'pointer';
+  }
+
+  // ===== INITIALIZE MAIN IMAGES =====
+  function initializeMainImages() {
+    mainImageItems.forEach((item, index) => {
+      const preview = item.querySelector('.main-preview-image');
+      const plusIcon = item.querySelector('.add-card__plus');
+
+      if (productData.mainImages && productData.mainImages[index]) {
+        preview.src = productData.mainImages[index];
+        preview.style.display = 'block';
+        plusIcon.style.display = 'none';
+      } else {
+        preview.style.display = 'none';
+        plusIcon.style.display = 'flex';
+      }
+    });
+  }
+
+  // ===== FUNCTIONS =====
+  function updateQuantityVisibility() {
+    const selected = document.querySelector('.section__form-size.active-form');
+    if (selected) {
+      addQuantity.style.display = 'flex';
+      qtyInput.disabled = false;
+      qtyInput.focus();
+      qtyInput.value = '';
+      selectedSizeInMain = selected.textContent.trim();
+    } else {
+      addQuantity.style.display = 'none';
+      qtyInput.disabled = true;
+      qtyInput.value = '';
+      selectedSizeInMain = null;
+    }
+  }
+
+  function resetModalImages() {
+    modalImageItems.forEach((item) => {
+      const input = item.querySelector('.modal-image-input');
+      const preview = item.querySelector('.modal-preview-image');
+      const plusIcon = item.querySelector('.modal-image-plus');
+      input.value = '';
+      preview.style.display = 'none';
+      preview.src = '';
+      plusIcon.style.display = 'flex';
+    });
+  }
+
+  function reindexColorCards() {
+    const cards = Array.from(
+      colorCardsContainer.querySelectorAll('.add__product-color')
+    );
+    const addNew = cards.find((c) => c.classList.contains('add-new'));
+    let idx = 0;
+    cards.forEach((c) => {
+      if (c === addNew) return;
+      c.dataset.colorIndex = idx;
+      idx++;
+    });
+  }
+
+  async function removeColorAt(index) {
+    index = Number(index);
+    if (!Number.isFinite(index)) return;
+
+    const color = productData.colors[index];
+
+    // Nếu color có colorId (đã lưu trong DB), gọi API xóa
+    if (color && color.colorId) {
+      try {
+        const res = await fetch(`/admin/color/${color.colorId}`, {
+          method: 'DELETE',
+        });
+        const data = await res.json();
+
+        if (!res.ok || !data.success) {
+          console.error('Failed to delete color:', data);
+          alert('Failed to delete color: ' + (data.message || 'Unknown error'));
+          return;
+        }
+
+        console.log(' Color deleted from database');
+      } catch (err) {
+        console.error('Error deleting color:', err);
+        alert('Error deleting color. Please try again.');
+        return;
+      }
+    }
+
+    // Xóa UI
+    const card = colorCardsContainer.querySelector(
+      `.add__product-color[data-color-index="${index}"]`
+    );
+    if (card && card.dataset.thumbUrl) {
+      try {
+        URL.revokeObjectURL(card.dataset.thumbUrl);
+      } catch (e) {}
+    }
+
+    productData.colors.splice(index, 1);
+    if (card) card.remove();
+    reindexColorCards();
+  }
+
+  function openNewColorModal(e) {
+    e?.stopPropagation();
+    editingColorIndex = null;
+    tempColorData = { colorName: '', images: [], sizes: [] };
+    modalColorInput.value = '';
+    modalQtyInput.value = '';
+    selectedSizeInModal = null;
+    modalSizeBtns.forEach((b) => b.classList.remove('active'));
+    resetModalImages();
+    if (modalRemoveBtn) modalRemoveBtn.style.display = 'none';
+    modal.classList.add('active');
+  }
+
+  function openColorModalForIndex(index) {
+    index = Number(index);
+    if (!Number.isFinite(index) || !productData.colors[index])
+      return openNewColorModal();
+
+    editingColorIndex = index;
+    const source = productData.colors[index];
+    tempColorData = {
+      colorId: source.colorId,
+      colorName: source.colorName,
+      images: [...source.images],
+      sizes: source.sizes.map((s) => ({ size: s.size, quantity: s.quantity })),
+    };
+
+    modalColorInput.value = tempColorData.colorName || '';
+    modalQtyInput.value = '';
+    selectedSizeInModal = null;
+    modalSizeBtns.forEach((b) => b.classList.remove('active'));
+
+    modalImageItems.forEach((item, idx) => {
+      const preview = item.querySelector('.modal-preview-image');
+      const plusIcon = item.querySelector('.modal-image-plus');
+      const file = tempColorData.images[idx];
+
+      if (file) {
+        if (file instanceof File) {
+          const reader = new FileReader();
+          reader.onload = (ev) => (preview.src = ev.target.result);
+          reader.readAsDataURL(file);
+        } else {
+          preview.src = file;
+        }
+        preview.style.display = 'block';
+        plusIcon.style.display = 'none';
+      } else {
+        preview.style.display = 'none';
+        preview.src = '';
+        plusIcon.style.display = 'flex';
+      }
+    });
+
+    const sizeMap = {};
+    tempColorData.sizes.forEach((s) => (sizeMap[s.size] = s.quantity));
+    modalSizeBtns.forEach((btn) => {
+      const sz = btn.dataset.size;
+      if (sizeMap[sz]) {
+        btn.title = 'Qty: ' + sizeMap[sz];
+        btn.style.opacity = '0.7';
+      } else {
+        btn.title = '';
+        btn.style.opacity = '';
+      }
+    });
+
+    modal.classList.add('active');
+
+    const modalContent = modal.querySelector('.modal-content') || modal;
+    if (!modalRemoveBtn) {
+      modalRemoveBtn = document.createElement('button');
+      modalRemoveBtn.type = 'button';
+      modalRemoveBtn.className = 'modal-remove-btn';
+      modalRemoveBtn.textContent = 'Delete Color';
+      modalContent.appendChild(modalRemoveBtn);
+      modalRemoveBtn.addEventListener('click', async (ev) => {
+        ev.stopPropagation();
+        if (!confirm('Delete this color? This cannot be undone.')) return;
+
+        await removeColorAt(editingColorIndex);
+        editingColorIndex = null;
+        tempColorData = { colorName: '', images: [], sizes: [] };
+        resetModalImages();
+        modal.classList.remove('active');
+      });
+    }
+    modalRemoveBtn.style.display = '';
+  }
+
+  function addColorCard(colorIndex) {
+    const color = productData.colors[colorIndex];
+    const colorCard = document.createElement('div');
+    colorCard.className = 'add__product-color';
+    colorCard.dataset.colorIndex = colorIndex;
+
+    const plusBlock = document.createElement('div');
+    plusBlock.className =
+      'add-card__plus add__product-plus active__product-color';
+    plusBlock.innerHTML = `<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15 6.25V23.75" stroke="#000" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M6.25 15H23.75" stroke="#000" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>`;
+    colorCard.appendChild(plusBlock);
+
+    const first = color.images[0];
+    if (first) {
+      let src = '';
+      if (first instanceof File) src = URL.createObjectURL(first);
+      else src = first;
+      colorCard.dataset.thumbUrl = src;
+      const svg = plusBlock.querySelector('svg');
+      if (svg) svg.style.display = 'none';
+      const img = document.createElement('img');
+      img.className = 'color-thumb-img';
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = 'cover';
+      img.src = src;
+      plusBlock.appendChild(img);
+    }
+
+    colorCard.addEventListener('click', (ev) =>
+      openColorModalForIndex(ev.currentTarget.dataset.colorIndex)
+    );
+
+    const addNew = colorCardsContainer.querySelector(
+      '.add__product-color.add-new'
+    );
+    if (addNew) colorCardsContainer.insertBefore(colorCard, addNew);
+    else colorCardsContainer.appendChild(colorCard);
+    reindexColorCards();
+  }
+
+  // ===== UPDATE PRODUCT FUNCTION =====
+  async function updateProduct() {
+    productData.name = productNameInput.value.trim();
+    productData.description = descriptionInput.value.trim();
+    productData.type = typeSelect.value;
+    productData.cost = costInput.value.trim();
+
+    if (
+      !productData.name ||
+      !productData.description ||
+      !productData.type ||
+      !productData.cost
+    ) {
+      alert('Please fill all required fields');
+      return;
+    }
+    if (productData.colors.length === 0) {
+      alert('Please add at least one color with sizes');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('ProductName', productData.name);
+    formData.append('Descriptions', productData.description);
+    formData.append('TypeID', productData.type);
+    formData.append('Price', productData.cost);
+
+    productData.mainImages.forEach((file) => {
+      if (file instanceof File) {
+        formData.append('mainImages', file);
+      }
+    });
+
+    productData.colors.forEach((color, ci) => {
+      if (color.colorId) {
+        formData.append(`colors[${ci}][colorId]`, color.colorId);
+      }
+      formData.append(`colors[${ci}][colorName]`, color.colorName);
+
+      (color.images || []).forEach((file) => {
+        if (file instanceof File) {
+          formData.append(`colors[${ci}][images]`, file);
+        }
+      });
+
+      (color.sizes || []).forEach((s, si) => {
+        formData.append(`colors[${ci}][sizes][${si}][size]`, s.size);
+        formData.append(`colors[${ci}][sizes][${si}][quantity]`, s.quantity);
+      });
+    });
+
+    try {
+      const res = await fetch(`/admin/detail/${productData.id}`, {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        alert('Product updated successfully!');
+        window.location.reload();
+      } else {
+        console.error('Update failed', data);
+        alert('Update failed: ' + (data.message || 'Unknown'));
+      }
+    } catch (err) {
+      console.error('Request error', err);
+      alert('Request error. See console.');
+    }
+  }
+
+  // ===== EVENT LISTENERS =====
+
+  // Edit/Update button
+  editUpdateBtn.addEventListener('click', async () => {
+    if (!isEditMode) {
+      // Switch to Edit mode
+      isEditMode = true;
+      enableAllInputs();
+
+      const icon = editUpdateBtn.querySelector('i');
+      const text = editUpdateBtn.querySelector('.header__save');
+      icon.className = 'fa-solid fa-floppy-disk';
+      text.textContent = 'Update';
+      editUpdateBtn.style.background = '#4CAF50';
+    } else {
+      // Update product
+      await updateProduct();
+    }
+  });
+
+  // Main images upload
+  mainImageItems.forEach((item, index) => {
+    const input = item.querySelector('.image-input');
+    const preview = item.querySelector('.main-preview-image');
+    const plusIcon = item.querySelector('.add-card__plus');
+
+    item.addEventListener('click', () => {
+      if (!input.disabled) input.click();
+    });
+    input.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        preview.src = ev.target.result;
+        preview.style.display = 'block';
+        plusIcon.style.display = 'none';
+        productData.mainImages[index] = file;
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+
+  // Modal images upload
+  modalImageItems.forEach((item, index) => {
+    const input = item.querySelector('.modal-image-input');
+    const preview = item.querySelector('.modal-preview-image');
+    const plusIcon = item.querySelector('.modal-image-plus');
+
+    item.addEventListener('click', () => input.click());
+    input.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        preview.src = ev.target.result;
+        preview.style.display = 'block';
+        plusIcon.style.display = 'none';
+        tempColorData.images[index] = file;
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+
+  // Size selection
+  sizeOptions.forEach((option) =>
+    option.addEventListener('click', function () {
+      if (this.style.pointerEvents === 'none') return;
+      const isActive = this.classList.contains('active-form');
+      sizeOptions.forEach((opt) => opt.classList.remove('active-form'));
+      if (!isActive) this.classList.add('active-form');
+      updateQuantityVisibility();
+    })
+  );
+
+  saveQtyBtn.addEventListener('click', () => {
+    if (!selectedSizeInMain || !qtyInput.value.trim()) {
+      alert('Please select size and enter quantity');
+      return;
+    }
+    if (productData.colors.length === 0)
+      productData.colors.push({ colorName: 'Default', images: [], sizes: [] });
+    const color = productData.colors[0];
+    const existing = color.sizes.find((s) => s.size === selectedSizeInMain);
+    if (existing) existing.quantity = Number(qtyInput.value);
+    else
+      color.sizes.push({
+        size: selectedSizeInMain,
+        quantity: Number(qtyInput.value),
+      });
+    sizeOptions.forEach((opt) => opt.classList.remove('active-form'));
+    qtyInput.value = '';
+    updateQuantityVisibility();
+  });
+
+  // Modal size buttons
+  modalSizeBtns.forEach((btn) =>
+    btn.addEventListener('click', function () {
+      modalSizeBtns.forEach((b) => b.classList.remove('active'));
+      this.classList.add('active');
+      selectedSizeInModal = this.dataset.size;
+      const exist = (tempColorData.sizes || []).find(
+        (s) => s.size === selectedSizeInModal
+      );
+      modalQtyInput.value = exist ? exist.quantity : '';
+      modalQtyInput.focus();
+    })
+  );
+
+  // Modal save quantity
+  modalSaveBtn.addEventListener('click', () => {
+    if (!selectedSizeInModal || !modalQtyInput.value.trim()) {
+      alert('Please select size and enter quantity');
+      return;
+    }
+    if (!modalColorInput.value.trim()) {
+      alert('Please enter color name');
+      return;
+    }
+    tempColorData.colorName = modalColorInput.value.trim();
+    const existing = tempColorData.sizes.find(
+      (s) => s.size === selectedSizeInModal
+    );
+    if (existing) existing.quantity = Number(modalQtyInput.value);
+    else
+      tempColorData.sizes.push({
+        size: selectedSizeInModal,
+        quantity: Number(modalQtyInput.value),
+      });
+    modalSizeBtns.forEach((b) => b.classList.remove('active'));
+    modalQtyInput.value = '';
+    selectedSizeInModal = null;
+  });
+
+  // Close modal
+  closeModalBtn.addEventListener('click', () => {
+    if (
+      !tempColorData ||
+      (Array.isArray(tempColorData.sizes) && tempColorData.sizes.length === 0)
+    ) {
+      alert('Please add at least one size!');
+      return;
+    }
+
+    if (editingColorIndex !== null) {
+      productData.colors[editingColorIndex] = tempColorData;
+      const card = colorCardsContainer.querySelector(
+        `.add__product-color[data-color-index="${editingColorIndex}"]`
+      );
+      if (card) {
+        const plusBlock = card.querySelector('.add-card__plus');
+        const first = tempColorData.images[0] || null;
+        let src = '';
+        if (first) {
+          if (first instanceof File) src = URL.createObjectURL(first);
+          else src = first;
+        }
+        if (src) {
+          let img = plusBlock.querySelector('.color-thumb-img');
+          if (!img) {
+            img = document.createElement('img');
+            img.className = 'color-thumb-img';
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            plusBlock.appendChild(img);
+          }
+          img.src = src;
+          const svg = plusBlock.querySelector('svg');
+          if (svg) svg.style.display = 'none';
+        }
+      }
+    } else {
+      productData.colors.push(tempColorData);
+      addColorCard(productData.colors.length - 1);
+    }
+
+    editingColorIndex = null;
+    tempColorData = { colorName: '', images: [], sizes: [] };
+    resetModalImages();
+    modal.classList.remove('active');
+  });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.classList.remove('active');
+  });
+
+  // Initialize color cards
+  (function initColorCards() {
+    const existing = colorCardsContainer.querySelectorAll(
+      '.add__product-color'
+    );
+    existing.forEach((card, i) => {
+      card.dataset.colorIndex = i;
+      card.addEventListener('click', (ev) => {
+        if (card.style.pointerEvents !== 'none') {
+          openColorModalForIndex(ev.currentTarget.dataset.colorIndex);
+        }
+      });
+    });
+  })();
+
+  // ===== INITIALIZE =====
+  initializeMainImages();
+  disableAllInputs();
+
+  console.log(' Detail page initialized - Edit mode disabled');
+});

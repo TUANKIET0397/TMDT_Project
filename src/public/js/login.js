@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     try {
       // Gửi request đến server
-      const response = await fetch('/authSite/login', {
+      const response = await fetch('/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

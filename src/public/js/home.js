@@ -127,30 +127,3 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCart()
 }) // ✅ đóng DOMContentLoaded
 
-// === CHAT WIDGET ===
-
-// === CHAT SYSTEM - ẩn/hiện ===
-document.addEventListener('DOMContentLoaded', () => {
-  const chatIcon = document.getElementById('chatIcon')
-  const chatDrawer = document.getElementById('chatDrawer')
-  const chatOverlay = document.querySelector('.chat-overlay')
-  const closeChat = document.getElementById('closeChat')
-
-  if (!chatIcon || !chatDrawer || !chatOverlay || !closeChat) return
-
-  // Mở/đóng chat
-  chatIcon.addEventListener('click', () => {
-    chatDrawer.classList.toggle('active')
-    chatOverlay.classList.toggle('active')
-  })
-
-  closeChat.addEventListener('click', () => {
-    chatDrawer.classList.remove('active')
-    chatOverlay.classList.remove('active')
-  })
-
-  chatOverlay.addEventListener('click', () => {
-    chatDrawer.classList.remove('active')
-    chatOverlay.classList.remove('active')
-  })
-})

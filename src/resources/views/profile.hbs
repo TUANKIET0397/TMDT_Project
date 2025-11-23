@@ -1,2 +1,209 @@
-{{! profile }}
-profile
+{{#contentFor "styles"}}
+<link rel="stylesheet" href="/css/profile.css" />
+{{/contentFor}}
+
+<div class="profile-page">
+    <input type="radio" name="tab" id="tab-profile" checked />
+    <input type="radio" name="tab" id="tab-orders" />
+
+    <div class="tab-header">
+        <div class="user-summary">
+            <div class="user-avatar">
+                {{#if user.Avt}}
+                <img src="/uploads/users/{{user.Avt}}" alt="avatar"
+                    style="width:48px;height:48px;border-radius:50%" />
+                {{/if}}
+            </div>
+            <div class="user-info">
+                <strong>{{user.FirstName}} {{user.LastName}}</strong>
+                <!-- Edit button: click to enable editing -->
+                <div class="user-actions">
+                  <button id="editProfileBtn" type="button" class="btn btn-link">Edit profile</button>
+                  <button id="saveProfileBtn" type="button" class="btn btn-primary" style="display:none">Save</button>
+                  <button id="cancelEditBtn" type="button" class="btn" style="display:none">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <label for="tab-profile">Profile of user</label>
+        <label for="tab-orders">Order Purchases</label>
+    </div>
+
+    <div class="tab-content profile">
+        <form class="profile-form" method="POST" action="/profile/update">
+            <div>
+                <div class="field-label">First name</div>
+                <input name="FirstName" class="field-input editable"
+                    value="{{user.FirstName}}" disabled />
+            </div>
+
+            <div>
+                <div class="field-label">Last name</div>
+                <input name="LastName" class="field-input editable"
+                    value="{{user.LastName}}" disabled />
+            </div>
+
+            <div>
+                <div class="field-label">ID</div>
+                <input name="ID" class="field-input" value="{{user.ID}}" readonly />
+            </div>
+
+            <div>
+                <div class="field-label">Birth date</div>
+                <input type="date" name="BirthDate" class="field-input editable"
+                    value="{{user.BirthDate}}" disabled />
+            </div>
+
+            <div>
+                <div class="field-label">Gender</div>
+                <input name="Gender" class="field-input editable"
+                    value="{{user.Gender}}" disabled />
+            </div>
+
+            <div>
+                <div class="field-label">User name</div>
+                <input name="UserName" class="field-input" value="{{user.UserName}}" readonly />
+            </div>
+
+            <div>
+                <div class="field-label">Phone number</div>
+                <input name="PhoneNumber" class="field-input editable"
+                    value="{{user.PhoneNumber}}" disabled />
+            </div>
+
+            <div class="field-span-2">
+                <div class="field-label">Email</div>
+                <input name="Email" class="field-input editable"
+                    value="{{user.Email}}" disabled />
+            </div>
+
+            <div class="full-width">
+                <div class="field-label">Address</div>
+                <input name="Address" class="field-input editable"
+                    value="{{user.Address}}" disabled />
+            </div>
+
+            <div>
+                <div class="field-label">Region</div>
+                <select name="Region" class="field-select editable" disabled>
+                    <option selected>{{user.Region}}</option>
+                </select>
+            </div>
+        </form>
+    </div>
+
+    <div class="tab-content orders">
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Quantity types</th>
+                    <th>Dates</th>
+                    <th>Costs</th>
+                    <th>Payment</th>
+                    <th>States</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each orders}}
+                <tr class="order-row" data-detail="detail-{{id}}">
+                    <td class="order-id">
+                        <span class="order-arrow">˅</span>
+                        <span>{{id}}</span>
+                    </td>
+                    <td>{{quantityTypes}}</td>
+                    <td>{{createdAt}}</td>
+                    <td>${{totalCost}}</td>
+                    <td>{{payment}}</td>
+                    <td>{{states}}</td>
+                </tr>
+
+                <tr id="detail-{{id}}" class="order-detail-row" style="display:none">
+                    <td colspan="6">
+                        <div class="detail-header">
+                            <span>Name</span>
+                            <span>Quantity</span>
+                            <span>Cost</span>
+                        </div>
+
+                        {{#each items}}
+                        <div class="detail-item">
+                            <div class="detail-info">
+                                <img src="{{img}}" alt />
+                                <p>{{productName}}</p>
+                            </div>
+                            <div class="detail-qty">x{{qty}}</div>
+                            <div class="detail-cost">${{totalPrice}}</div>
+                        </div>
+                        {{/each}}
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+(function () {
+  const editBtn = document.getElementById('editProfileBtn')
+  const saveBtn = document.getElementById('saveProfileBtn')
+  const cancelBtn = document.getElementById('cancelEditBtn')
+  const form = document.querySelector('.profile-form')
+  const editables = Array.from(document.querySelectorAll('.profile-form .editable'))
+
+  // store original values for cancel
+  const original = {}
+  editables.forEach(el => {
+    original[el.name || el.dataset.name || Math.random()] = el.value
+  })
+
+  function setEditable(enabled) {
+    editables.forEach(el => {
+      el.disabled = !enabled
+    })
+    editBtn.style.display = enabled ? 'none' : ''
+    saveBtn.style.display = enabled ? '' : 'none'
+    cancelBtn.style.display = enabled ? '' : 'none'
+  }
+
+  editBtn && editBtn.addEventListener('click', function () {
+    // snapshot current values for cancel
+    editables.forEach(el => { el.dataset._orig = el.value })
+    setEditable(true)
+    // focus first editable
+    const first = editables.find(e => !e.disabled)
+    if (first) first.focus()
+  })
+
+  cancelBtn && cancelBtn.addEventListener('click', function () {
+    // restore values from snapshot
+    editables.forEach(el => {
+      if (el.dataset._orig !== undefined) el.value = el.dataset._orig
+      el.disabled = true
+    })
+    setEditable(false)
+  })
+
+  saveBtn && saveBtn.addEventListener('click', function () {
+    // optional: add client-side validation here
+    form.submit()
+  })
+
+  // order row toggle
+  document.querySelectorAll(".order-row").forEach(function (row) {
+    row.addEventListener("click", function () {
+      const targetId = row.getAttribute("data-detail");
+      const detailRow = document.getElementById(targetId);
+      const isOpen = row.classList.contains("open");
+      if (isOpen) {
+        row.classList.remove("open");
+        detailRow.style.display = "none";
+      } else {
+        row.classList.add("open");
+        detailRow.style.display = "table-row";
+      }
+    });
+  });
+})();
+</script>

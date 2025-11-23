@@ -63,39 +63,95 @@ class Product {
     }
 
     // Lấy chi tiết sản phẩm
-    static async getProductById(productId) {
-        try {
-            const [rows] = await db.query(
-                `
-                SELECT 
-                    p.ID,
-                    p.ProductName,
-                    p.Descriptions,
-                    pr.Price,
-                    tp.TypeName,
-                    p.TypeID,
-                    (SELECT GROUP_CONCAT(i.ImgPath SEPARATOR ',') 
-                     FROM ProductImg pi 
-                     JOIN Image i ON pi.ImgID = i.ID 
-                     WHERE pi.ProductID = p.ID) as Images,
-                    COALESCE((SELECT i.ImgPath 
-                     FROM ProductImg pi 
-                     JOIN Image i ON pi.ImgID = i.ID 
-                     WHERE pi.ProductID = p.ID 
-                     LIMIT 1), '/img/default.jpg') as ImgPath
-                FROM Product p
-                LEFT JOIN Price pr ON p.ID = pr.ProductID
-                LEFT JOIN TypeProduct tp ON p.TypeID = tp.ID
-                WHERE p.ID = ?
-            `,
-                [productId]
-            )
-            return rows[0]
-        } catch (error) {
-            console.error("Error in getProductById:", error)
-            throw error
+    // ...existing code...
+static async getProductById(productId) {
+    try {
+        const [rows] = await db.query(
+            `
+            SELECT 
+                p.ID,
+                p.ProductName,
+                p.Descriptions,
+                pr.Price,
+                tp.TypeName,
+                p.TypeID,
+                (SELECT GROUP_CONCAT(i.ImgPath SEPARATOR ',') 
+                 FROM ProductImg pi 
+                 JOIN Image i ON pi.ImgID = i.ID 
+                 WHERE pi.ProductID = p.ID) as Images,
+                -- images grouped by color via ColorProduct -> ColorProductImage -> Image
+                (SELECT GROUP_CONCAT(CONCAT(cp.ColorName, '::', i.ImgPath) SEPARATOR ',')
+                 FROM ColorProduct cp
+                 JOIN ColorProductImage cpi ON cpi.ColorProductID = cp.ID
+                 JOIN Image i ON cpi.ImgID = i.ID
+                 WHERE cp.ProductID = p.ID) as ImagesByColor,
+                COALESCE((SELECT i.ImgPath 
+                 FROM ProductImg pi 
+                 JOIN Image i ON pi.ImgID = i.ID 
+                 WHERE pi.ProductID = p.ID 
+                 LIMIT 1), '/img/default.jpg') as ImgPath
+            FROM Product p
+            LEFT JOIN Price pr ON p.ID = pr.ProductID
+            LEFT JOIN TypeProduct tp ON p.TypeID = tp.ID
+            WHERE p.ID = ?
+        `,
+            [productId]
+        )
+
+        const product = rows[0]
+        if (!product) return product
+
+        const normalize = (p) => {
+            if (!p) return '/img/default.jpg'
+            p = String(p).trim()
+            if (/^https?:\/\//.test(p) || p.startsWith('/')) return p
+            return `/uploads/products/${p}`
         }
+
+        // all images for product
+        let imgsRaw = []
+        if (product.Images && typeof product.Images === 'string') {
+            imgsRaw = product.Images.split(',').map(s => s.trim()).filter(Boolean)
+        } else if (product.ImgPath) {
+            imgsRaw = [String(product.ImgPath).trim()]
+        }
+        if (imgsRaw.length === 0) imgsRaw = [product.ImgPath || '/img/default.jpg']
+        product.ImagesArray = imgsRaw.map(String)
+        product.Images6 = imgsRaw.slice(0, 6).map(normalize)
+
+        // parse ImagesByColor into map — only real color entries (no fallback)
+        const byColorMap = {}
+        if (product.ImagesByColor && typeof product.ImagesByColor === 'string') {
+            product.ImagesByColor.split(',').forEach(entry => {
+                const parts = entry.split('::')
+                if (parts.length >= 2) {
+                    const colorRaw = parts[0].trim()
+                    const path = parts.slice(1).join('::').trim()
+                    if (!colorRaw) return
+                    if (!byColorMap[colorRaw]) byColorMap[colorRaw] = []
+                    byColorMap[colorRaw].push(path)
+                }
+            })
+        }
+
+        const byColorList = []
+        for (const [color, arr] of Object.entries(byColorMap)) {
+            const clean = arr.map(a => String(a).trim()).filter(Boolean)
+            if (clean.length === 0) continue
+            const normalized = clean.slice(0, 6).map(normalize)
+            byColorList.push({ color, images: clean.map(normalize), images6: normalized })
+        }
+
+        product.ImagesByColorMap = byColorMap
+        product.ImagesByColorList = byColorList
+
+        return product
+    } catch (error) {
+        console.error("Error in getProductById:", error)
+        throw error
     }
+}
+// ...existing code...
 
     // Lấy sản phẩm liên quan
     static async getRelatedProducts(typeId, limit = 4) {
