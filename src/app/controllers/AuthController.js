@@ -58,19 +58,20 @@ class AuthController {
     // ===== [POST] /auth/login - Xử lý đăng nhập =====
     async loginPost(req, res) {
         try {
-            const { username, password } = req.body
+            // ✅ FIX: Đổi từ username sang email
+            const { email, password } = req.body
 
-            console.log("🔐 Login attempt:", username)
+            console.log("🔐 Login attempt:", email)
 
-            if (!username || !password) {
+            if (!email || !password) {
                 return res.status(400).json({
                     success: false,
-                    message: "Username and password are required",
+                    message: "Email and password are required",
                 })
             }
 
-            // 1. Kiểm tra admin
-            const admin = await AuthSite.loginAdmin(username, password)
+            // 1. Kiểm tra admin (vẫn dùng username cho admin)
+            const admin = await AuthSite.loginAdmin(email, password)
             if (admin) {
                 req.session.adminId = admin.ID
                 req.session.adminName = admin.AdminName
@@ -85,8 +86,8 @@ class AuthController {
                 })
             }
 
-            // 2. Kiểm tra user
-            const userResult = await AuthSite.loginUser(username, password)
+            // 2. Kiểm tra user - ✅ Dùng email thay vì username
+            const userResult = await AuthSite.loginUser(email, password)
 
             req.session.userId = userResult.data.user.id
             req.session.userName = userResult.data.account.userName
@@ -147,15 +148,16 @@ class AuthController {
                 return res.redirect("/auth")
             }
 
-            res.render("auth/profile", {
-                layout: "Auth",
+            // ✅ FIX: Render đúng view, không có folder auth/
+            res.render("profile", {
+                layout: "main", // hoặc layout phù hợp
                 user: user,
                 account: account,
             })
         } catch (error) {
             console.error("❌ Get profile error:", error)
             res.status(500).render("error", {
-                layout: "Auth",
+                layout: "main",
                 message: "Failed to load profile",
             })
         }

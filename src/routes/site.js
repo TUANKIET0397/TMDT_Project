@@ -16,6 +16,17 @@ const momoConfig = {
     secretKey: "SetA5RDnLHvt51AULf51DyauxUo3kDU6",
 }
 
+// ✅ Trang chủ - không cần auth
+router.get("/", (req, res, next) => {
+    siteController.index(req, res, next)
+})
+
+// ✅ About - không cần auth
+router.get("/about", siteController.about)
+
+// ✅ FIX: Profile - CẦN requireAuth
+router.get("/profile", requireAuth, siteController.profile)
+
 // ✅ Protected routes - Bắt buộc đăng nhập + thông tin đầy đủ
 router.get(
     "/checkout",
@@ -23,14 +34,13 @@ router.get(
     requireCompleteProfile,
     siteController.checkout
 )
+
 router.post(
     "/payment",
     requireAuth,
     requireCompleteProfile,
     siteController.payment
 )
-router.get("/profile", siteController.profile)
-router.get("/about", siteController.about)
 
 // ✅ MoMo Return Callback - User is redirected here after payment
 router.get("/return", async (req, res) => {
@@ -61,7 +71,7 @@ router.get("/return", async (req, res) => {
         // ✅ Lưu transaction vào database với InvoiceID
         try {
             await Transaction.saveTransaction({
-                InvoiceID: invoiceId, // ← Quan trọng!
+                InvoiceID: invoiceId,
                 orderId,
                 transId: transId || `TRANS_${Date.now()}`,
                 amount: parseInt(amount),
@@ -164,7 +174,7 @@ router.post("/ipn", async (req, res) => {
         if (signature !== calculatedSignature) {
             console.warn("✗ Invalid MoMo IPN signature")
             return res.status(200).json({
-                resultCode: 0, // MoMo yêu cầu trả về 0 ngay cả khi có lỗi
+                resultCode: 0,
                 message: "Signature verification failed",
             })
         }
@@ -177,10 +187,8 @@ router.post("/ipn", async (req, res) => {
         if (!existingTrans) {
             console.log("ℹ Transaction not found in DB, will save from IPN")
 
-            // Tìm Invoice theo orderId (nếu có lưu trong extraData hoặc logic khác)
-            // Tạm thời set InvoiceID = NULL nếu không tìm thấy
             await Transaction.saveTransaction({
-                InvoiceID: null, // ← IPN thường không có InvoiceID, xử lý sau
+                InvoiceID: null,
                 orderId,
                 requestId,
                 partnerCode,
@@ -211,10 +219,6 @@ router.post("/ipn", async (req, res) => {
             message: "IPN processed with errors",
         })
     }
-})
-
-router.get("/", (req, res, next) => {
-    siteController.index(req, res, next)
 })
 
 module.exports = router

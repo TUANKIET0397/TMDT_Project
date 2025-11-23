@@ -123,19 +123,79 @@ class AuthSite {
     }
 
     // ===== ĐĂNG NHẬP =====
-    static async login(username, password) {
+    // static async login(username, password) {
+    //     try {
+    //         // 1. Tìm account theo username
+    //         const [accounts] = await db.query(
+    //             `SELECT a.*, u.FirstName, u.LastName, u.Email, u.Avt, u.Gender, u.Address, u.Statuses as UserStatus
+    //              FROM Accounts a
+    //              INNER JOIN Users u ON a.UserID = u.ID
+    //              WHERE a.UserName = ?`,
+    //             [username]
+    //         )
+
+    //         if (accounts.length === 0) {
+    //             throw new Error("Invalid username or password")
+    //         }
+
+    //         const account = accounts[0]
+
+    //         // 2. Kiểm tra account status
+    //         if (account.Statuses === 0) {
+    //             throw new Error("Account is disabled")
+    //         }
+
+    //         // 3. Kiểm tra user status
+    //         if (account.UserStatus === 0) {
+    //             throw new Error("User account is disabled")
+    //         }
+
+    //         // 4. Verify password
+    //         const isValidPassword = await bcrypt.compare(
+    //             password,
+    //             account.PasswordHash
+    //         )
+    //         if (!isValidPassword) {
+    //             throw new Error("Invalid username or password")
+    //         }
+
+    //         // 5. Lấy thông tin đầy đủ
+    //         const user = await this.getUserById(account.UserID)
+
+    //         return {
+    //             success: true,
+    //             message: "Login successful",
+    //             data: {
+    //                 user,
+    //                 account: {
+    //                     id: account.ID,
+    //                     userId: account.UserID,
+    //                     userName: account.UserName,
+    //                     statuses: account.Statuses,
+    //                 },
+    //             },
+    //         }
+    //     } catch (error) {
+    //         console.error("Error in login:", error)
+    //         throw error
+    //     }
+    // }
+    // ===== ĐĂNG NHẬP (deprecated - sử dụng loginUser) =====
+    // ===== ĐĂNG NHẬP BẰNG EMAIL =====
+    static async loginUser(emailOrUsername, password) {
         try {
-            // 1. Tìm account theo username
+            // ✅ FIX: Tìm account theo EMAIL thay vì username
+            // Join với bảng Users để lấy email
             const [accounts] = await db.query(
                 `SELECT a.*, u.FirstName, u.LastName, u.Email, u.Avt, u.Gender, u.Address, u.Statuses as UserStatus
-                 FROM Accounts a
-                 INNER JOIN Users u ON a.UserID = u.ID
-                 WHERE a.UserName = ?`,
-                [username]
+             FROM Accounts a
+             INNER JOIN Users u ON a.UserID = u.ID
+             WHERE u.Email = ? OR a.UserName = ?`,
+                [emailOrUsername, emailOrUsername]
             )
 
             if (accounts.length === 0) {
-                throw new Error("Invalid username or password")
+                throw new Error("Invalid email or password")
             }
 
             const account = accounts[0]
@@ -156,7 +216,7 @@ class AuthSite {
                 account.PasswordHash
             )
             if (!isValidPassword) {
-                throw new Error("Invalid username or password")
+                throw new Error("Invalid email or password")
             }
 
             // 5. Lấy thông tin đầy đủ
@@ -176,9 +236,13 @@ class AuthSite {
                 },
             }
         } catch (error) {
-            console.error("Error in login:", error)
+            console.error("Error in loginUser:", error)
             throw error
         }
+    }
+
+    static async login(username, password) {
+        return this.loginUser(username, password)
     }
 
     // ===== LOGIN ADMIN =====
@@ -213,10 +277,6 @@ class AuthSite {
             console.error("Error in loginAdmin:", error)
             throw error
         }
-    }
-
-    static async loginUser(username, password) {
-        return this.login(username, password)
     }
 
     // ===== LẤY USER THEO ID =====
