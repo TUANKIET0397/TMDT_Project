@@ -281,38 +281,47 @@ class AuthSite {
 
     // ===== LẤY USER THEO ID =====
     static async getUserById(userId) {
-        try {
-            const [users] = await db.query(
-                `SELECT ID, FirstName, LastName, BirthDate, Gender, PhoneNumber, Email, Avt, Address, RegionID, Statuses, CreatedTime
-                 FROM Users WHERE ID = ?`,
-                [userId]
-            )
+    try {
+      const [users] = await db.query(
+        `SELECT ID, FirstName, LastName, BirthDate, Gender, PhoneNumber, Email, Avt, Address, RegionID, Statuses, CreatedTime
+         FROM Users WHERE ID = ? LIMIT 1`,
+        [userId]
+      )
 
-            if (users.length === 0) {
-                return null
-            }
+      if (users.length === 0) return null
 
-            const user = users[0]
-            return {
-                id: user.ID,
-                firstName: user.FirstName,
-                lastName: user.LastName,
-                fullName: `${user.FirstName} ${user.LastName}`.trim(),
-                birthDate: user.BirthDate,
-                gender: user.Gender,
-                phoneNumber: user.PhoneNumber,
-                email: user.Email,
-                avt: user.Avt,
-                address: user.Address,
-                region: user.Region,
-                statuses: user.Statuses,
-                createdTime: user.CreatedTime,
-            }
-        } catch (error) {
-            console.error("Error in getUserById:", error)
-            throw error
-        }
+      const user = users[0]
+      return {
+        // giữ cả kiểu camelCase và tên cũ để tương thích view/controllers
+        id: user.ID,
+        ID: user.ID,
+        FirstName: user.FirstName,
+        LastName: user.LastName,
+        fullName: `${user.FirstName || ""} ${user.LastName || ""}`.trim(),
+        BirthDate: user.BirthDate,
+        birthDate: user.BirthDate,
+        Gender: user.Gender,
+        gender: user.Gender,
+        PhoneNumber: user.PhoneNumber,
+        phoneNumber: user.PhoneNumber,
+        Email: user.Email,
+        email: user.Email,
+        Avt: user.Avt,
+        avt: user.Avt,
+        Address: user.Address,
+        address: user.Address,
+        // trả về RegionID dưới nhiều tên để tránh break
+        RegionID: user.RegionID,
+        region: user.RegionID,
+        Statuses: user.Statuses,
+        statuses: user.Statuses,
+        CreatedTime: user.CreatedTime,
+      }
+    } catch (error) {
+      console.error("Error in getUserById:", error)
+      throw error
     }
+  }
 
     // ===== LẤY USER THEO EMAIL =====
     static async getUserByEmail(email) {
@@ -425,50 +434,127 @@ class AuthSite {
         }
     }
 
-    // ===== CẬP NHẬT PROFILE USER =====
-    static async updateProfile(userId, updateData) {
-        try {
-            const updates = []
-            const values = []
 
-            // Chỉ update các field được cung cấp
-            const allowedFields = {
-                FirstName: updateData.FirstName,
-                LastName: updateData.LastName,
-                BirthDate: updateData.BirthDate,
-                Gender: updateData.Gender,
-                PhoneNumber: updateData.PhoneNumber,
-                Address: updateData.Address,
-                Region: updateData.Region,
-                Avt: updateData.Avt,
-            }
-
-            for (const [field, value] of Object.entries(allowedFields)) {
-                if (value !== undefined && value !== null) {
-                    updates.push(`${field} = ?`)
-                    values.push(value)
-                }
-            }
-
-            if (updates.length === 0) {
-                throw new Error("No fields to update")
-            }
-
-            values.push(userId)
-            const query = `UPDATE Users SET ${updates.join(", ")} WHERE ID = ?`
-
-            const [result] = await db.query(query, values)
-
-            if (result.affectedRows === 0) {
-                throw new Error("User not found")
-            }
-
-            return await this.getUserById(userId)
-        } catch (error) {
-            console.error("Error in updateProfile:", error)
-            throw error
-        }
+    // ===== LẤY DANH SÁCH REGION =====
+  static async getUserRegions() {
+    try {
+      const [rows] = await db.query(
+        `SELECT ID, RegionName FROM Region ORDER BY RegionName`
+      )
+      return rows
+    } catch (error) {
+      console.error("Error in getUserRegions:", error)
+      throw error
     }
+  }
+
+    // ===== CẬP NHẬT PROFILE USER =====
+static async updateProfile(userId, updateData) {
+    try {
+      const updates = []
+      const values = []
+
+      // Chỉ cập nhật các field được cung cấp — lưu ý DB dùng RegionID
+      const allowedFields = {
+        FirstName: updateData.FirstName,
+        LastName: updateData.LastName,
+        BirthDate: updateData.BirthDate,
+        Gender: updateData.Gender,
+        PhoneNumber: updateData.PhoneNumber,
+        Address: updateData.Address,
+        RegionID: updateData.RegionID, // đúng trường DB
+        Avt: updateData.Avt,
+        Email: updateData.Email, // nếu bạn muốn cho phép update email
+        }
+         for (const [field, value] of Object.entries(allowedFields)) {
+        if (value !== undefined) {
+          updates.push(`${field} = ?`)
+          values.push(value === "" ? null : value)
+        }
+      }
+
+      if (updates.length === 0) {
+        // nothing to update
+        return await this.getUserById(userId)
+      }
+
+      values.push(userId)
+      const query = `UPDATE Users SET ${updates.join(", ")} WHERE ID = ?`
+
+      const [result] = await db.query(query, values)
+
+      if (result.affectedRows === 0) {
+        throw new Error("User not found")
+      }
+
+      return await this.getUserById(userId)
+    } catch (error) {
+      console.error("Error in updateProfile:", error)
+      throw error
+    }
+  }
+
+         // ===== LẤY ĐƠN HÀNG CỦA USER (kèm items nếu có CartID) =====
+  static async getUserOrders(userId) {
+    try {
+      const [invoices] = await db.query(
+        `SELECT ID, DateCreated, QuantityTypes, StatusID,
+                COALESCE(Payment,'Unpaid') AS Payment,
+                COALESCE(States,'Done') AS States,
+                COALESCE(TotalCost,0.00) AS TotalCost,
+                CartID
+         FROM Invoice
+         WHERE UserID = ?
+         ORDER BY DateCreated DESC`,
+        [userId]
+      )
+
+      const orders = []
+      for (const inv of invoices) {
+        let items = []
+        if (inv.CartID) {
+          const [rows] = await db.query(
+            `
+            SELECT ci.ID as CartItemID, ci.Volume, ci.UnitPrice, ci.TotalPrice,
+                   p.ID as ProductID, p.ProductName,
+                   (SELECT i.ImgPath FROM ProductImg pi JOIN Image i ON pi.ImgID = i.ID WHERE pi.ProductID = p.ID LIMIT 1) as ImgPath
+            FROM CartItem ci
+            JOIN Product p ON ci.ProductID = p.ID
+            WHERE ci.CartID = ?
+            `,
+            [inv.CartID]
+          )
+          items = rows.map(it => ({
+            id: it.CartItemID,
+            productId: it.ProductID,
+            productName: it.ProductName,
+            qty: it.Volume,
+            unitPrice: Number(it.UnitPrice || 0),
+            totalPrice: Number(it.TotalPrice) || (Number(it.UnitPrice || 0) * Number(it.Volume || 0)),
+            img: it.ImgPath ? (`/uploads/products/${String(it.ImgPath).trim()}`) : '/img/default.jpg'
+          }))
+        }
+
+        // nếu không có items -> bỏ qua (theo yêu cầu mới)
+        if (!items || items.length === 0) continue
+
+        orders.push({
+          id: inv.ID,
+          createdAt: (new Date(inv.DateCreated)).toLocaleString(),
+          payment: inv.Payment,
+          states: inv.States,
+          totalCost: Number(inv.TotalCost) || 0,
+          quantityTypes: Number(inv.QuantityTypes) || items.length,
+          items
+        })
+      }
+
+      return orders
+    } catch (error) {
+      console.error("Error in getUserOrders:", error)
+      throw error
+    }
+  }
 
     // ===== ĐỔI MẬT KHẨU =====
     static async changePassword(userId, oldPassword, newPassword) {

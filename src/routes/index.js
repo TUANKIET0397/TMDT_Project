@@ -7,13 +7,11 @@ const authRouter = require('./authSite');
 // admin
 const adminRouter = require('./admin');
 // user
-const userRouter = require('./user');
 
 function router(app) {
   app.use('/admin', adminRouter);
   app.use('/auth', authRouter);
   app.use('/products', productRouter);
-  app.use('/', userRouter);
   app.use('/', siteRouter); // dùng đúng biến siteRouter
 }
 
