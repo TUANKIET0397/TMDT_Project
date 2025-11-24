@@ -4,47 +4,123 @@
         // MoMo payment handler
         document.addEventListener('DOMContentLoaded', function() {
             const momoBtn = document.querySelector('.checkout__btn')
-            if (momoBtn) {
-                momoBtn.addEventListener('click', function(e) {
-                    e.preventDefault()
-                    const form = document.querySelector('.checkout__form')
-                    
-                    // Show loading status
-                    const statusDiv = document.createElement('div')
+            const form = document.querySelector('.checkout__form')
+            if (!momoBtn || !form) return
+
+            let statusDiv
+            const showStatus = (message, type = 'info') => {
+                if (!statusDiv) {
+                    statusDiv = document.createElement('div')
                     statusDiv.id = 'paymentStatus'
-                    statusDiv.style.cssText = 'position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#667eea; color:white; padding:15px 30px; border-radius:8px; z-index:9999; font-weight:600; box-shadow:0 4px 12px rgba(0,0,0,0.15);'
-                    statusDiv.textContent = '⏳ Đang kết nối với MoMo...'
+                    statusDiv.style.cssText = 'position:fixed; top:20px; left:50%; transform:translateX(-50%); color:white; padding:15px 30px; border-radius:8px; z-index:9999; font-weight:600; box-shadow:0 4px 12px rgba(0,0,0,0.15);'
                     document.body.appendChild(statusDiv)
-                    
-                    // Get total amount from price display
-                    const totalAmount = document.querySelector('.checkout__total-price')?.textContent?.replace('$', '').trim() || '0'
-                    
-                    // Remove any existing hidden inputs for payment (to avoid duplicates)
-                    const existingPaymentType = form.querySelector('input[name="paymentType"]')
-                    if (existingPaymentType) existingPaymentType.remove()
-                    const existingAmount = form.querySelector('input[name="amount"]')
-                    if (existingAmount) existingAmount.remove()
-                    
-                    // Create hidden input for payment type
-                    const paymentTypeInput = document.createElement('input')
-                    paymentTypeInput.type = 'hidden'
-                    paymentTypeInput.name = 'paymentType'
-                    paymentTypeInput.value = 'momo'
-                    form.appendChild(paymentTypeInput)
-                    
-                    // Create hidden input for amount
-                    const amountInput = document.createElement('input')
-                    amountInput.type = 'hidden'
-                    amountInput.name = 'amount'
-                    amountInput.value = totalAmount
-                    form.appendChild(amountInput)
-                    
-                    // Change form action and submit
-                    form.action = '/payment'
-                    form.method = 'POST'
-                    form.submit()
-                })
+                }
+                statusDiv.style.background = type === 'error' ? '#e53e3e' : '#667eea'
+                statusDiv.textContent = message
+
+                if (type === 'error') {
+                    clearTimeout(statusDiv._hideTimer)
+                    statusDiv._hideTimer = setTimeout(() => {
+                        statusDiv.remove()
+                        statusDiv = null
+                    }, 4000)
+                }
             }
+
+            const ensureCartInput = () => {
+                let cartDataInput = form.querySelector('input[name="cartData"]')
+                if (!cartDataInput) {
+                    cartDataInput = document.createElement('input')
+                    cartDataInput.type = 'hidden'
+                    cartDataInput.name = 'cartData'
+                    form.appendChild(cartDataInput)
+                }
+                return cartDataInput
+            }
+
+            momoBtn.addEventListener('click', function(e) {
+                e.preventDefault()
+
+                const requiredFields = [
+                    { selector: '.firstName', label: 'First name' },
+                    { selector: '.lastName', label: 'Last name' },
+                    { selector: '.checkout__address', label: 'Address' },
+                    { selector: '.checkout__phone', label: 'Phone number' },
+                ]
+
+                const missingFields = requiredFields
+                    .filter(({ selector }) => {
+                        const input = form.querySelector(selector)
+                        return !input || !input.value.trim()
+                    })
+                    .map((field) => field.label)
+
+                const regionSelect = form.querySelector('select[name="RegionID"]')
+                if (!regionSelect || !regionSelect.value) {
+                    missingFields.push('Region')
+                }
+
+                if (missingFields.length > 0) {
+                    showStatus(
+                        `Vui lòng điền: ${missingFields.join(', ')}`,
+                        'error'
+                    )
+                    return
+                }
+
+                const cartDataInput = ensureCartInput()
+                if (!cartDataInput.value) {
+                    try {
+                        const storedCart = localStorage.getItem('cart')
+                        cartDataInput.value = storedCart || '[]'
+                    } catch (storageErr) {
+                        console.error('Cannot read cart from localStorage', storageErr)
+                        cartDataInput.value = '[]'
+                    }
+                }
+
+                let parsedCart = []
+                try {
+                    parsedCart = JSON.parse(cartDataInput.value || '[]')
+                } catch (parseErr) {
+                    console.error('Invalid cart data in checkout', parseErr)
+                    showStatus('Giỏ hàng không hợp lệ, vui lòng thử lại.', 'error')
+                    return
+                }
+
+                if (!Array.isArray(parsedCart) || parsedCart.length === 0) {
+                    showStatus('Giỏ hàng trống. Vui lòng thêm sản phẩm.', 'error')
+                    return
+                }
+
+                showStatus('⏳ Đang kết nối với MoMo...')
+
+                const totalAmount = document
+                    .querySelector('.checkout__total-price')
+                    ?.textContent?.replace('$', '')
+                    .trim() || '0'
+
+                const existingPaymentType = form.querySelector('input[name="paymentType"]')
+                if (existingPaymentType) existingPaymentType.remove()
+                const existingAmount = form.querySelector('input[name="amount"]')
+                if (existingAmount) existingAmount.remove()
+
+                const paymentTypeInput = document.createElement('input')
+                paymentTypeInput.type = 'hidden'
+                paymentTypeInput.name = 'paymentType'
+                paymentTypeInput.value = 'momo'
+                form.appendChild(paymentTypeInput)
+
+                const amountInput = document.createElement('input')
+                amountInput.type = 'hidden'
+                amountInput.name = 'amount'
+                amountInput.value = totalAmount
+                form.appendChild(amountInput)
+
+                form.action = '/payment'
+                form.method = 'POST'
+                form.submit()
+            })
         })
     </script>
 {{/contentFor}}
@@ -52,6 +128,12 @@
 <main class="checkout">
 
     <form class="checkout__form" action="/checkout" method="get">
+        <input
+            type="hidden"
+            name="cartData"
+            id="checkoutCartData"
+            value='{{#if cartDataJson}}{{{cartDataJson}}}{{else}}[]{{/if}}'
+        />
 
         <div class="checkout-wrap">
             <!-- Form Sign Up Delivery -->
@@ -69,26 +151,26 @@
                 <h2 class="checkout__heading">Delivery</h2>
                 <select
                     class="checkout__country"
-                    name="country"
+                    name="RegionID"
                     id="country"
                     required
                 >
                     <option
                         value=""
                         disabled
-                        {{#unless user}}selected{{/unless}}
+                        {{#unless user.RegionID}}selected{{/unless}}
                         hidden
                     >Country/Region</option>
-                    <option value="1" {{#if (eq user.Region "1")}}selected{{/if}}>TP Hồ Chí Minh</option>
-                    <option value="2" {{#if (eq user.Region "2")}}selected{{/if}}>Cà Mau</option>
-                    <option value="3" {{#if (eq user.Region "3")}}selected{{/if}}>Hà Nội</option>
-                    <option value="4" {{#if (eq user.Region "4")}}selected{{/if}}>Hà Nội</option>
-                    <option value="5" {{#if (eq user.Region "5")}}selected{{/if}}>Hà Nội</option>
-                    <option value="6" {{#if (eq user.Region "6")}}selected{{/if}}>Hà Nội</option>
-                    <option value="7" {{#if (eq user.Region "7")}}selected{{/if}}>Hà Nội</option>
-                    <option value="8" {{#if (eq user.Region "8")}}selected{{/if}}>Hà Nội</option>
-                    <option value="9" {{#if (eq user.Region "9")}}selected{{/if}}>Hà Nội</option>
-                    <option value="10" {{#if (eq user.Region "10")}}selected{{/if}}>Hà Nội</option>
+                    {{#if regions}}
+                        {{#each regions}}
+                            <option
+                                value="{{ID}}"
+                                {{#if selected}}selected{{/if}}
+                            >{{RegionName}}</option>
+                        {{/each}}
+                    {{else}}
+                        <option value="" disabled>No regions available</option>
+                    {{/if}}
                 </select>
                 <div class="checkout__fullname">
                     <input

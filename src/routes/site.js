@@ -28,6 +28,8 @@ router.get("/about", siteController.about)
 router.get("/profile", requireAuth, siteController.profile)
 
 // ✅ Protected routes - Bắt buộc đăng nhập + thông tin đầy đủ
+router.post("/profile/update", requireAuth, siteController.updateProfile)
+
 router.get(
     "/checkout",
     requireAuth,

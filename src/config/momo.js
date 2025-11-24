@@ -44,3 +44,6 @@ async function createPayment(orderId, amount, returnUrl, ipnUrl) {
 }
 
 module.exports = { createPayment }
+
+//“Trong môi trường test, tiền không thực sự đi đâu cả, chỉ giả lập để kiểm thử.”
+//“Trong môi trường thật, tiền sẽ đi từ ví MoMo của khách hàng về tài khoản Merchant đã đăng ký.”

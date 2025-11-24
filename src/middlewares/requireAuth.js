@@ -39,14 +39,28 @@ function requireCompleteProfile(req, res, next) {
                 return res.redirect("/auth?error=user_not_found")
             }
 
-            // Kiểm tra các trường bắt buộc
+            // Kiểm tra các trường bắt buộc (hỗ trợ cả FirstName và firstName ...)
+            const getFieldValue = (...keys) => {
+                for (const key of keys) {
+                    const value = user[key]
+                    if (
+                        value !== undefined &&
+                        value !== null &&
+                        value.toString().trim() !== ""
+                    ) {
+                        return value
+                    }
+                }
+                return null
+            }
+
             const requiredFields = {
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email: user.email,
-                phoneNumber: user.phoneNumber,
-                address: user.address,
-                region: user.region,
+                firstName: getFieldValue("FirstName", "firstName"),
+                lastName: getFieldValue("LastName", "lastName"),
+                email: getFieldValue("Email", "email"),
+                phoneNumber: getFieldValue("PhoneNumber", "phoneNumber"),
+                address: getFieldValue("Address", "address"),
+                region: getFieldValue("RegionID", "Region", "region"),
             }
 
             const missingFields = []
@@ -73,7 +87,7 @@ function requireCompleteProfile(req, res, next) {
                             return f.replace(/([A-Z])/g, " $1").toLowerCase()
                         })
                         .join(", ")}`,
-                    retryUrl: "/profile", // ✅ Link đến trang profile để cập nhật
+                    retryUrl: "/profile?next=/checkout", // ✅ Link đến trang profile để cập nhật
                 })
             }
 

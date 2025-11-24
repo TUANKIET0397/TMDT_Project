@@ -31,6 +31,7 @@
 
     <div class="tab-content profile">
         <form class="profile-form" method="POST" action="/profile/update">
+            <input type="hidden" name="redirectTo" value="{{redirectTo}}" />
             <div>
                 <div class="field-label">First name</div>
                 <input name="FirstName" class="field-input editable"
