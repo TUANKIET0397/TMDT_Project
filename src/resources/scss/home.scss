@@ -805,6 +805,7 @@ section p {
 }
 
 /* --- VIDEOS --- */
+/* --- VIDEOS --- */
 .videos {
     flex: 1;
     display: flex;
@@ -817,6 +818,11 @@ section p {
     background: transparent;
     display: flex;
     flex-direction: column;
+    transition: transform 0.3s ease;
+}
+
+.video-card:hover {
+    transform: translateY(-5px);
 }
 
 .video-thumb {
@@ -825,43 +831,68 @@ section p {
     aspect-ratio: 9/13;
     overflow: hidden;
     border-radius: 6px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.3s ease;
 }
 
-.video-thumb img {
+.video-card:hover .video-thumb {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.video-thumb video {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
+    cursor: pointer;
 }
 
-/* Play button */
-.play {
+.video-thumb .play {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 40px;
-    color: #000;
-    background: #fff;
+    font-size: 48px;
+    color: white;
+    background: rgba(0, 0, 0, 0.6);
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
-    width: 65px;
-    height: 65px;
     display: flex;
     align-items: center;
     justify-content: center;
+    pointer-events: none;
     opacity: 0.9;
+    transition: all 0.3s ease;
 }
 
-/* Video duration */
-.duration {
+.video-card:hover .play {
+    background: rgba(0, 0, 0, 0.8);
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 1;
+}
+
+.video-thumb .duration {
     position: absolute;
-    bottom: 8px;
+    bottom: 10px;
     right: 10px;
     background: rgba(0, 0, 0, 0.8);
-    color: #fff;
-    font-size: 12px;
-    padding: 3px 6px;
+    color: white;
+    padding: 4px 8px;
     border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.cap-vid {
+    margin-top: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 /* Caption immediately under the image */
