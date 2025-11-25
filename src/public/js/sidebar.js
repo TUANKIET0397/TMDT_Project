@@ -36,6 +36,13 @@ dashboardItems.forEach((item) => {
         )
         // Add active to clicked item
         this.classList.add("dashboard_item--active")
+
+        // Remove any menu-item active so sidebar highlights only dashboard section
+        menuItems.forEach((i) => {
+            const c = i.querySelector(".item_container")
+            if (c) c.classList.remove("menu-item--active")
+        })
+
         // Persist to localStorage
         const text = this.textContent.trim()
         if (text) localStorage.setItem("sidebarActive", `dashboard:${text}`)
@@ -89,6 +96,15 @@ window.addEventListener("load", () => {
                 isMenuOpen = true
             }
         })
+    } else if (savedActive && savedActive.startsWith("menu:")) {
+        const itemText = savedActive.split(":")[1]
+        menuItems.forEach((item) => {
+            const container = item.querySelector(".item_container")
+            const titleEl = container?.querySelector(".item_title")
+            if (titleEl && titleEl.textContent.trim() === itemText) {
+                container.classList.add("menu-item--active")
+            }
+        })
     }
 })
 
@@ -117,7 +133,7 @@ document.addEventListener("click", function (e) {
 })
 
 // Active menu item
-menuItems.forEach((item) => {
+/*menuItems.forEach((item) => {
     const container = item.querySelector(".item_container")
     if (!container) return
     item.addEventListener("click", function (e) {
@@ -137,6 +153,40 @@ menuItems.forEach((item) => {
         //         window.location.href = route
         //     }
         // }
+    })
+})*/
+menuItems.forEach((item) => {
+    const container = item.querySelector(".item_container")
+    if (!container) return
+    item.addEventListener("click", function (e) {
+        e.stopPropagation()
+        const isActive = container.classList.contains("menu-item--active")
+        menuItems.forEach((i) => {
+            const c = i.querySelector(".item_container")
+            if (c) c.classList.remove("menu-item--active")
+        })
+        if (!isActive) container.classList.add("menu-item--active")
+
+        // Nếu click vào 1 menu-item bình thường (không phải Dashboard header),
+        // thì xóa active của dashboard items, đóng dropdown
+        if (!item.classList.contains("dashboard-btn")) {
+            dashboardItems.forEach((di) =>
+                di.classList.remove("dashboard_item--active")
+            )
+            if (dashboardMenu) {
+                dashboardMenu.style.maxHeight = "0"
+                dashboardMenu.style.opacity = "0"
+            }
+            if (dashboardIcon) dashboardIcon.style.transform = "rotate(0deg)"
+
+            // Lưu state active cho menu bình thường (Chat/Users)
+            const titleEl = container.querySelector(".item_title")
+            if (titleEl)
+                localStorage.setItem(
+                    "sidebarActive",
+                    `menu:${titleEl.textContent.trim()}`
+                )
+        }
     })
 })
 
