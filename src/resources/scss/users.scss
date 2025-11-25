@@ -247,12 +247,13 @@ a {
   display: none;
 }
 
-/* label - heading (CHỈ 7 CỘT) */
+/* label - heading  */
 .section__inner-label--other,
 .section__inner-label {
   display: grid;
   align-items: center;
-  grid-template-columns: 130px 1fr 170px 120px 140px 140px 80px;
+  grid-template-columns: 130px 180px 170px 180px 180px 140px 90px;
+  column-gap: 8px;
 }
 
 .section__inner-label {
@@ -378,11 +379,12 @@ a {
 .section-item__date,
 .section-item__location,
 .section-item__total {
-  padding-right: 5px;
+  padding-left: 8px;
   font-weight: 500;
 }
 
 .section-icon__trash i {
+  padding-left: 8px;
   font-size: 20px;
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
