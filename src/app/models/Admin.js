@@ -1,18 +1,18 @@
 // src/app/models/AdminSite.js
-const db = require('../../config/db');
+const db = require("../../config/db")
 
 class AdminSite {
-  // ===== LẤY TẤT CẢ ĐƠN HÀNG (INVOICE) =====
-  static async getAllInvoices() {
-    try {
-      const [rows] = await db.query(`
+    // ===== LẤY TẤT CẢ ĐƠN HÀNG (INVOICE) =====
+    static async getAllInvoices() {
+        try {
+            const [rows] = await db.query(`
                 SELECT 
                     i.ID as InvoiceID,
                     i.DateCreated,
                     u.FirstName,
                     u.LastName,
                     u.Email,
-                    u.Region,
+                    COALESCE(r.RegionName, 'N/A') as Region,
                     si.StatusName,
                     CASE 
                         WHEN si.StatusName = 'Delivered' THEN 'green'
@@ -25,32 +25,33 @@ class AdminSite {
                      WHERE ci.CartID = i.CartID) as TotalAmount
                 FROM Invoice i
                 LEFT JOIN Users u ON i.UserID = u.ID
+                LEFT JOIN Region r ON u.RegionID = r.ID
                 LEFT JOIN StatusInvoice si ON i.StatusID = si.ID
                 ORDER BY i.DateCreated DESC
-            `);
-      return rows;
-    } catch (error) {
-      console.error('Error in getAllInvoices:', error);
-      throw error;
+            `)
+            return rows
+        } catch (error) {
+            console.error("Error in getAllInvoices:", error)
+            throw error
+        }
     }
-  }
 
-  // ===== LẤY CHI TIẾT SẢN PHẨM TRONG ĐƠN HÀNG (UPDATED) =====
-  static async getInvoiceProducts(invoiceID) {
-    try {
-      const [invoice] = await db.query(
-        `SELECT CartID FROM Invoice WHERE ID = ?`,
-        [invoiceID]
-      );
+    // ===== LẤY CHI TIẾT SẢN PHẨM TRONG ĐƠN HÀNG (UPDATED) =====
+    static async getInvoiceProducts(invoiceID) {
+        try {
+            const [invoice] = await db.query(
+                `SELECT CartID FROM Invoice WHERE ID = ?`,
+                [invoiceID]
+            )
 
-      if (!invoice || !invoice[0]) {
-        return [];
-      }
+            if (!invoice || !invoice[0]) {
+                return []
+            }
 
-      const cartID = invoice[0].CartID;
+            const cartID = invoice[0].CartID
 
-      const [products] = await db.query(
-        `
+            const [products] = await db.query(
+                `
       SELECT 
         p.ProductName,
         cp.ColorName,
@@ -69,46 +70,48 @@ class AdminSite {
       LEFT JOIN SizeProduct sp ON ci.SizeID = sp.ID
       WHERE ci.CartID = ?
       `,
-        [cartID]
-      );
+                [cartID]
+            )
 
-      return products;
-    } catch (error) {
-      console.error('Error in getInvoiceProducts:', error);
-      throw error;
+            return products
+        } catch (error) {
+            console.error("Error in getInvoiceProducts:", error)
+            throw error
+        }
     }
-  }
 
-  // ===== LẤY ĐƠN HÀNG KÈM SẢN PHẨM =====
-  static async getInvoicesWithProducts(sortBy = null) {
-    try {
-      const invoices = await this.getAllInvoices();
+    // ===== LẤY ĐƠN HÀNG KÈM SẢN PHẨM =====
+    static async getInvoicesWithProducts(sortBy = null) {
+        try {
+            const invoices = await this.getAllInvoices()
 
-      // Lấy sản phẩm cho từng invoice
-      for (let invoice of invoices) {
-        invoice.Products = await this.getInvoiceProducts(invoice.InvoiceID);
-      }
+            // Lấy sản phẩm cho từng invoice
+            for (let invoice of invoices) {
+                invoice.Products = await this.getInvoiceProducts(
+                    invoice.InvoiceID
+                )
+            }
 
-      // Sort by status if provided
-      if (sortBy) {
-        invoices.sort((a, b) => {
-          if (a.StatusName === sortBy) return -1;
-          if (b.StatusName === sortBy) return 1;
-          return 0;
-        });
-      }
+            // Sort by status if provided
+            if (sortBy) {
+                invoices.sort((a, b) => {
+                    if (a.StatusName === sortBy) return -1
+                    if (b.StatusName === sortBy) return 1
+                    return 0
+                })
+            }
 
-      return invoices;
-    } catch (error) {
-      console.error('Error in getInvoicesWithProducts:', error);
-      throw error;
+            return invoices
+        } catch (error) {
+            console.error("Error in getInvoicesWithProducts:", error)
+            throw error
+        }
     }
-  }
 
-  // ===== THỐNG KÊ ĐơN HÀNG =====
-  static async getInvoiceStats() {
-    try {
-      const [stats] = await db.query(`
+    // ===== THỐNG KÊ ĐơN HÀNG =====
+    static async getInvoiceStats() {
+        try {
+            const [stats] = await db.query(`
                 SELECT 
                     COUNT(*) as TotalInvoices,
                     SUM(CASE WHEN si.StatusName = 'Delivered' THEN 1 ELSE 0 END) as DeliveredCount,
@@ -116,73 +119,73 @@ class AdminSite {
                     SUM(CASE WHEN si.StatusName = 'Pending' THEN 1 ELSE 0 END) as PendingCount
                 FROM Invoice i
                 LEFT JOIN StatusInvoice si ON i.StatusID = si.ID
-            `);
-      return stats[0];
-    } catch (error) {
-      console.error('Error in getInvoiceStats:', error);
-      throw error;
+            `)
+            return stats[0]
+        } catch (error) {
+            console.error("Error in getInvoiceStats:", error)
+            throw error
+        }
     }
-  }
 
-  // ===== XÓA ĐƠN HÀNG =====
-  static async deleteInvoice(invoiceID) {
-    try {
-      const [result] = await db.query(
-        `
+    // ===== XÓA ĐƠN HÀNG =====
+    static async deleteInvoice(invoiceID) {
+        try {
+            const [result] = await db.query(
+                `
                 DELETE FROM Invoice WHERE ID = ?
             `,
-        [invoiceID]
-      );
-      return result.affectedRows;
-    } catch (error) {
-      console.error('Error in deleteInvoice:', error);
-      throw error;
+                [invoiceID]
+            )
+            return result.affectedRows
+        } catch (error) {
+            console.error("Error in deleteInvoice:", error)
+            throw error
+        }
     }
-  }
-  // XÓA NHIỀU ĐƠN HÀNG THEO MẢNG ID
-  static async deleteInvoicesByIds(ids = []) {
-    if (!Array.isArray(ids) || ids.length === 0) return 0;
+    // XÓA NHIỀU ĐƠN HÀNG THEO MẢNG ID
+    static async deleteInvoicesByIds(ids = []) {
+        if (!Array.isArray(ids) || ids.length === 0) return 0
 
-    // Sanitize and build placeholders
-    const placeholders = ids.map(() => '?').join(',');
-    try {
-      const [result] = await db.query(
-        `DELETE FROM Invoice WHERE ID IN (${placeholders})`,
-        ids
-      );
-      return result.affectedRows;
-    } catch (error) {
-      console.error('Error in deleteInvoicesByIds:', error);
-      throw error;
+        // Sanitize and build placeholders
+        const placeholders = ids.map(() => "?").join(",")
+        try {
+            const [result] = await db.query(
+                `DELETE FROM Invoice WHERE ID IN (${placeholders})`,
+                ids
+            )
+            return result.affectedRows
+        } catch (error) {
+            console.error("Error in deleteInvoicesByIds:", error)
+            throw error
+        }
     }
-  }
-  // all delete
-  static async deleteAllInvoices() {
-    const query = 'DELETE FROM Invoice';
-    const [result] = await db.execute(query);
-    return result.affectedRows;
-  }
+    // all delete
+    static async deleteAllInvoices() {
+        const query = "DELETE FROM Invoice"
+        const [result] = await db.execute(query)
+        return result.affectedRows
+    }
 
-  // ===== CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG =====
-  static async updateInvoiceStatus(invoiceID, statusID) {
-    try {
-      const [result] = await db.query(
-        `
+    // ===== CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG =====
+    static async updateInvoiceStatus(invoiceID, statusID) {
+        try {
+            const [result] = await db.query(
+                `
                 UPDATE Invoice SET StatusID = ? WHERE ID = ?
             `,
-        [statusID, invoiceID]
-      );
-      return result.affectedRows;
-    } catch (error) {
-      console.error('Error in updateInvoiceStatus:', error);
-      throw error;
+                [statusID, invoiceID]
+            )
+            return result.affectedRows
+        } catch (error) {
+            console.error("Error in updateInvoiceStatus:", error)
+            throw error
+        }
     }
-  }
 
-  // ===== LẤY TẤT CẢ SẢN PHẨM =====
-  static async getAllProducts(typeName = null) {
-    try {
-      let query = `
+    // ===== LẤY TẤT CẢ SẢN PHẨM =====
+    static async getAllProducts(typeName = null) {
+        try {
+            let query = `
             SELECT 
                 p.ID,
                 p.ProductName,
@@ -200,27 +203,27 @@ class AdminSite {
             FROM Product p
             LEFT JOIN TypeProduct tp ON p.TypeID = tp.ID
             LEFT JOIN Price pr ON p.ID = pr.ProductID
-        `;
-      const params = [];
-      if (typeName) {
-        query += ' WHERE tp.TypeName = ?';
-        params.push(typeName);
-      }
-
-      const [rows] = await db.query(query, params);
-      return rows;
-    } catch (error) {
-      console.error('Error in getAllProducts:', error);
-      throw error;
-    }
-  }
-
-  // ===== LẤY CHI TIẾT SẢN PHẨM THEO ID (COMPLETELY FIXED) =====
-  static async getProductByID(productID) {
-    try {
-      // 1. Get basic product info
-      const [products] = await db.query(
         `
+            const params = []
+            if (typeName) {
+                query += " WHERE tp.TypeName = ?"
+                params.push(typeName)
+            }
+
+            const [rows] = await db.query(query, params)
+            return rows
+        } catch (error) {
+            console.error("Error in getAllProducts:", error)
+            throw error
+        }
+    }
+
+    // ===== LẤY CHI TIẾT SẢN PHẨM THEO ID (COMPLETELY FIXED) =====
+    static async getProductByID(productID) {
+        try {
+            // 1. Get basic product info
+            const [products] = await db.query(
+                `
       SELECT 
         p.ID,
         p.ProductName,
@@ -232,56 +235,59 @@ class AdminSite {
       LEFT JOIN TypeProduct tp ON p.TypeID = tp.ID
       WHERE p.ID = ?
       `,
-        [productID]
-      );
+                [productID]
+            )
 
-      if (!products || !products[0]) return null;
-      const product = products[0];
+            if (!products || !products[0]) return null
+            const product = products[0]
 
-      // 2. Get ALL ImgIDs that belong to ANY color (to exclude from main images)
-      const [colorImageIds] = await db.query(
-        `
+            // 2. Get ALL ImgIDs that belong to ANY color (to exclude from main images)
+            const [colorImageIds] = await db.query(
+                `
       SELECT cpi.ImgID
       FROM ColorProductImage cpi
       JOIN ColorProduct cp ON cpi.ColorProductID = cp.ID
       WHERE cp.ProductID = ?
       GROUP BY cpi.ImgID
       `,
-        [productID]
-      );
+                [productID]
+            )
 
-      const colorImgIdsList = colorImageIds.map((row) => row.ImgID);
+            const colorImgIdsList = colorImageIds.map((row) => row.ImgID)
 
-      // 3. Get ONLY main images (exclude color images)
-      let mainImagesQuery = `
+            // 3. Get ONLY main images (exclude color images)
+            let mainImagesQuery = `
       SELECT img.ImgPath
       FROM ProductImg pi
       LEFT JOIN Image img ON pi.ImgID = img.ID
       WHERE pi.ProductID = ?
-    `;
+    `
 
-      let mainImagesParams = [productID];
+            let mainImagesParams = [productID]
 
-      if (colorImgIdsList.length > 0) {
-        const placeholders = colorImgIdsList.map(() => '?').join(',');
-        mainImagesQuery += ` AND pi.ImgID NOT IN (${placeholders})`;
-        mainImagesParams = [productID, ...colorImgIdsList];
-      }
+            if (colorImgIdsList.length > 0) {
+                const placeholders = colorImgIdsList.map(() => "?").join(",")
+                mainImagesQuery += ` AND pi.ImgID NOT IN (${placeholders})`
+                mainImagesParams = [productID, ...colorImgIdsList]
+            }
 
-      mainImagesQuery += ' ORDER BY pi.ID';
+            mainImagesQuery += " ORDER BY pi.ID"
 
-      const [mainImages] = await db.query(mainImagesQuery, mainImagesParams);
-      product.mainImages = mainImages.map((img) => img.ImgPath);
+            const [mainImages] = await db.query(
+                mainImagesQuery,
+                mainImagesParams
+            )
+            product.mainImages = mainImages.map((img) => img.ImgPath)
 
-      console.log('📦 Main images loaded:', {
-        total: product.mainImages.length,
-        excludedColorImgIds: colorImgIdsList.length,
-        paths: product.mainImages,
-      });
+            console.log("📦 Main images loaded:", {
+                total: product.mainImages.length,
+                excludedColorImgIds: colorImgIdsList.length,
+                paths: product.mainImages,
+            })
 
-      // 4. Get colors with their images
-      const [colors] = await db.query(
-        `
+            // 4. Get colors with their images
+            const [colors] = await db.query(
+                `
       SELECT 
         cp.ID as ColorID,
         cp.ColorName
@@ -289,32 +295,32 @@ class AdminSite {
       WHERE cp.ProductID = ?
       ORDER BY cp.ID
       `,
-        [productID]
-      );
+                [productID]
+            )
 
-      // 5. For each color, get its images and sizes
-      for (const color of colors) {
-        // Get color-specific images (ONLY from ColorProductImage)
-        const [colorImages] = await db.query(
-          `
+            // 5. For each color, get its images and sizes
+            for (const color of colors) {
+                // Get color-specific images (ONLY from ColorProductImage)
+                const [colorImages] = await db.query(
+                    `
         SELECT img.ImgPath
         FROM ColorProductImage cpi
         LEFT JOIN Image img ON cpi.ImgID = img.ID
         WHERE cpi.ColorProductID = ?
         ORDER BY cpi.ID
         `,
-          [color.ColorID]
-        );
-        color.images = colorImages.map((img) => img.ImgPath);
+                    [color.ColorID]
+                )
+                color.images = colorImages.map((img) => img.ImgPath)
 
-        console.log(`🎨 Color "${color.ColorName}" images:`, {
-          colorId: color.ColorID,
-          imageCount: color.images.length,
-        });
+                console.log(`🎨 Color "${color.ColorName}" images:`, {
+                    colorId: color.ColorID,
+                    imageCount: color.images.length,
+                })
 
-        // Get sizes and quantities for this color
-        const [sizes] = await db.query(
-          `
+                // Get sizes and quantities for this color
+                const [sizes] = await db.query(
+                    `
         SELECT 
           sp.SizeName as size,
           q.QuantityValue as quantity
@@ -323,252 +329,252 @@ class AdminSite {
         WHERE q.ColorID = ? AND q.ProductID = ?
         ORDER BY sp.ID
         `,
-          [color.ColorID, productID]
-        );
-        color.sizes = sizes;
-      }
+                    [color.ColorID, productID]
+                )
+                color.sizes = sizes
+            }
 
-      product.colors = colors;
+            product.colors = colors
 
-      console.log(' Product loaded successfully:', {
-        id: product.ID,
-        name: product.ProductName,
-        mainImagesCount: product.mainImages.length,
-        colorsCount: product.colors.length,
-        totalColorImages: product.colors.reduce(
-          (sum, c) => sum + c.images.length,
-          0
-        ),
-      });
+            console.log(" Product loaded successfully:", {
+                id: product.ID,
+                name: product.ProductName,
+                mainImagesCount: product.mainImages.length,
+                colorsCount: product.colors.length,
+                totalColorImages: product.colors.reduce(
+                    (sum, c) => sum + c.images.length,
+                    0
+                ),
+            })
 
-      return product;
-    } catch (error) {
-      console.error(' Error in getProductByID:', error);
-      throw error;
+            return product
+        } catch (error) {
+            console.error(" Error in getProductByID:", error)
+            throw error
+        }
     }
-  }
-  // ===== THÊM SẢN PHẨM MỚI =====
-  static async addProduct({ ProductName, Descriptions, TypeID, Price }) {
-    const connection = await db.getConnection();
-    try {
-      await connection.beginTransaction();
+    // ===== THÊM SẢN PHẨM MỚI =====
+    static async addProduct({ ProductName, Descriptions, TypeID, Price }) {
+        const connection = await db.getConnection()
+        try {
+            await connection.beginTransaction()
 
-      // Thêm sản phẩm
-      const [result] = await connection.query(
-        `
+            // Thêm sản phẩm
+            const [result] = await connection.query(
+                `
                 INSERT INTO Product (ProductName, Descriptions, TypeID)
                 VALUES (?, ?, ?)
             `,
-        [ProductName, Descriptions, TypeID]
-      );
+                [ProductName, Descriptions, TypeID]
+            )
 
-      const productID = result.insertId;
+            const productID = result.insertId
 
-      // Thêm giá sản phẩm
-      await connection.query(
-        `
+            // Thêm giá sản phẩm
+            await connection.query(
+                `
                 INSERT INTO Price (ProductID, Price)
                 VALUES (?, ?)
             `,
-        [productID, Price]
-      );
+                [productID, Price]
+            )
 
-      await connection.commit();
-      return productID;
-    } catch (error) {
-      await connection.rollback();
-      console.error('Error in addProduct:', error);
-      throw error;
-    } finally {
-      connection.release();
+            await connection.commit()
+            return productID
+        } catch (error) {
+            await connection.rollback()
+            console.error("Error in addProduct:", error)
+            throw error
+        } finally {
+            connection.release()
+        }
     }
-  }
 
-  // ===== CẬP NHẬT SẢN PHẨM =====
-  static async updateProduct(
-    productID,
-    { ProductName, Descriptions, TypeID, Price }
-  ) {
-    const connection = await db.getConnection();
-    try {
-      await connection.beginTransaction();
+    // ===== CẬP NHẬT SẢN PHẨM =====
+    static async updateProduct(
+        productID,
+        { ProductName, Descriptions, TypeID, Price }
+    ) {
+        const connection = await db.getConnection()
+        try {
+            await connection.beginTransaction()
 
-      await connection.query(
-        `
+            await connection.query(
+                `
                 UPDATE Product 
                 SET ProductName = ?, Descriptions = ?, TypeID = ?
                 WHERE ID = ?
             `,
-        [ProductName, Descriptions, TypeID, productID]
-      );
+                [ProductName, Descriptions, TypeID, productID]
+            )
 
-      // Cập nhật giá
-      await connection.query(
-        `
+            // Cập nhật giá
+            await connection.query(
+                `
                 UPDATE Price 
                 SET Price = ?
                 WHERE ProductID = ?
             `,
-        [Price, productID]
-      );
+                [Price, productID]
+            )
 
-      await connection.commit();
-      return true;
-    } catch (error) {
-      await connection.rollback();
-      console.error('Error in updateProduct:', error);
-      throw error;
-    } finally {
-      connection.release();
+            await connection.commit()
+            return true
+        } catch (error) {
+            await connection.rollback()
+            console.error("Error in updateProduct:", error)
+            throw error
+        } finally {
+            connection.release()
+        }
     }
-  }
 
-  // ===== XÓA SẢN PHẨM =====
-  static async deleteProduct(productID) {
-    try {
-      const [result] = await db.query(
-        `
+    // ===== XÓA SẢN PHẨM =====
+    static async deleteProduct(productID) {
+        try {
+            const [result] = await db.query(
+                `
                 DELETE FROM Product WHERE ID = ?
             `,
-        [productID]
-      );
-      return result.affectedRows;
-    } catch (error) {
-      console.error('Error in deleteProduct:', error);
-      throw error;
+                [productID]
+            )
+            return result.affectedRows
+        } catch (error) {
+            console.error("Error in deleteProduct:", error)
+            throw error
+        }
     }
-  }
-  // ===== LẤY TẤT CẢ LOẠI SẢN PHẨM =====
-  static async getAllProductTypes() {
-    try {
-      const [types] = await db.query(`
+    // ===== LẤY TẤT CẢ LOẠI SẢN PHẨM =====
+    static async getAllProductTypes() {
+        try {
+            const [types] = await db.query(`
                 SELECT * FROM TypeProduct ORDER BY TypeName
-            `);
-      return types;
-    } catch (error) {
-      console.error('Error in getAllProductTypes:', error);
-      throw error;
+            `)
+            return types
+        } catch (error) {
+            console.error("Error in getAllProductTypes:", error)
+            throw error
+        }
     }
-  }
 
-  // ===== TẠO SẢN PHẨM MỚI VỚI MÀU SẮC VÀ KÍCH CỠ (FIXED) =====
-  static async createProductWithColors(payload) {
-    const conn = await db.getConnection();
-    try {
-      await conn.beginTransaction();
+    // ===== TẠO SẢN PHẨM MỚI VỚI MÀU SẮC VÀ KÍCH CỠ (FIXED) =====
+    static async createProductWithColors(payload) {
+        const conn = await db.getConnection()
+        try {
+            await conn.beginTransaction()
 
-      // 1) Insert Product
-      const [prodRes] = await conn.query(
-        'INSERT INTO Product (ProductName, Descriptions, TypeID) VALUES (?, ?, ?)',
-        [payload.ProductName, payload.Descriptions, payload.TypeID]
-      );
-      const productId = prodRes.insertId;
+            // 1) Insert Product
+            const [prodRes] = await conn.query(
+                "INSERT INTO Product (ProductName, Descriptions, TypeID) VALUES (?, ?, ?)",
+                [payload.ProductName, payload.Descriptions, payload.TypeID]
+            )
+            const productId = prodRes.insertId
 
-      // 2) Insert Price
-      await conn.query('INSERT INTO Price (ProductID, Price) VALUES (?, ?)', [
-        productId,
-        payload.Price,
-      ]);
-
-      // Helper: insert image and return id
-      const insertImage = async (imgPath) => {
-        const [imgRes] = await conn.query(
-          'INSERT INTO Image (ImgPath) VALUES (?)',
-          [imgPath]
-        );
-        return imgRes.insertId;
-      };
-
-      // 3) Main images → ONLY Image + ProductImg
-      if (Array.isArray(payload.mainImages)) {
-        for (const imgPath of payload.mainImages) {
-          if (!imgPath) continue;
-          const imgId = await insertImage(imgPath);
-
-          await conn.query(
-            'INSERT INTO ProductImg (ProductID, ImgID) VALUES (?, ?)',
-            [productId, imgId]
-          );
-        }
-      }
-
-      console.log(` Saved ${payload.mainImages?.length || 0} main images`);
-
-      // 4) Process colors with multiple images
-      for (const color of payload.colors || []) {
-        // Insert ColorProduct (WITHOUT ImgID)
-        const [colorRes] = await conn.query(
-          'INSERT INTO ColorProduct (ProductID, ColorName) VALUES (?, ?)',
-          [productId, color.colorName || 'Default']
-        );
-        const colorId = colorRes.insertId;
-
-        if (Array.isArray(color.images)) {
-          for (const imgPath of color.images) {
-            if (!imgPath) continue;
-
-            const imgId = await insertImage(imgPath);
-
+            // 2) Insert Price
             await conn.query(
-              'INSERT INTO ColorProductImage (ColorProductID, ImgID) VALUES (?, ?)',
-              [colorId, imgId]
-            );
-          }
+                "INSERT INTO Price (ProductID, Price) VALUES (?, ?)",
+                [productId, payload.Price]
+            )
 
-          console.log(
-            ` Color "${color.colorName}": saved ${color.images.length} images to ColorProductImage`
-          );
-        }
+            // Helper: insert image and return id
+            const insertImage = async (imgPath) => {
+                const [imgRes] = await conn.query(
+                    "INSERT INTO Image (ImgPath) VALUES (?)",
+                    [imgPath]
+                )
+                return imgRes.insertId
+            }
 
-        // Insert sizes and quantities
-        for (const s of color.sizes || []) {
-          if (!s || !s.size) continue;
-          const sizeName = String(s.size).trim();
+            // 3) Main images → ONLY Image + ProductImg
+            if (Array.isArray(payload.mainImages)) {
+                for (const imgPath of payload.mainImages) {
+                    if (!imgPath) continue
+                    const imgId = await insertImage(imgPath)
 
-          // Find or create size
-          const [rows] = await conn.query(
-            'SELECT ID FROM SizeProduct WHERE SizeName = ?',
-            [sizeName]
-          );
-          let sizeId;
-          if (rows && rows.length) {
-            sizeId = rows[0].ID;
-          } else {
-            const [sizeRes] = await conn.query(
-              'INSERT INTO SizeProduct (SizeName) VALUES (?)',
-              [sizeName]
-            );
-            sizeId = sizeRes.insertId;
-          }
+                    await conn.query(
+                        "INSERT INTO ProductImg (ProductID, ImgID) VALUES (?, ?)",
+                        [productId, imgId]
+                    )
+                }
+            }
 
-          // Insert into Quantity
-          const quantityVal = Number(s.quantity) || 0;
-          await conn.query(
-            `INSERT INTO Quantity (QuantityValue, SizeID, ColorID, ProductID)
+            console.log(` Saved ${payload.mainImages?.length || 0} main images`)
+
+            // 4) Process colors with multiple images
+            for (const color of payload.colors || []) {
+                // Insert ColorProduct (WITHOUT ImgID)
+                const [colorRes] = await conn.query(
+                    "INSERT INTO ColorProduct (ProductID, ColorName) VALUES (?, ?)",
+                    [productId, color.colorName || "Default"]
+                )
+                const colorId = colorRes.insertId
+
+                if (Array.isArray(color.images)) {
+                    for (const imgPath of color.images) {
+                        if (!imgPath) continue
+
+                        const imgId = await insertImage(imgPath)
+
+                        await conn.query(
+                            "INSERT INTO ColorProductImage (ColorProductID, ImgID) VALUES (?, ?)",
+                            [colorId, imgId]
+                        )
+                    }
+
+                    console.log(
+                        ` Color "${color.colorName}": saved ${color.images.length} images to ColorProductImage`
+                    )
+                }
+
+                // Insert sizes and quantities
+                for (const s of color.sizes || []) {
+                    if (!s || !s.size) continue
+                    const sizeName = String(s.size).trim()
+
+                    // Find or create size
+                    const [rows] = await conn.query(
+                        "SELECT ID FROM SizeProduct WHERE SizeName = ?",
+                        [sizeName]
+                    )
+                    let sizeId
+                    if (rows && rows.length) {
+                        sizeId = rows[0].ID
+                    } else {
+                        const [sizeRes] = await conn.query(
+                            "INSERT INTO SizeProduct (SizeName) VALUES (?)",
+                            [sizeName]
+                        )
+                        sizeId = sizeRes.insertId
+                    }
+
+                    // Insert into Quantity
+                    const quantityVal = Number(s.quantity) || 0
+                    await conn.query(
+                        `INSERT INTO Quantity (QuantityValue, SizeID, ColorID, ProductID)
            VALUES (?, ?, ?, ?)
            ON DUPLICATE KEY UPDATE QuantityValue = VALUES(QuantityValue)`,
-            [quantityVal, sizeId, colorId, productId]
-          );
+                        [quantityVal, sizeId, colorId, productId]
+                    )
+                }
+            }
+
+            await conn.commit()
+            console.log("Product created successfully:", productId)
+            return { success: true, productId }
+        } catch (err) {
+            await conn.rollback()
+            console.error(" createProductWithColors error:", err)
+            throw err
+        } finally {
+            conn.release()
         }
-      }
-
-      await conn.commit();
-      console.log('Product created successfully:', productId);
-      return { success: true, productId };
-    } catch (err) {
-      await conn.rollback();
-      console.error(' createProductWithColors error:', err);
-      throw err;
-    } finally {
-      conn.release();
     }
-  }
 
-  // returns [{ month: 1, amount: 12345.67 }, ...]
-  static async getMonthlyRevenueByYear(year = new Date().getFullYear()) {
-    try {
-      const [rows] = await db.query(
-        `
+    // returns [{ month: 1, amount: 12345.67 }, ...]
+    static async getMonthlyRevenueByYear(year = new Date().getFullYear()) {
+        try {
+            const [rows] = await db.query(
+                `
       SELECT MONTH(i.DateCreated) as month, 
              COALESCE(SUM(ci.TotalPrice),0) as amount
       FROM Invoice i
@@ -577,29 +583,29 @@ class AdminSite {
       GROUP BY MONTH(i.DateCreated)
       ORDER BY MONTH(i.DateCreated)
     `,
-        [year]
-      );
+                [year]
+            )
 
-      // ensure months 1..12 all present
-      const months = Array.from({ length: 12 }, (_, i) => ({
-        month: i + 1,
-        amount: 0,
-      }));
-      for (const r of rows) {
-        const idx = r.month - 1;
-        months[idx].amount = Number(r.amount || 0);
-      }
-      return months;
-    } catch (err) {
-      console.error('Error in getMonthlyRevenueByYear:', err);
-      throw err;
+            // ensure months 1..12 all present
+            const months = Array.from({ length: 12 }, (_, i) => ({
+                month: i + 1,
+                amount: 0,
+            }))
+            for (const r of rows) {
+                const idx = r.month - 1
+                months[idx].amount = Number(r.amount || 0)
+            }
+            return months
+        } catch (err) {
+            console.error("Error in getMonthlyRevenueByYear:", err)
+            throw err
+        }
     }
-  }
 
-  // returns [{ TypeName, cnt }, ...]
-  static async getProductCountsByType() {
-    try {
-      const [rows] = await db.query(`
+    // returns [{ TypeName, cnt }, ...]
+    static async getProductCountsByType() {
+        try {
+            const [rows] = await db.query(`
     SELECT tp.TypeName, IFNULL(SUM(ci.Volume),0) AS totalSold
     FROM TypeProduct tp
     LEFT JOIN Product p ON p.TypeID = tp.ID
@@ -609,125 +615,125 @@ class AdminSite {
     GROUP BY tp.TypeName
     ORDER BY totalSold DESC;
 
-    `);
-      return rows;
-    } catch (err) {
-      console.error('Error in getProductsSoldByType:', err);
-      throw err;
+    `)
+            return rows
+        } catch (err) {
+            console.error("Error in getProductsSoldByType:", err)
+            throw err
+        }
     }
-  }
 
-  // ===== LẤY TỔNG SỐ PAGEVIEWS =====
-  static async getTotalPageViews() {
-    try {
-      const [result] = await db.query(`
+    // ===== LẤY TỔNG SỐ PAGEVIEWS =====
+    static async getTotalPageViews() {
+        try {
+            const [result] = await db.query(`
         SELECT COUNT(*) as totalViews 
         FROM PageView
-      `);
-      return result[0]?.totalViews || 0;
-    } catch (error) {
-      console.error('Error in getTotalPageViews:', error);
-      // Nếu bảng chưa tồn tại, trả về 0
-      return 0;
+      `)
+            return result[0]?.totalViews || 0
+        } catch (error) {
+            console.error("Error in getTotalPageViews:", error)
+            // Nếu bảng chưa tồn tại, trả về 0
+            return 0
+        }
     }
-  }
 
-  // ===== LẤY SỐ NGƯỜI ĐĂNG KÝ MỚI THÁNG NÀY =====
-  static async getNewSignUps() {
-    try {
-      const [result] = await db.query(`
+    // ===== LẤY SỐ NGƯỜI ĐĂNG KÝ MỚI THÁNG NÀY =====
+    static async getNewSignUps() {
+        try {
+            const [result] = await db.query(`
         SELECT COUNT(*) as newSignUps
         FROM Users
         WHERE YEAR(CreatedAt) = YEAR(CURRENT_DATE)
           AND MONTH(CreatedAt) = MONTH(CURRENT_DATE)
-      `);
-      return result[0]?.newSignUps || 0;
-    } catch (error) {
-      console.error('Error in getNewSignUps:', error);
-      return 0;
+      `)
+            return result[0]?.newSignUps || 0
+        } catch (error) {
+            console.error("Error in getNewSignUps:", error)
+            return 0
+        }
     }
-  }
 
-  static async getAllGrowthMetrics() {
-    try {
-      const currentMonth = new Date().getMonth() + 1; // 1-12
-      const currentYear = new Date().getFullYear();
+    static async getAllGrowthMetrics() {
+        try {
+            const currentMonth = new Date().getMonth() + 1 // 1-12
+            const currentYear = new Date().getFullYear()
 
-      // --- 1. Total Page Views ---
-      const [pageViewsResult] = await db.query(
-        `
+            // --- 1. Total Page Views ---
+            const [pageViewsResult] = await db.query(
+                `
       SELECT COUNT(DISTINCT VisitorID) AS count
       FROM PageView
       WHERE YEAR(ViewTime) = ? AND MONTH(ViewTime) = ?
     `,
-        [currentYear, currentMonth]
-      );
-      const totalPageViews = pageViewsResult[0]?.count || 0;
+                [currentYear, currentMonth]
+            )
+            const totalPageViews = pageViewsResult[0]?.count || 0
 
-      const pageViewsGrowth = await this.getGrowthPercentage(
-        totalPageViews,
-        'PageView',
-        'DISTINCT VisitorID',
-        'ViewTime'
-      );
+            const pageViewsGrowth = await this.getGrowthPercentage(
+                totalPageViews,
+                "PageView",
+                "DISTINCT VisitorID",
+                "ViewTime"
+            )
 
-      // --- 2. Monthly Users ---
-      const [monthlyUsersResult] = await db.query(
-        `
+            // --- 2. Monthly Users ---
+            const [monthlyUsersResult] = await db.query(
+                `
       SELECT COUNT(DISTINCT a.UserID) AS count
       FROM Accounts a
       WHERE a.Statuses = 1
         AND YEAR(a.CreatedTime) = ? AND MONTH(a.CreatedTime) = ?
     `,
-        [currentYear, currentMonth]
-      );
-      const monthlyUsers = monthlyUsersResult[0]?.count || 0;
+                [currentYear, currentMonth]
+            )
+            const monthlyUsers = monthlyUsersResult[0]?.count || 0
 
-      const monthlyUsersGrowth = await this.getGrowthPercentage(
-        monthlyUsers,
-        'Accounts',
-        'DISTINCT UserID',
-        'CreatedTime'
-      );
+            const monthlyUsersGrowth = await this.getGrowthPercentage(
+                monthlyUsers,
+                "Accounts",
+                "DISTINCT UserID",
+                "CreatedTime"
+            )
 
-      // --- 3. New SignUps ---
-      const [signUpsResult] = await db.query(
-        `
+            // --- 3. New SignUps ---
+            const [signUpsResult] = await db.query(
+                `
       SELECT COUNT(*) AS count
       FROM Users
       WHERE YEAR(CreatedAt) = ? AND MONTH(CreatedAt) = ?
     `,
-        [currentYear, currentMonth]
-      );
-      const newSignUps = signUpsResult[0]?.count || 0;
+                [currentYear, currentMonth]
+            )
+            const newSignUps = signUpsResult[0]?.count || 0
 
-      const signUpsGrowth = await this.getGrowthPercentage(
-        newSignUps,
-        'Users',
-        '*',
-        'CreatedAt'
-      );
+            const signUpsGrowth = await this.getGrowthPercentage(
+                newSignUps,
+                "Users",
+                "*",
+                "CreatedAt"
+            )
 
-      // --- 4. Total Invoices ---
-      const [invoicesResult] = await db.query(
-        `
+            // --- 4. Total Invoices ---
+            const [invoicesResult] = await db.query(
+                `
       SELECT COUNT(*) AS count
       FROM Invoice
       WHERE YEAR(DateCreated) = ? AND MONTH(DateCreated) = ?
     `,
-        [currentYear, currentMonth]
-      );
-      const totalInvoices = invoicesResult[0]?.count || 0;
+                [currentYear, currentMonth]
+            )
+            const totalInvoices = invoicesResult[0]?.count || 0
 
-      const totalInvoicesGrowth = await this.getGrowthPercentage(
-        totalInvoices,
-        'Invoice',
-        '*',
-        'DateCreated'
-      );
+            const totalInvoicesGrowth = await this.getGrowthPercentage(
+                totalInvoices,
+                "Invoice",
+                "*",
+                "DateCreated"
+            )
 
-      // --- 5. Products Sold (tháng hiện tại) ---
-      const [thisMonth] = await db.query(`
+            // --- 5. Products Sold (tháng hiện tại) ---
+            const [thisMonth] = await db.query(`
       SELECT IFNULL(SUM(ci.Volume),0) AS total
       FROM CartItem ci
       JOIN Cart c ON ci.CartID = c.ID
@@ -735,11 +741,11 @@ class AdminSite {
       WHERE i.StatusID = 2
         AND YEAR(i.DateCreated) = YEAR(CURRENT_DATE)
         AND MONTH(i.DateCreated) = MONTH(CURRENT_DATE)
-    `);
-      const totalProductsSold = Number(thisMonth[0]?.total || 0);
+    `)
+            const totalProductsSold = Number(thisMonth[0]?.total || 0)
 
-      // Products sold tháng trước
-      const [lastMonth] = await db.query(`
+            // Products sold tháng trước
+            const [lastMonth] = await db.query(`
       SELECT IFNULL(SUM(ci.Volume),0) AS total
       FROM CartItem ci
       JOIN Cart c ON ci.CartID = c.ID
@@ -747,23 +753,23 @@ class AdminSite {
       WHERE i.StatusID = 2
         AND YEAR(i.DateCreated) = YEAR(DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH))
         AND MONTH(i.DateCreated) = MONTH(DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH))
-    `);
-      const previousMonthProductsSold = Number(lastMonth[0]?.total || 0);
+    `)
+            const previousMonthProductsSold = Number(lastMonth[0]?.total || 0)
 
-      let totalProductsGrowth = 0;
-      if (previousMonthProductsSold > 0) {
-        totalProductsGrowth =
-          Math.round(
-            ((totalProductsSold - previousMonthProductsSold) /
-              previousMonthProductsSold) *
-              100 *
-              10
-          ) / 10;
-      }
+            let totalProductsGrowth = 0
+            if (previousMonthProductsSold > 0) {
+                totalProductsGrowth =
+                    Math.round(
+                        ((totalProductsSold - previousMonthProductsSold) /
+                            previousMonthProductsSold) *
+                            100 *
+                            10
+                    ) / 10
+            }
 
-      // --- 6. Total Revenue (năm hiện tại) ---
-      const [revenueThisYear] = await db.query(
-        `
+            // --- 6. Total Revenue (năm hiện tại) ---
+            const [revenueThisYear] = await db.query(
+                `
       SELECT IFNULL(SUM(ci.Volume * ci.UnitPrice), 0) AS totalRevenue
       FROM CartItem ci
       JOIN Cart c ON ci.CartID = c.ID
@@ -771,13 +777,13 @@ class AdminSite {
       WHERE YEAR(i.DateCreated) = ?
         AND i.StatusID = 2
     `,
-        [currentYear]
-      );
-      const totalRevenue = Number(revenueThisYear[0]?.totalRevenue || 0);
+                [currentYear]
+            )
+            const totalRevenue = Number(revenueThisYear[0]?.totalRevenue || 0)
 
-      // Total Revenue năm trước
-      const [revenueLastYear] = await db.query(
-        `
+            // Total Revenue năm trước
+            const [revenueLastYear] = await db.query(
+                `
       SELECT IFNULL(SUM(ci.Volume * ci.UnitPrice), 0) AS totalRevenue
       FROM CartItem ci
       JOIN Cart c ON ci.CartID = c.ID
@@ -785,145 +791,152 @@ class AdminSite {
       WHERE YEAR(i.DateCreated) = ?
         AND i.StatusID = 2
     `,
-        [currentYear - 1]
-      );
-      const lastYearRevenue = Number(revenueLastYear[0]?.totalRevenue || 0);
+                [currentYear - 1]
+            )
+            const lastYearRevenue = Number(
+                revenueLastYear[0]?.totalRevenue || 0
+            )
 
-      let totalRevenueGrowthYoY = 0;
-      if (lastYearRevenue > 0) {
-        totalRevenueGrowthYoY =
-          Math.round(
-            ((totalRevenue - lastYearRevenue) / lastYearRevenue) * 100 * 10
-          ) / 10;
-      }
+            let totalRevenueGrowthYoY = 0
+            if (lastYearRevenue > 0) {
+                totalRevenueGrowthYoY =
+                    Math.round(
+                        ((totalRevenue - lastYearRevenue) / lastYearRevenue) *
+                            100 *
+                            10
+                    ) / 10
+            }
 
-      // --- Return object ---
-      return {
-        totalPageViews: Number(totalPageViews),
-        pageViewsGrowth: Number(pageViewsGrowth),
-        monthlyUsers: Number(monthlyUsers),
-        monthlyUsersGrowth: Number(monthlyUsersGrowth),
-        newSignUps: Number(newSignUps),
-        signUpsGrowth: Number(signUpsGrowth),
-        totalInvoices: Number(totalInvoices),
-        totalInvoicesGrowth: Number(totalInvoicesGrowth),
-        totalProductsSold: Number(totalProductsSold),
-        totalProductsGrowth: Number(totalProductsGrowth),
-        totalRevenue: Number(totalRevenue),
-        totalRevenueGrowthYoY: Number(totalRevenueGrowthYoY),
-      };
-    } catch (error) {
-      console.error('getAllGrowthMetrics error:', error);
-      // Return default values nếu có lỗi
-      return {
-        totalPageViews: 0,
-        pageViewsGrowth: 0,
-        monthlyUsers: 0,
-        monthlyUsersGrowth: 0,
-        newSignUps: 0,
-        signUpsGrowth: 0,
-        totalInvoices: 0,
-        totalInvoicesGrowth: 0,
-        totalProductsSold: 0,
-        totalProductsGrowth: 0,
-        totalRevenue: 0,
-        totalRevenueGrowthYoY: 0,
-      };
+            // --- Return object ---
+            return {
+                totalPageViews: Number(totalPageViews),
+                pageViewsGrowth: Number(pageViewsGrowth),
+                monthlyUsers: Number(monthlyUsers),
+                monthlyUsersGrowth: Number(monthlyUsersGrowth),
+                newSignUps: Number(newSignUps),
+                signUpsGrowth: Number(signUpsGrowth),
+                totalInvoices: Number(totalInvoices),
+                totalInvoicesGrowth: Number(totalInvoicesGrowth),
+                totalProductsSold: Number(totalProductsSold),
+                totalProductsGrowth: Number(totalProductsGrowth),
+                totalRevenue: Number(totalRevenue),
+                totalRevenueGrowthYoY: Number(totalRevenueGrowthYoY),
+            }
+        } catch (error) {
+            console.error("getAllGrowthMetrics error:", error)
+            // Return default values nếu có lỗi
+            return {
+                totalPageViews: 0,
+                pageViewsGrowth: 0,
+                monthlyUsers: 0,
+                monthlyUsersGrowth: 0,
+                newSignUps: 0,
+                signUpsGrowth: 0,
+                totalInvoices: 0,
+                totalInvoicesGrowth: 0,
+                totalProductsSold: 0,
+                totalProductsGrowth: 0,
+                totalRevenue: 0,
+                totalRevenueGrowthYoY: 0,
+            }
+        }
     }
-  }
 
-  // --- Hàm tính growth % dùng chung ---
-  static async getGrowthPercentage(
-    currentValue,
-    tableName,
-    column,
-    dateColumn
-  ) {
-    try {
-      const [result] = await db.query(`
+    // --- Hàm tính growth % dùng chung ---
+    static async getGrowthPercentage(
+        currentValue,
+        tableName,
+        column,
+        dateColumn
+    ) {
+        try {
+            const [result] = await db.query(`
         SELECT COUNT(${column}) AS lastMonthValue
         FROM ${tableName}
         WHERE YEAR(${dateColumn}) = YEAR(DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH))
           AND MONTH(${dateColumn}) = MONTH(DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH))
-      `);
+      `)
 
-      const lastMonthValue = result[0]?.lastMonthValue || 0;
-      if (lastMonthValue === 0) return 0;
+            const lastMonthValue = result[0]?.lastMonthValue || 0
+            if (lastMonthValue === 0) return 0
 
-      const growth = ((currentValue - lastMonthValue) / lastMonthValue) * 100;
-      return Math.round(growth * 10) / 10;
-    } catch (error) {
-      console.error('Error in getGrowthPercentage:', error);
-      return 0;
+            const growth =
+                ((currentValue - lastMonthValue) / lastMonthValue) * 100
+            return Math.round(growth * 10) / 10
+        } catch (error) {
+            console.error("Error in getGrowthPercentage:", error)
+            return 0
+        }
     }
-  }
-  static async getTotalInvoices() {
-    try {
-      const [rows] = await db.query(`SELECT COUNT(*) AS total FROM Invoice`);
-      return rows[0]?.total || 0;
-    } catch (err) {
-      console.error('Error in getTotalInvoices:', err);
-      return 0;
+    static async getTotalInvoices() {
+        try {
+            const [rows] = await db.query(
+                `SELECT COUNT(*) AS total FROM Invoice`
+            )
+            return rows[0]?.total || 0
+        } catch (err) {
+            console.error("Error in getTotalInvoices:", err)
+            return 0
+        }
     }
-  }
 
-  // Lấy tổng số sản phẩm bán ra theo type "Clothes"
-  static async getTotalProductsSold() {
-    try {
-      const [rows] = await db.query(`
+    // Lấy tổng số sản phẩm bán ra theo type "Clothes"
+    static async getTotalProductsSold() {
+        try {
+            const [rows] = await db.query(`
       SELECT SUM(ci.Volume) AS total
       FROM CartItem ci
       JOIN Cart c ON ci.CartID = c.ID
       JOIN Invoice i ON c.ID = i.CartID
       JOIN StatusInvoice si ON i.StatusID = si.ID
       WHERE si.StatusName = 'Delivered'
-    `);
-      return rows[0]?.total || 0;
-    } catch (err) {
-      console.error('Error in getTotalProductsSold:', err);
-      return 0;
+    `)
+            return rows[0]?.total || 0
+        } catch (err) {
+            console.error("Error in getTotalProductsSold:", err)
+            return 0
+        }
     }
-  }
 
-  static async getMonthlyUsers() {
-    try {
-      const [rows] = await db.query(`
+    static async getMonthlyUsers() {
+        try {
+            const [rows] = await db.query(`
         SELECT COUNT(DISTINCT UserID) AS total
         FROM Accounts
         WHERE MONTH(CreatedTime) = MONTH(CURRENT_DATE)
           AND YEAR(CreatedTime) = YEAR(CURRENT_DATE)
-      `);
-      return rows[0]?.total || 0;
-    } catch (err) {
-      console.error('Error in getMonthlyUsers:', err);
-      return 0;
+      `)
+            return rows[0]?.total || 0
+        } catch (err) {
+            console.error("Error in getMonthlyUsers:", err)
+            return 0
+        }
     }
-  }
 
-  // --- lấy tổng doanh thu trong 1 năm ---
-  static async getTotalRevenueByYear(year) {
-    try {
-      const [rows] = await db.query(
-        `
+    // --- lấy tổng doanh thu trong 1 năm ---
+    static async getTotalRevenueByYear(year) {
+        try {
+            const [rows] = await db.query(
+                `
       SELECT IFNULL(SUM(ci.Volume * ci.UnitPrice), 0) AS totalRevenue
       FROM CartItem ci
       JOIN Cart c ON ci.CartID = c.ID
       JOIN Invoice i ON c.ID = i.CartID
       WHERE YEAR(i.DateCreated) = ?
       `,
-        [year]
-      );
-      return Number(rows[0]?.totalRevenue || 0);
-    } catch (err) {
-      console.error('Error in getTotalRevenueByYear:', err);
-      return 0;
+                [year]
+            )
+            return Number(rows[0]?.totalRevenue || 0)
+        } catch (err) {
+            console.error("Error in getTotalRevenueByYear:", err)
+            return 0
+        }
     }
-  }
 
-  // ===== LẤY DANH SÁCH USER + SỐ ĐƠN + TỔNG TIỀN =====
-  static async getAllUsers() {
-    try {
-      const [rows] = await db.query(`
+    // ===== LẤY DANH SÁCH USER + SỐ ĐƠN + TỔNG TIỀN =====
+    static async getAllUsers() {
+        try {
+            const [rows] = await db.query(`
       SELECT 
         u.ID,
         u.FirstName,
@@ -931,101 +944,102 @@ class AdminSite {
         u.Email,
         u.PhoneNumber,
         u.Address,
-        u.Region,
+        COALESCE(r.RegionName, 'N/A') as Region,
         -- Số đơn (số Invoice)
         COUNT(i.ID) AS TotalOrders,
         -- Tổng tiền tất cả đơn (sum CartItem.TotalPrice từ các cart của user)
         COALESCE(SUM(ci.TotalPrice), 0) AS TotalAmount
       FROM Users u
+      LEFT JOIN Region r ON u.RegionID = r.ID
       LEFT JOIN Invoice i ON u.ID = i.UserID
       LEFT JOIN Cart c ON i.CartID = c.ID
       LEFT JOIN CartItem ci ON c.ID = ci.CartID
       GROUP BY u.ID
       ORDER BY u.ID DESC;
-    `);
+    `)
 
-      return rows; // trả thẳng mảng user
-    } catch (error) {
-      console.error('Error in getAllUsers:', error);
-      throw error;
+            return rows // trả thẳng mảng user
+        } catch (error) {
+            console.error("Error in getAllUsers:", error)
+            throw error
+        }
     }
-  }
 
-  // XÓA 1 USER
-  static async deleteUser(userId) {
-    try {
-      const [result] = await db.query(`DELETE FROM Users WHERE ID = ?`, [
-        userId,
-      ]);
-      return result.affectedRows;
-    } catch (error) {
-      console.error('Error in deleteUser:', error);
-      throw error;
+    // XÓA 1 USER
+    static async deleteUser(userId) {
+        try {
+            const [result] = await db.query(`DELETE FROM Users WHERE ID = ?`, [
+                userId,
+            ])
+            return result.affectedRows
+        } catch (error) {
+            console.error("Error in deleteUser:", error)
+            throw error
+        }
     }
-  }
 
-  // XÓA NHIỀU USER
-  static async deleteUsersByIds(ids = []) {
-    if (!Array.isArray(ids) || ids.length === 0) return 0;
+    // XÓA NHIỀU USER
+    static async deleteUsersByIds(ids = []) {
+        if (!Array.isArray(ids) || ids.length === 0) return 0
 
-    const placeholders = ids.map(() => '?').join(',');
-    try {
-      const [result] = await db.query(
-        `DELETE FROM Users WHERE ID IN (${placeholders})`,
-        ids
-      );
-      return result.affectedRows;
-    } catch (error) {
-      console.error('Error in deleteUsersByIds:', error);
-      throw error;
+        const placeholders = ids.map(() => "?").join(",")
+        try {
+            const [result] = await db.query(
+                `DELETE FROM Users WHERE ID IN (${placeholders})`,
+                ids
+            )
+            return result.affectedRows
+        } catch (error) {
+            console.error("Error in deleteUsersByIds:", error)
+            throw error
+        }
     }
-  }
 
-  // --- tính growth YoY cho doanh thu ---
-  static async getRevenueGrowthYoY(currentYear) {
-    try {
-      const thisYear = Number(currentYear || new Date().getFullYear());
-      const lastYear = thisYear - 1;
+    // --- tính growth YoY cho doanh thu ---
+    static async getRevenueGrowthYoY(currentYear) {
+        try {
+            const thisYear = Number(currentYear || new Date().getFullYear())
+            const lastYear = thisYear - 1
 
-      const [thisRows] = await db.query(
-        `SELECT IFNULL(SUM(ci.Volume * ci.UnitPrice),0) AS totalRevenue
+            const [thisRows] = await db.query(
+                `SELECT IFNULL(SUM(ci.Volume * ci.UnitPrice),0) AS totalRevenue
        FROM CartItem ci
        JOIN Cart c ON ci.CartID = c.ID
        JOIN Invoice i ON c.ID = i.CartID
        WHERE YEAR(i.DateCreated) = ?`,
-        [thisYear]
-      );
+                [thisYear]
+            )
 
-      const [lastRows] = await db.query(
-        `SELECT IFNULL(SUM(ci.Volume * ci.UnitPrice),0) AS totalRevenue
+            const [lastRows] = await db.query(
+                `SELECT IFNULL(SUM(ci.Volume * ci.UnitPrice),0) AS totalRevenue
        FROM CartItem ci
        JOIN Cart c ON ci.CartID = c.ID
        JOIN Invoice i ON c.ID = i.CartID
        WHERE YEAR(i.DateCreated) = ?`,
-        [lastYear]
-      );
+                [lastYear]
+            )
 
-      const thisTotal = Number(thisRows[0]?.totalRevenue || 0);
-      const lastTotal = Number(lastRows[0]?.totalRevenue || 0);
+            const thisTotal = Number(thisRows[0]?.totalRevenue || 0)
+            const lastTotal = Number(lastRows[0]?.totalRevenue || 0)
 
-      if (lastTotal === 0) return 0; // tránh chia 0 — bạn có thể trả null hoặc 100 nếu muốn
+            if (lastTotal === 0) return 0 // tránh chia 0 — bạn có thể trả null hoặc 100 nếu muốn
 
-      const growth = ((thisTotal - lastTotal) / lastTotal) * 100;
-      return Math.round(growth * 10) / 10; // 1 decimal
-    } catch (err) {
-      console.error('Error in getRevenueGrowthYoY:', err);
-      return 0;
+            const growth = ((thisTotal - lastTotal) / lastTotal) * 100
+            return Math.round(growth * 10) / 10 // 1 decimal
+        } catch (err) {
+            console.error("Error in getRevenueGrowthYoY:", err)
+            return 0
+        }
     }
-  }
 
-  // Lấy revenue theo TypeName và năm
-  static async getMonthlyRevenueByType(
-    typeName,
-    year = new Date().getFullYear()
-  ) {
-    try {
-      const [rows] = await db.query(
-        `
+    // Lấy revenue theo TypeName và năm
+    static async getMonthlyRevenueByType(
+        typeName,
+        year = new Date().getFullYear()
+    ) {
+        try {
+            const [rows] = await db.query(
+                `
       SELECT MONTH(i.DateCreated) as month, 
              COALESCE(SUM(ci.Volume * ci.UnitPrice), 0) as amount
       FROM Invoice i
@@ -1038,35 +1052,35 @@ class AdminSite {
       GROUP BY MONTH(i.DateCreated)
       ORDER BY MONTH(i.DateCreated)
       `,
-        [year, typeName]
-      );
+                [year, typeName]
+            )
 
-      // Ensure months 1..12 all present
-      const months = Array.from({ length: 12 }, (_, i) => ({
-        month: i + 1,
-        amount: 0,
-      }));
+            // Ensure months 1..12 all present
+            const months = Array.from({ length: 12 }, (_, i) => ({
+                month: i + 1,
+                amount: 0,
+            }))
 
-      for (const r of rows) {
-        const idx = r.month - 1;
-        months[idx].amount = Number(r.amount || 0);
-      }
+            for (const r of rows) {
+                const idx = r.month - 1
+                months[idx].amount = Number(r.amount || 0)
+            }
 
-      return months;
-    } catch (err) {
-      console.error('Error in getMonthlyRevenueByType:', err);
-      throw err;
+            return months
+        } catch (err) {
+            console.error("Error in getMonthlyRevenueByType:", err)
+            throw err
+        }
     }
-  }
 
-  // Lấy tổng revenue theo TypeName và năm
-  static async getTotalRevenueByType(
-    typeName,
-    year = new Date().getFullYear()
-  ) {
-    try {
-      const [rows] = await db.query(
-        `
+    // Lấy tổng revenue theo TypeName và năm
+    static async getTotalRevenueByType(
+        typeName,
+        year = new Date().getFullYear()
+    ) {
+        try {
+            const [rows] = await db.query(
+                `
       SELECT COALESCE(SUM(ci.Volume * ci.UnitPrice), 0) as totalRevenue
       FROM Invoice i
       LEFT JOIN CartItem ci ON i.CartID = ci.CartID
@@ -1076,249 +1090,261 @@ class AdminSite {
         AND tp.TypeName = ?
         AND i.StatusID = 2
       `,
-        [year, typeName]
-      );
+                [year, typeName]
+            )
 
-      return Number(rows[0]?.totalRevenue || 0);
-    } catch (err) {
-      console.error('Error in getTotalRevenueByType:', err);
-      throw err;
+            return Number(rows[0]?.totalRevenue || 0)
+        } catch (err) {
+            console.error("Error in getTotalRevenueByType:", err)
+            throw err
+        }
     }
-  }
 
-  // Thêm vào AdminSite model
+    // Thêm vào AdminSite model
 
-  // ===== CẬP NHẬT SẢN PHẨM VỚI MÀU SẮC VÀ KÍCH CỠ =====
-  static async updateProductWithColors(productId, payload) {
-    const conn = await db.getConnection();
-    try {
-      await conn.beginTransaction();
+    // ===== CẬP NHẬT SẢN PHẨM VỚI MÀU SẮC VÀ KÍCH CỠ =====
+    static async updateProductWithColors(productId, payload) {
+        const conn = await db.getConnection()
+        try {
+            await conn.beginTransaction()
 
-      // 1) Update Product info
-      await conn.query(
-        'UPDATE Product SET ProductName = ?, Descriptions = ?, TypeID = ? WHERE ID = ?',
-        [payload.ProductName, payload.Descriptions, payload.TypeID, productId]
-      );
-
-      // 2) Update Price
-      await conn.query('UPDATE Price SET Price = ? WHERE ProductID = ?', [
-        payload.Price,
-        productId,
-      ]);
-
-      // Helper: insert image and return id
-      const insertImage = async (imgPath) => {
-        const [imgRes] = await conn.query(
-          'INSERT INTO Image (ImgPath) VALUES (?)',
-          [imgPath]
-        );
-        return imgRes.insertId;
-      };
-
-      // 3) Handle main images - CHỈ THÊM ẢNH MỚI VÀO ProductImg
-      if (Array.isArray(payload.mainImages) && payload.mainImages.length > 0) {
-        for (const imgPath of payload.mainImages) {
-          if (!imgPath) continue;
-          const imgId = await insertImage(imgPath);
-          await conn.query(
-            'INSERT IGNORE INTO ProductImg (ProductID, ImgID) VALUES (?, ?)',
-            [productId, imgId]
-          );
-        }
-      }
-
-      // 4) Handle colors
-      // Lấy danh sách màu hiện tại
-      const [existingColors] = await conn.query(
-        'SELECT ID, ColorName FROM ColorProduct WHERE ProductID = ?',
-        [productId]
-      );
-
-      const existingColorMap = {};
-      existingColors.forEach((c) => {
-        existingColorMap[c.ColorName] = c.ID;
-      });
-
-      const processedColorIds = new Set();
-
-      for (const color of payload.colors || []) {
-        let colorId;
-
-        // Kiểm tra xem màu đã tồn tại chưa
-        if (existingColorMap[color.colorName]) {
-          colorId = existingColorMap[color.colorName];
-          processedColorIds.add(colorId);
-        } else {
-          // Tạo màu mới
-          const [colorRes] = await conn.query(
-            'INSERT INTO ColorProduct (ProductID, ColorName) VALUES (?, ?)',
-            [productId, color.colorName || 'Default']
-          );
-          colorId = colorRes.insertId;
-          processedColorIds.add(colorId);
-        }
-
-        // Thêm ảnh mới cho màu này
-        // QUAN TRỌNG: CHỈ LƯU VÀO ColorProductImage, KHÔNG LƯU VÀO ProductImg
-        if (Array.isArray(color.images) && color.images.length > 0) {
-          for (const imgPath of color.images) {
-            if (!imgPath) continue;
-
-            const imgId = await insertImage(imgPath);
-
-            // CHỈ link to ColorProductImage (KHÔNG link to ProductImg)
+            // 1) Update Product info
             await conn.query(
-              'INSERT IGNORE INTO ColorProductImage (ColorProductID, ImgID) VALUES (?, ?)',
-              [colorId, imgId]
-            );
-          }
+                "UPDATE Product SET ProductName = ?, Descriptions = ?, TypeID = ? WHERE ID = ?",
+                [
+                    payload.ProductName,
+                    payload.Descriptions,
+                    payload.TypeID,
+                    productId,
+                ]
+            )
+
+            // 2) Update Price
+            await conn.query("UPDATE Price SET Price = ? WHERE ProductID = ?", [
+                payload.Price,
+                productId,
+            ])
+
+            // Helper: insert image and return id
+            const insertImage = async (imgPath) => {
+                const [imgRes] = await conn.query(
+                    "INSERT INTO Image (ImgPath) VALUES (?)",
+                    [imgPath]
+                )
+                return imgRes.insertId
+            }
+
+            // 3) Handle main images - CHỈ THÊM ẢNH MỚI VÀO ProductImg
+            if (
+                Array.isArray(payload.mainImages) &&
+                payload.mainImages.length > 0
+            ) {
+                for (const imgPath of payload.mainImages) {
+                    if (!imgPath) continue
+                    const imgId = await insertImage(imgPath)
+                    await conn.query(
+                        "INSERT IGNORE INTO ProductImg (ProductID, ImgID) VALUES (?, ?)",
+                        [productId, imgId]
+                    )
+                }
+            }
+
+            // 4) Handle colors
+            // Lấy danh sách màu hiện tại
+            const [existingColors] = await conn.query(
+                "SELECT ID, ColorName FROM ColorProduct WHERE ProductID = ?",
+                [productId]
+            )
+
+            const existingColorMap = {}
+            existingColors.forEach((c) => {
+                existingColorMap[c.ColorName] = c.ID
+            })
+
+            const processedColorIds = new Set()
+
+            for (const color of payload.colors || []) {
+                let colorId
+
+                // Kiểm tra xem màu đã tồn tại chưa
+                if (existingColorMap[color.colorName]) {
+                    colorId = existingColorMap[color.colorName]
+                    processedColorIds.add(colorId)
+                } else {
+                    // Tạo màu mới
+                    const [colorRes] = await conn.query(
+                        "INSERT INTO ColorProduct (ProductID, ColorName) VALUES (?, ?)",
+                        [productId, color.colorName || "Default"]
+                    )
+                    colorId = colorRes.insertId
+                    processedColorIds.add(colorId)
+                }
+
+                // Thêm ảnh mới cho màu này
+                // QUAN TRỌNG: CHỈ LƯU VÀO ColorProductImage, KHÔNG LƯU VÀO ProductImg
+                if (Array.isArray(color.images) && color.images.length > 0) {
+                    for (const imgPath of color.images) {
+                        if (!imgPath) continue
+
+                        const imgId = await insertImage(imgPath)
+
+                        // CHỈ link to ColorProductImage (KHÔNG link to ProductImg)
+                        await conn.query(
+                            "INSERT IGNORE INTO ColorProductImage (ColorProductID, ImgID) VALUES (?, ?)",
+                            [colorId, imgId]
+                        )
+                    }
+                }
+
+                // Xóa tất cả quantities cũ của màu này
+                await conn.query(
+                    "DELETE FROM Quantity WHERE ColorID = ? AND ProductID = ?",
+                    [colorId, productId]
+                )
+
+                // Insert sizes và quantities mới
+                for (const s of color.sizes || []) {
+                    if (!s || !s.size) continue
+                    const sizeName = String(s.size).trim()
+
+                    // Find or create size
+                    const [rows] = await conn.query(
+                        "SELECT ID FROM SizeProduct WHERE SizeName = ?",
+                        [sizeName]
+                    )
+                    let sizeId
+                    if (rows && rows.length) {
+                        sizeId = rows[0].ID
+                    } else {
+                        const [sizeRes] = await conn.query(
+                            "INSERT INTO SizeProduct (SizeName) VALUES (?)",
+                            [sizeName]
+                        )
+                        sizeId = sizeRes.insertId
+                    }
+
+                    // Insert into Quantity
+                    const quantityVal = Number(s.quantity) || 0
+                    await conn.query(
+                        "INSERT INTO Quantity (QuantityValue, SizeID, ColorID, ProductID) VALUES (?, ?, ?, ?)",
+                        [quantityVal, sizeId, colorId, productId]
+                    )
+                }
+            }
+
+            // Xóa các màu không còn tồn tại
+            const existingColorIds = existingColors.map((c) => c.ID)
+            const colorsToDelete = existingColorIds.filter(
+                (id) => !processedColorIds.has(id)
+            )
+
+            if (colorsToDelete.length > 0) {
+                const placeholders = colorsToDelete.map(() => "?").join(",")
+
+                // Xóa ColorProductImage trước
+                await conn.query(
+                    `DELETE FROM ColorProductImage WHERE ColorProductID IN (${placeholders})`,
+                    colorsToDelete
+                )
+
+                // Xóa Quantity
+                await conn.query(
+                    `DELETE FROM Quantity WHERE ColorID IN (${placeholders})`,
+                    colorsToDelete
+                )
+
+                // Xóa ColorProduct
+                await conn.query(
+                    `DELETE FROM ColorProduct WHERE ID IN (${placeholders})`,
+                    colorsToDelete
+                )
+            }
+
+            await conn.commit()
+            return { success: true, productId }
+        } catch (err) {
+            await conn.rollback()
+            console.error("updateProductWithColors error:", err)
+            throw err
+        } finally {
+            conn.release()
         }
-
-        // Xóa tất cả quantities cũ của màu này
-        await conn.query(
-          'DELETE FROM Quantity WHERE ColorID = ? AND ProductID = ?',
-          [colorId, productId]
-        );
-
-        // Insert sizes và quantities mới
-        for (const s of color.sizes || []) {
-          if (!s || !s.size) continue;
-          const sizeName = String(s.size).trim();
-
-          // Find or create size
-          const [rows] = await conn.query(
-            'SELECT ID FROM SizeProduct WHERE SizeName = ?',
-            [sizeName]
-          );
-          let sizeId;
-          if (rows && rows.length) {
-            sizeId = rows[0].ID;
-          } else {
-            const [sizeRes] = await conn.query(
-              'INSERT INTO SizeProduct (SizeName) VALUES (?)',
-              [sizeName]
-            );
-            sizeId = sizeRes.insertId;
-          }
-
-          // Insert into Quantity
-          const quantityVal = Number(s.quantity) || 0;
-          await conn.query(
-            'INSERT INTO Quantity (QuantityValue, SizeID, ColorID, ProductID) VALUES (?, ?, ?, ?)',
-            [quantityVal, sizeId, colorId, productId]
-          );
-        }
-      }
-
-      // Xóa các màu không còn tồn tại
-      const existingColorIds = existingColors.map((c) => c.ID);
-      const colorsToDelete = existingColorIds.filter(
-        (id) => !processedColorIds.has(id)
-      );
-
-      if (colorsToDelete.length > 0) {
-        const placeholders = colorsToDelete.map(() => '?').join(',');
-
-        // Xóa ColorProductImage trước
-        await conn.query(
-          `DELETE FROM ColorProductImage WHERE ColorProductID IN (${placeholders})`,
-          colorsToDelete
-        );
-
-        // Xóa Quantity
-        await conn.query(
-          `DELETE FROM Quantity WHERE ColorID IN (${placeholders})`,
-          colorsToDelete
-        );
-
-        // Xóa ColorProduct
-        await conn.query(
-          `DELETE FROM ColorProduct WHERE ID IN (${placeholders})`,
-          colorsToDelete
-        );
-      }
-
-      await conn.commit();
-      return { success: true, productId };
-    } catch (err) {
-      await conn.rollback();
-      console.error('updateProductWithColors error:', err);
-      throw err;
-    } finally {
-      conn.release();
     }
-  }
 
-  // Xóa color và tất cả dữ liệu liên quan
-  static async deleteColor(colorId) {
-    const conn = await db.getConnection();
-    try {
-      await conn.beginTransaction();
+    // Xóa color và tất cả dữ liệu liên quan
+    static async deleteColor(colorId) {
+        const conn = await db.getConnection()
+        try {
+            await conn.beginTransaction()
 
-      // 1. Lấy tất cả ImgID của color này
-      const [colorImages] = await conn.query(
-        'SELECT ImgID FROM ColorProductImage WHERE ColorProductID = ?',
-        [colorId]
-      );
+            // 1. Lấy tất cả ImgID của color này
+            const [colorImages] = await conn.query(
+                "SELECT ImgID FROM ColorProductImage WHERE ColorProductID = ?",
+                [colorId]
+            )
 
-      // 2. Xóa ColorProductImage
-      await conn.query(
-        'DELETE FROM ColorProductImage WHERE ColorProductID = ?',
-        [colorId]
-      );
+            // 2. Xóa ColorProductImage
+            await conn.query(
+                "DELETE FROM ColorProductImage WHERE ColorProductID = ?",
+                [colorId]
+            )
 
-      // 3. Xóa Quantity
-      await conn.query('DELETE FROM Quantity WHERE ColorID = ?', [colorId]);
+            // 3. Xóa Quantity
+            await conn.query("DELETE FROM Quantity WHERE ColorID = ?", [
+                colorId,
+            ])
 
-      // 4. Xóa ColorProduct
-      const [result] = await conn.query(
-        'DELETE FROM ColorProduct WHERE ID = ?',
-        [colorId]
-      );
+            // 4. Xóa ColorProduct
+            const [result] = await conn.query(
+                "DELETE FROM ColorProduct WHERE ID = ?",
+                [colorId]
+            )
 
-      // 5. Xóa các ảnh không còn được sử dụng
-      if (colorImages.length > 0) {
-        for (const img of colorImages) {
-          // Check nếu ảnh không còn được dùng ở đâu khác
-          const [usageCheck] = await conn.query(
-            `
+            // 5. Xóa các ảnh không còn được sử dụng
+            if (colorImages.length > 0) {
+                for (const img of colorImages) {
+                    // Check nếu ảnh không còn được dùng ở đâu khác
+                    const [usageCheck] = await conn.query(
+                        `
           SELECT COUNT(*) as count FROM (
             SELECT ImgID FROM ProductImg WHERE ImgID = ?
             UNION ALL
             SELECT ImgID FROM ColorProductImage WHERE ImgID = ?
           ) as img_usage
         `,
-            [img.ImgID, img.ImgID]
-          );
+                        [img.ImgID, img.ImgID]
+                    )
 
-          if (usageCheck[0].count === 0) {
-            // Ảnh không còn được dùng, xóa file path và record
-            const [imgData] = await conn.query(
-              'SELECT ImgPath FROM Image WHERE ID = ?',
-              [img.ImgID]
-            );
+                    if (usageCheck[0].count === 0) {
+                        // Ảnh không còn được dùng, xóa file path và record
+                        const [imgData] = await conn.query(
+                            "SELECT ImgPath FROM Image WHERE ID = ?",
+                            [img.ImgID]
+                        )
 
-            // Xóa record trong database
-            await conn.query('DELETE FROM Image WHERE ID = ?', [img.ImgID]);
+                        // Xóa record trong database
+                        await conn.query("DELETE FROM Image WHERE ID = ?", [
+                            img.ImgID,
+                        ])
 
-            // TODO: Xóa file vật lý trên server nếu cần
-            // const fs = require('fs');
-            // if (imgData[0] && imgData[0].ImgPath) {
-            //   fs.unlinkSync('./public' + imgData[0].ImgPath);
-            // }
-          }
+                        // TODO: Xóa file vật lý trên server nếu cần
+                        // const fs = require('fs');
+                        // if (imgData[0] && imgData[0].ImgPath) {
+                        //   fs.unlinkSync('./public' + imgData[0].ImgPath);
+                        // }
+                    }
+                }
+            }
+
+            await conn.commit()
+            return result.affectedRows
+        } catch (error) {
+            await conn.rollback()
+            console.error(" Error in deleteColor:", error)
+            throw error
+        } finally {
+            conn.release()
         }
-      }
-
-      await conn.commit();
-      return result.affectedRows;
-    } catch (error) {
-      await conn.rollback();
-      console.error(' Error in deleteColor:', error);
-      throw error;
-    } finally {
-      conn.release();
     }
-  }
 }
-module.exports = AdminSite;
+module.exports = AdminSite

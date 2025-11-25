@@ -4,7 +4,19 @@ const AuthSite = require("../models/AuthSite")
 class AuthController {
     // ===== [GET] /auth - Trang chủ auth (index) =====
     async index(req, res) {
-        res.render("auth/index", { layout: "Auth" })
+        const nextUrl =
+            typeof req.query.next === "string" && req.query.next.startsWith("/")
+                ? req.query.next
+                : null
+
+        if (nextUrl && req.session) {
+            req.session.returnTo = nextUrl
+        }
+
+        res.render("auth/index", {
+            layout: "Auth",
+            returnTo: nextUrl || req.session?.returnTo || "",
+        })
     }
 
     // ===== [GET] /auth/register - Hiển thị trang đăng ký =====
@@ -101,7 +113,13 @@ class AuthController {
             await AuthSite.updateLastLogin(userResult.data.user.id)
 
             // ✅ Redirect về returnTo nếu có, không thì về trang chủ
-            const redirectUrl = req.session.returnTo || "/"
+            const bodyReturnTo =
+                typeof req.body.returnTo === "string" &&
+                req.body.returnTo.startsWith("/")
+                    ? req.body.returnTo
+                    : null
+
+            const redirectUrl = bodyReturnTo || req.session.returnTo || "/"
             delete req.session.returnTo
 
             res.json({
@@ -130,96 +148,103 @@ class AuthController {
             }
             res.redirect("/auth")
         })
-    }    
-      // ===== [GET] /profile - Hiển thị profile (dùng AuthSite để lấy regions & orders) =====
-      async profile(req, res) {
+    }
+    // ===== [GET] /profile - Hiển thị profile (dùng AuthSite để lấy regions & orders) =====
+    async profile(req, res) {
         try {
-          const userId = req.session && req.session.userId
-          if (!userId) return res.redirect("/auth")
-    
-          const user = await AuthSite.getUserById(userId)
-          if (!user) return res.redirect("/auth")
-    
-          // format BirthDate cho input[type=date]
-          if (user.BirthDate) {
-            const d = new Date(user.BirthDate)
-            user.BirthDate = isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 10)
-          } else {
-            user.BirthDate = ""
-          }
-    
-          // load regions và đánh dấu selected
-          const regions = await AuthSite.getUserRegions()
-          const regionsWithFlag = regions.map(r => ({
-            ...r,
-            selected: String(r.ID) === String(user.RegionID || user.region)
-          }))
-    
-          // load orders (đã filter chỉ lấy invoices có items)
-          const orders = await AuthSite.getUserOrders(userId)
-    
-          return res.render("profile", {
-            layout: "main",
-            user,
-            orders,
-            regions: regionsWithFlag
-          })
-        } catch (error) {
-          console.error("❌ Get profile error:", error)
-          res.status(500).render("error", {
-            layout: "main",
-            message: "Failed to load profile",
-            error: error.message
-          })
-        }
-      }
-    
-      // ===== [POST] /profile/update - Xử lý cập nhật profile từ form =====
-      async updateProfile(req, res) {
-        try {
-          const userId = req.session && req.session.userId
-          if (!userId) return res.status(401).redirect("/auth")
-    
-          // xây payload từ form
-          const payload = {
-            FirstName: req.body.FirstName,
-            LastName: req.body.LastName,
-            BirthDate: req.body.BirthDate,
-            Gender: req.body.Gender,
-            PhoneNumber: req.body.PhoneNumber,
-            Email: req.body.Email,
-            Address: req.body.Address,
-            RegionID: req.body.RegionID,
-            Avt: req.body.Avt
-          }
-    
-          const updated = await AuthSite.updateProfile(userId, payload)
-    
-          // nếu request AJAX/JSON => trả JSON, ngược lại redirect về /profile
-          const acceptsJson = req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') !== -1)
-          if (acceptsJson) {
-            return res.json({ success: true, data: updated })
-          }
-    
-          // cập nhật session nhanh
-          req.session.userFullName = updated.fullName || `${updated.FirstName || ""} ${updated.LastName || ""}`.trim()
-          req.session.userEmail = updated.Email || updated.email
-    
-          return res.redirect("/profile")
-        } catch (error) {
-          console.error("❌ Update profile error:", error)
-          if (req.xhr) {
-            return res.status(400).json({ success: false, message: error.message })
-          }
-          return res.status(400).render("error", {
-            layout: "main",
-            message: "Update failed",
-            error: error.message
-          })
-        }
-      }
-    
+            const userId = req.session && req.session.userId
+            if (!userId) return res.redirect("/auth")
 
+            const user = await AuthSite.getUserById(userId)
+            if (!user) return res.redirect("/auth")
+
+            // format BirthDate cho input[type=date]
+            if (user.BirthDate) {
+                const d = new Date(user.BirthDate)
+                user.BirthDate = isNaN(d.getTime())
+                    ? ""
+                    : d.toISOString().slice(0, 10)
+            } else {
+                user.BirthDate = ""
+            }
+
+            // load regions và đánh dấu selected
+            const regions = await AuthSite.getUserRegions()
+            const regionsWithFlag = regions.map((r) => ({
+                ...r,
+                selected: String(r.ID) === String(user.RegionID || user.region),
+            }))
+
+            // load orders (đã filter chỉ lấy invoices có items)
+            const orders = await AuthSite.getUserOrders(userId)
+
+            return res.render("profile", {
+                layout: "main",
+                user,
+                orders,
+                regions: regionsWithFlag,
+            })
+        } catch (error) {
+            console.error("❌ Get profile error:", error)
+            res.status(500).render("error", {
+                layout: "main",
+                message: "Failed to load profile",
+                error: error.message,
+            })
+        }
+    }
+
+    // ===== [POST] /profile/update - Xử lý cập nhật profile từ form =====
+    async updateProfile(req, res) {
+        try {
+            const userId = req.session && req.session.userId
+            if (!userId) return res.status(401).redirect("/auth")
+
+            // xây payload từ form
+            const payload = {
+                FirstName: req.body.FirstName,
+                LastName: req.body.LastName,
+                BirthDate: req.body.BirthDate,
+                Gender: req.body.Gender,
+                PhoneNumber: req.body.PhoneNumber,
+                Email: req.body.Email,
+                Address: req.body.Address,
+                RegionID: req.body.RegionID,
+                Avt: req.body.Avt,
+            }
+
+            const updated = await AuthSite.updateProfile(userId, payload)
+
+            // nếu request AJAX/JSON => trả JSON, ngược lại redirect về /profile
+            const acceptsJson =
+                req.xhr ||
+                (req.headers.accept &&
+                    req.headers.accept.indexOf("json") !== -1)
+            if (acceptsJson) {
+                return res.json({ success: true, data: updated })
+            }
+
+            // cập nhật session nhanh
+            req.session.userFullName =
+                updated.fullName ||
+                `${updated.FirstName || ""} ${updated.LastName || ""}`.trim()
+            req.session.userEmail = updated.Email || updated.email
+
+            return res.redirect("/profile")
+        } catch (error) {
+            console.error("❌ Update profile error:", error)
+            if (req.xhr) {
+                return res
+                    .status(400)
+                    .json({ success: false, message: error.message })
+            }
+            return res.status(400).render("error", {
+                layout: "main",
+                message: "Update failed",
+                error: error.message,
+            })
+        }
+    }
 
     // ===== [POST] /auth/change-password - Đổi mật khẩu =====
     async changePassword(req, res) {

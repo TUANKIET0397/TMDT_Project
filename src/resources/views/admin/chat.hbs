@@ -4,6 +4,65 @@
 
 <main class="main-content">
     <div class="chat-container">
+        <div class="chat-main-header">
+            <h2 class="chat-main-title">Chat</h2>
+        </div>
+
+        <div class="chat-content-wrapper">
+            <div class="user-list">
+                <div class="user-list-header">
+                    <div class="user-search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input
+                            type="text"
+                            class="user-search-input"
+                            placeholder="Search user or email"
+                        />
+                    </div>
+                </div>
+                <div class="users-scroll" id="adminUserList">
+                    <div class="user-empty-state">
+                        <p>No conversations yet.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-area">
+                <div class="chat-header">
+                    <div class="chat-user-info">
+                        <div class="chat-user-avatar"></div>
+                        <div class="chat-user-name">Select a conversation</div>
+                    </div>
+                </div>
+
+                <div class="chat-messages">
+                    <div class="chat-empty-state">
+                        <p>Select a conversation to get started</p>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <input
+                        type="text"
+                        class="chat-input"
+                        placeholder="Type here"
+                    />
+                    <button class="send-button">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+{{#contentFor "scriptAdmin"}}
+    <script src="/js/admin-chat.js"></script>
+{{/contentFor}}
+{{!-- {{#contentFor "styleadmin"}}
+    <link rel="stylesheet" href="/css/chatadmin.css" />
+{{/contentFor}}
+
+<main class="main-content">
+    <div class="chat-container">
         <!-- Chat Main Header -->
         <div class="chat-main-header">
             <h2 class="chat-main-title">Chat</h2>
@@ -23,22 +82,10 @@
                         />
                     </div>
                 </div>
-                <div class="users-scroll">
-                    <div class="user-item active">
-                        <div class="user-item-avatar"></div>
-                        <div class="user-item-info">
-                            <div class="user-item-name">John nguyen</div>
-                            <div class="user-item-message">You - Okay sir</div>
-                        </div>
+                <div class="users-scroll" id="adminUserList">
+                    <div class="user-empty-state">
+                        <p>No conversations yet.</p>
                     </div>
-                    <div class="user-item">
-                        <div class="user-item-avatar"></div>
-                        <div class="user-item-info">
-                            <div class="user-item-name">John nguyen</div>
-                            <div class="user-item-message">You - Okay sir</div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
 
@@ -182,4 +229,4 @@
 
 {{#contentFor "scriptAdmin"}}
     <script src="/js/admin-chat.js"></script>
-{{/contentFor}}
+{{/contentFor}} --}}

@@ -13,6 +13,12 @@
     <div class="login_box">
         <h1 class="login_title">Login</h1>
         <form id="loginForm">
+            <input
+                type="hidden"
+                id="returnTo"
+                name="returnTo"
+                value="{{returnTo}}"
+            />
             <div class="login_info">
                 {{! ✅ FIX: Đổi từ username sang email }}
                 <input

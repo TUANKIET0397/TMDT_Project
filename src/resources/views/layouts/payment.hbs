@@ -23,6 +23,9 @@
         <div class="header__checkout-container">
             {{{body}}}
         </div>
+        <script>
+            window.APP_USER = {{#if appUserJson}}{{{appUserJson}}}{{else}}null{{/if}}
+        </script>
     </body>
 
 </html>

@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const emailInput = document.getElementById("email") // ✅ Đổi từ username sang email
     const passwordInput = document.getElementById("password")
     const rememberMeCheckbox = document.getElementById("rememberMe")
+    const returnToInput = document.getElementById("returnTo")
 
     // ✅ Load saved email if "Remember me" was checked
     const savedEmail = localStorage.getItem("rememberedEmail")
@@ -20,6 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const formData = {
             email: emailInput.value.trim(),
             password: passwordInput.value,
+            returnTo: returnToInput?.value || undefined,
         }
 
         // ✅ Validate phía client

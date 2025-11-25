@@ -186,7 +186,7 @@ section p {
 }
 .Name-price h4 {
     display: -webkit-box;
-    -webkit-line-clamp: 1;   /* số dòng tối đa */
+    -webkit-line-clamp: 1; /* số dòng tối đa */
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -204,7 +204,7 @@ section p {
     background: #fff;
     font-family: "Nunito Sans", sans-serif;
     display: -webkit-box;
-    -webkit-line-clamp: 2;   /* số dòng tối đa */
+    -webkit-line-clamp: 2; /* số dòng tối đa */
     -webkit-box-orient: vertical;
     overflow: hidden;
 }

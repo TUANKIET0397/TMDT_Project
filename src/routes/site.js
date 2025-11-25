@@ -44,6 +44,8 @@ router.post(
     siteController.payment
 )
 
+router.get("/chat/history", requireAuth, siteController.chatHistory)
+
 // ✅ MoMo Return Callback - User is redirected here after payment
 router.get("/return", async (req, res) => {
     try {

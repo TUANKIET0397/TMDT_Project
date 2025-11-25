@@ -3,6 +3,18 @@
 {{/contentFor}}
 
 <div class="profile-page">
+    {{#if notice}}
+        <div class="profile-alert" style="background:#fff9c4;border:1px solid #f6e05e;padding:12px 16px;border-radius:8px;margin-bottom:16px;color:#744210;">
+            {{notice}}
+            {{#if missingFieldsDisplay}}
+                <br />
+                <strong>Thiếu:</strong>
+                {{#each missingFieldsDisplay}}
+                    {{this}}{{#unless @last}}, {{/unless}}
+                {{/each}}
+            {{/if}}
+        </div>
+    {{/if}}
     <input type="radio" name="tab" id="tab-profile" checked />
     <input type="radio" name="tab" id="tab-orders" />
 

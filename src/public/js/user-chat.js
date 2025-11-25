@@ -1,259 +1,324 @@
 // src/public/js/user-chat.js
 
-// Kết nối Socket.IO
-const socket = io()
+document.addEventListener("DOMContentLoaded", () => {
+    const chatDrawer = document.getElementById("chatDrawer")
+    const chatOverlay = document.querySelector(".chat-overlay")
+    const closeChat = document.getElementById("closeChat")
+    const chatInput = document.getElementById("chatInput")
+    const sendMessage = document.getElementById("sendMessage")
+    const chatMessages = document.getElementById("chatMessages")
+    const chatIcon = document.getElementById("chatIcon")
 
-// Lấy userId từ localStorage hoặc tạo mới
-let userId = localStorage.getItem("chatUserId")
-if (!userId) {
-    userId = "user_" + Date.now()
-    localStorage.setItem("chatUserId", userId)
-}
+    const hasChatUI =
+        chatDrawer &&
+        chatOverlay &&
+        closeChat &&
+        chatInput &&
+        sendMessage &&
+        chatMessages
 
-// Đăng ký userId với server
-socket.emit("user:join", { userId })
+    const currentPath =
+        typeof window.getCurrentPath === "function"
+            ? window.getCurrentPath()
+            : window.location.pathname || "/"
 
-// Nhận userId từ server
-socket.on("user:joined", (data) => {
-    console.log("Joined as:", data.userId)
-    userId = data.userId
-    localStorage.setItem("chatUserId", userId)
-})
+    const isLoggedIn =
+        typeof window.isUserLoggedIn === "function"
+            ? window.isUserLoggedIn()
+            : Boolean(window.APP_USER && window.APP_USER.id)
 
-// DOM Elements
-const chatDrawer = document.getElementById("chatDrawer")
-const chatOverlay = document.querySelector(".chat-overlay")
-const closeChat = document.getElementById("closeChat")
-const chatInput = document.getElementById("chatInput")
-const sendMessage = document.getElementById("sendMessage")
-const chatMessages = document.getElementById("chatMessages")
-  const chatIcon = document.getElementById('chatIcon')
+    const requestLogin = () => {
+        sessionStorage.setItem("postLoginChat", "1")
+        if (typeof window.requireLogin === "function") {
+            window.requireLogin({ next: currentPath, intent: "chat" })
+        } else {
+            window.location.href = `/auth?next=${encodeURIComponent(
+                currentPath
+            )}`
+        }
+    }
 
+    if (!chatIcon) {
+        console.warn("Chat icon not found in DOM")
+    }
 
-// Track last date to show separator
-let lastMessageDate = null
+    function handleChatRequest(onAuthorized) {
+        if (!isLoggedIn) {
+            requestLogin()
+            return
+        }
+        if (!hasChatUI) {
+            console.warn("Chat UI not available on this page")
+            return
+        }
+        if (typeof onAuthorized === "function") {
+            onAuthorized()
+        }
+    }
 
-// Mở chat khi click "Tư vấn ngay" (từ trang detail)
-document.addEventListener("click", function (e) {
-    if (e.target.closest(".btn-consult")) {
+    if (chatIcon) {
+        chatIcon.addEventListener("click", (e) => {
+            e.preventDefault()
+            handleChatRequest(() => openChatDrawer())
+        })
+    }
+
+    document.addEventListener("click", function (e) {
+        const consultBtn = e.target.closest(".btn-consult")
+        if (!consultBtn) return
         e.preventDefault()
-        chatDrawer.classList.toggle('active')
-        chatOverlay.classList.toggle('active')
-
-        // Lấy thông tin sản phẩm
-        const productCard = e.target.closest(".product-detail")
-        if (productCard) {
+        handleChatRequest(() => {
+            openChatDrawer()
+            const productCard = consultBtn.closest(".product-detail")
+            if (!productCard) return
             const productData = {
                 productId: productCard.dataset.productId,
                 productName: productCard.dataset.productName,
                 productPrice: productCard.dataset.productPrice,
                 productImage: productCard.dataset.productImage,
             }
-
-            // Gửi tin nhắn với thông tin sản phẩm
             sendProductMessage(productData)
-        }
-    }
-})
-
- // Mở/đóng chat
-  chatIcon.addEventListener('click', () => {
-    chatDrawer.classList.toggle('active')
-    chatOverlay.classList.toggle('active')
-  })
-
-  closeChat.addEventListener('click', () => {
-    chatDrawer.classList.remove('active')
-    chatOverlay.classList.remove('active')
-  })
-
-  chatOverlay.addEventListener('click', () => {
-    chatDrawer.classList.remove('active')
-    chatOverlay.classList.remove('active')
-  })
-
-// Gửi tin nhắn thông thường
-sendMessage.addEventListener("click", sendTextMessage)
-chatInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-        sendTextMessage()
-    }
-})
-
-function sendTextMessage() {
-    const message = chatInput.value.trim()
-    if (!message) return
-
-    socket.emit("user:message", {
-        message: message,
-        userId: userId,
+        })
     })
 
-    chatInput.value = ""
-}
-
-// Gửi tin nhắn kèm sản phẩm
-function sendProductMessage(productData) {
-    const productMessage = `Tôi muốn hỏi về sản phẩm: ${productData.productName}`
-    const ts = new Date().toISOString()
-
-    socket.emit("user:message", {
-        message: productMessage,
-        productId: productData.productId,
-        productName: productData.productName,
-        productPrice: productData.productPrice,
-        productImage: productData.productImage,
-        userId: userId,
-    })
-
-    // Hiển thị sản phẩm trong chat (optimistic)
-    addProductToChat(productData, ts)
-}
-
-// Hiển thị tin nhắn đã gửi
-socket.on("user:message-sent", (data) => {
-    // If server echoes a product message, we avoid duplicating (optimistic already shown)
-    if (data.productName) {
-        // update timestamp on last product message if present
-        updateLastProductMessageTimestamp(data.timestamp)
+    if (!isLoggedIn || !hasChatUI) {
         return
     }
-    addMessageToChat(data.message, "sent", data.timestamp)
-})
 
-// Nhận tin nhắn từ admin
-socket.on("user:receive-message", (data) => {
-    addMessageToChat(data.message, "received", data.timestamp)
-})
+    const socket = io()
+    let userId = window.APP_USER?.id
 
-// Thêm tin nhắn vào chat
-function addMessageToChat(message, type, timestamp) {
-    // Thêm date separator nếu cần
-    if (shouldShowDateSeparator(timestamp)) {
-        addDateSeparator(timestamp)
-    }
+    socket.emit("user:join", { userId })
 
-    const messageDiv = document.createElement("div")
-    messageDiv.className = `message ${type}`
-    const timeHTML = timestamp
-        ? `<div class="message-time" style="font-size: 12px; color: #999; margin-bottom: 5px;">${formatTimestamp(
-              timestamp
-          )}</div>`
-        : ""
-    messageDiv.innerHTML = `${timeHTML}<div class="message-content">${escapeHtml(
-        message
-    )}</div>`
-    chatMessages.appendChild(messageDiv)
-    scrollToBottom()
-}
+    socket.on("user:joined", (data) => {
+        console.log("Joined as:", data.userId)
+        userId = data.userId
+    })
 
-function formatTimestamp(ts) {
-    try {
-        return new Date(ts).toLocaleString()
-    } catch (e) {
-        return ts
-    }
-}
+    let lastMessageDate = null
+    let historyLoaded = false
 
-function formatDateOnly(ts) {
-    try {
-        const d = new Date(ts)
-        return d.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-        })
-    } catch (e) {
-        return ""
-    }
-}
-
-function shouldShowDateSeparator(timestamp) {
-    if (!timestamp) return false
-    const currentDate = formatDateOnly(timestamp)
-    if (currentDate !== lastMessageDate) {
-        lastMessageDate = currentDate
-        return true
-    }
-    return false
-}
-
-function addDateSeparator(timestamp) {
-    const dateDiv = document.createElement("div")
-    dateDiv.style.cssText =
-        "text-align: center; color: #999; font-size: 12px; margin: 15px 0 10px 0; padding: 0 20px;"
-    dateDiv.textContent = formatDateOnly(timestamp)
-    chatMessages.appendChild(dateDiv)
-}
-
-function escapeHtml(text) {
-    if (!text) return ""
-    return String(text)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/\"/g, "&quot;")
-        .replace(/'/g, "&#039;")
-}
-
-// Thêm sản phẩm vào chat
-function addProductToChat(product, timestamp) {
-    // Thêm date separator nếu cần
-    if (shouldShowDateSeparator(timestamp)) {
-        addDateSeparator(timestamp)
-    }
-
-    const productDiv = document.createElement("div")
-    productDiv.className = "message sent"
-    productDiv.style.width = "100%"
-    productDiv.style.maxWidth = "none"
-    productDiv.style.padding = "0"
-    const timeHTML = timestamp
-        ? `<div class="message-time" style="font-size: 12px; color: #999; margin-bottom: 10px; text-align: right;">${formatTimestamp(
-              timestamp
-          )}</div>`
-        : ""
-    productDiv.innerHTML = `
-        ${timeHTML}
-        <div class="product-message" style="width: 100%; display: flex; gap: 10px; padding: 10px 0; background-color: #f5f5f5; border-radius: 8px; padding: 10px;">
-            <div class="product-image" style="width: 100px; height: 100px; flex-shrink: 0; background-image: url('${escapeHtml(
-                product.productImage
-            )}'); background-size: cover; background-position: center; background-repeat: no-repeat; border-radius: 8px;"></div>
-            <div class="product-info" style="flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: center;">
-                <div class="product-name" style="font-weight: bold; flex: 1; margin-bottom: 5px; font-size: 20px; display: -webkit-box;
-  -webkit-line-clamp: 3; /* số dòng tối đa */
-  -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 15px;">${escapeHtml(
-                    product.productName
-                )}</div>
-                <div class="chat-price" style="color: #e74c3c; font-weight: bold; font-size: 20px; margin-bottom: 8px;">${escapeHtml(
-                    product.productPrice
-                )}$</div>
-                <button class="Buy" style="; padding: 6px; background-color: #000; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 20px;">Buy now</button>
-            </div>
-        </div>
-    `
-    chatMessages.appendChild(productDiv)
-    scrollToBottom()
-}
-
-function updateLastProductMessageTimestamp(timestamp) {
-    // find last .message.sent that contains .product-message
-    const messages = chatMessages.querySelectorAll(".message.sent")
-    for (let i = messages.length - 1; i >= 0; i--) {
-        const m = messages[i]
-        if (m.querySelector(".product-message")) {
-            if (!m.querySelector(".message-time")) {
-                const timeDiv = document.createElement("div")
-                timeDiv.className = "message-time"
-                timeDiv.textContent = formatTimestamp(timestamp)
-                m.appendChild(timeDiv)
-            }
-            break
+    function openChatDrawer() {
+        chatDrawer.classList.add("active")
+        chatOverlay.classList.add("active")
+        if (!historyLoaded) {
+            loadChatHistory()
         }
     }
-}
 
-// Scroll xuống cuối
-function scrollToBottom() {
-    chatMessages.scrollTop = chatMessages.scrollHeight
-}
+    function closeChatDrawer() {
+        chatDrawer.classList.remove("active")
+        chatOverlay.classList.remove("active")
+    }
+
+    closeChat.addEventListener("click", closeChatDrawer)
+    chatOverlay.addEventListener("click", closeChatDrawer)
+
+    const shouldAutoOpenChat = sessionStorage.getItem("postLoginChat") === "1"
+    if (shouldAutoOpenChat) {
+        sessionStorage.removeItem("postLoginChat")
+        openChatDrawer()
+    }
+
+    async function loadChatHistory() {
+        try {
+            const response = await fetch("/chat/history")
+            if (!response.ok) throw new Error("Failed to load history")
+            const data = await response.json()
+            const messages = Array.isArray(data.messages) ? data.messages : []
+            chatMessages.innerHTML = ""
+            lastMessageDate = null
+            messages.forEach((msg) => {
+                const type = msg.AdminID ? "received" : "sent"
+                if (msg.ProductID && msg.ProductName) {
+                    addProductToChat(
+                        {
+                            productName: msg.ProductName,
+                            productPrice: msg.ProductPrice,
+                            productImage: msg.ProductImage,
+                        },
+                        msg.SendTime,
+                        type
+                    )
+                }
+                if (msg.Message && msg.Message.trim() !== "") {
+                    addMessageToChat(msg.Message, type, msg.SendTime)
+                }
+            })
+            historyLoaded = true
+        } catch (error) {
+            console.error("Error loading chat history:", error)
+        }
+    }
+
+    sendMessage.addEventListener("click", sendTextMessage)
+    chatInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+            sendTextMessage()
+        }
+    })
+
+    function sendTextMessage() {
+        const message = chatInput.value.trim()
+        if (!message) return
+
+        socket.emit("user:message", {
+            message: message,
+            userId: userId,
+        })
+
+        chatInput.value = ""
+    }
+
+    function sendProductMessage(productData) {
+        if (!productData || !productData.productName) return
+        const productMessage = `Tôi muốn hỏi về sản phẩm: ${productData.productName}`
+        const ts = new Date().toISOString()
+
+        socket.emit("user:message", {
+            message: productMessage,
+            productId: productData.productId,
+            productName: productData.productName,
+            productPrice: productData.productPrice,
+            productImage: productData.productImage,
+            userId: userId,
+        })
+
+        addProductToChat(productData, ts)
+    }
+
+    socket.on("user:message-sent", (data) => {
+        if (data.productName) {
+            addProductToChat(
+                {
+                    productName: data.productName,
+                    productPrice: data.productPrice,
+                    productImage: data.productImage,
+                },
+                data.timestamp,
+                "sent"
+            )
+            return
+        }
+        addMessageToChat(data.message, "sent", data.timestamp)
+    })
+
+    socket.on("user:receive-message", (data) => {
+        if (data.productName) {
+            addProductToChat(
+                {
+                    productName: data.productName,
+                    productPrice: data.productPrice,
+                    productImage: data.productImage,
+                },
+                data.timestamp,
+                "received"
+            )
+        }
+        if (data.message && data.message.trim() !== "") {
+            addMessageToChat(data.message, "received", data.timestamp)
+        }
+    })
+
+    function addMessageToChat(message, type, timestamp) {
+        if (shouldShowDateSeparator(timestamp)) {
+            addDateSeparator(timestamp)
+        }
+
+        const messageDiv = document.createElement("div")
+        messageDiv.className = `message ${type}`
+        const timeHTML = timestamp
+            ? `<div class="message-time" style="font-size: 12px; color: #999; margin-bottom: 5px;">${formatTimestamp(
+                  timestamp
+              )}</div>`
+            : ""
+        messageDiv.innerHTML = `${timeHTML}<div class="message-content">${escapeHtml(
+            message
+        )}</div>`
+        chatMessages.appendChild(messageDiv)
+        scrollToBottom()
+    }
+
+    function formatTimestamp(ts) {
+        try {
+            return new Date(ts).toLocaleString()
+        } catch (e) {
+            return ts
+        }
+    }
+
+    function formatDateOnly(ts) {
+        try {
+            const d = new Date(ts)
+            return d.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+            })
+        } catch (e) {
+            return ""
+        }
+    }
+
+    function shouldShowDateSeparator(timestamp) {
+        if (!timestamp) return false
+        const currentDate = formatDateOnly(timestamp)
+        if (currentDate !== lastMessageDate) {
+            lastMessageDate = currentDate
+            return true
+        }
+        return false
+    }
+
+    function addDateSeparator(timestamp) {
+        const dateDiv = document.createElement("div")
+        dateDiv.style.cssText =
+            "text-align: center; color: #999; font-size: 12px; margin: 15px 0 10px 0; padding: 0 20px;"
+        dateDiv.textContent = formatDateOnly(timestamp)
+        chatMessages.appendChild(dateDiv)
+    }
+
+    function escapeHtml(text) {
+        if (!text) return ""
+        return String(text)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\"/g, "&quot;")
+            .replace(/'/g, "&#039;")
+    }
+
+    function addProductToChat(product, timestamp, type = "sent") {
+        if (shouldShowDateSeparator(timestamp)) {
+            addDateSeparator(timestamp)
+        }
+
+        const productDiv = document.createElement("div")
+        productDiv.className = `message ${type} product`
+        const timeHTML = timestamp
+            ? `<div class="message-time">${formatTimestamp(timestamp)}</div>`
+            : ""
+        productDiv.innerHTML = `
+            ${timeHTML}
+            <div class="product-message">
+                <div class="product-image" style="background-image: url('${escapeHtml(
+                    product.productImage || "/img/default.jpg"
+                )}');"></div>
+                <div class="product-info">
+                    <div class="product-name">${escapeHtml(
+                        product.productName || "Product"
+                    )}</div>
+                    <div class="chat-price">${escapeHtml(
+                        product.productPrice || "0"
+                    )}$</div>
+                </div>
+            </div>
+        `
+        chatMessages.appendChild(productDiv)
+        scrollToBottom()
+    }
+
+    function scrollToBottom() {
+        chatMessages.scrollTop = chatMessages.scrollHeight
+    }
+})

@@ -4,6 +4,7 @@ const { createPayment } = require("../../config/momo")
 const Transaction = require("../models/Transaction")
 const Invoice = require("../models/Invoice")
 const AuthSite = require("../models/AuthSite") // ✅ Thêm import
+const db = require("../../config/db")
 
 class SiteController {
     async index(req, res, next) {
@@ -101,6 +102,25 @@ class SiteController {
             const redirectTo =
                 req.query.next || req.query.redirectTo || req.session.returnTo
 
+            const missingParam = req.query.missing || ""
+            const missingFieldsDisplay = missingParam
+                .split(",")
+                .filter(Boolean)
+                .map((field) =>
+                    field
+                        .replace(/([A-Z])/g, " $1")
+                        .replace(/_/g, " ")
+                        .toLowerCase()
+                )
+
+            const noticeMessage =
+                req.query.notice ||
+                (missingFieldsDisplay.length
+                    ? `Vui lòng cập nhật các thông tin còn thiếu: ${missingFieldsDisplay.join(
+                          ", "
+                      )}.`
+                    : null)
+
             res.render("profile", {
                 layout: "main",
                 user,
@@ -108,6 +128,8 @@ class SiteController {
                 orders,
                 regions: regionsWithSelection,
                 redirectTo: redirectTo || "/profile",
+                notice: noticeMessage,
+                missingFieldsDisplay,
             })
         } catch (error) {
             console.error("Error in profile:", error)
@@ -177,6 +199,55 @@ class SiteController {
                 message: "Update failed",
                 error: error.message,
                 retryUrl: "/profile",
+            })
+        }
+    }
+
+    async chatHistory(req, res) {
+        try {
+            const userId = req.session?.userId
+            if (!userId) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Unauthorized",
+                })
+            }
+
+            const [messages] = await db.query(
+                `
+                SELECT 
+                    c.ID,
+                    c.Message,
+                    c.SendTime,
+                    c.AdminID,
+                    c.ProductID,
+                    p.ProductName,
+                    pr.Price AS ProductPrice,
+                    COALESCE((
+                        SELECT img.ImgPath
+                        FROM ProductImg pi
+                        LEFT JOIN Image img ON pi.ImgID = img.ID
+                        WHERE pi.ProductID = p.ID
+                        LIMIT 1
+                    ), '/img/default.jpg') AS ProductImage
+                FROM Chat c
+                LEFT JOIN Product p ON c.ProductID = p.ID
+                LEFT JOIN Price pr ON p.ID = pr.ProductID
+                WHERE c.UserID = ?
+                ORDER BY c.SendTime ASC
+            `,
+                [userId]
+            )
+
+            return res.json({
+                success: true,
+                messages,
+            })
+        } catch (error) {
+            console.error("Error loading chat history:", error)
+            return res.status(500).json({
+                success: false,
+                message: "Failed to load chat history",
             })
         }
     }

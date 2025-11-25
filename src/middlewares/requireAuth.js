@@ -9,7 +9,11 @@ function requireAuth(req, res, next) {
         console.warn("⚠️ Unauthorized access attempt to:", req.originalUrl)
 
         // Lưu URL người dùng muốn truy cập để redirect sau khi login
-        req.session.returnTo = req.originalUrl
+        if (req.session) {
+            const isGetRequest =
+                req.method && req.method.toUpperCase() === "GET"
+            req.session.returnTo = isGetRequest ? req.originalUrl : "/checkout"
+        }
 
         // ✅ Redirect về đúng route /auth (không phải /auth/login)
         return res.redirect("/auth?error=login_required")
@@ -77,18 +81,13 @@ function requireCompleteProfile(req, res, next) {
                     missingFields
                 )
 
-                // ✅ FIX: Hiển thị lỗi thay vì redirect
-                return res.status(400).render("error", {
-                    layout: "payment",
-                    message: "Please complete your profile before checkout",
-                    error: `Missing required information: ${missingFields
-                        .map((f) => {
-                            // Convert camelCase to readable text
-                            return f.replace(/([A-Z])/g, " $1").toLowerCase()
-                        })
-                        .join(", ")}`,
-                    retryUrl: "/profile?next=/checkout", // ✅ Link đến trang profile để cập nhật
-                })
+                const query = new URLSearchParams({
+                    next: req.originalUrl || "/checkout",
+                    missing: missingFields.join(","),
+                    notice: "Vui lòng hoàn tất hồ sơ trước khi tiếp tục thanh toán.",
+                }).toString()
+
+                return res.redirect(`/profile?${query}`)
             }
 
             // ✅ Thông tin đầy đủ, lưu vào req để dùng trong controller

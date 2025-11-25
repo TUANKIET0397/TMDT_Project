@@ -37,6 +37,9 @@
 
 
         </div>
+    <script>
+        window.APP_USER = {{#if appUserJson}}{{{appUserJson}}}{{else}}null{{/if}}
+    </script>
     <script src="/js/home.js"></script>
 
     <!-- Socket.IO Client -->

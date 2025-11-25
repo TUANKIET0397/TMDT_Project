@@ -503,7 +503,6 @@
           const enabled = buyBtn.getAttribute('aria-disabled') === 'false'
           if (!enabled) { e.preventDefault(); validateAndCollect(); return }
           window.addToCartDetail()
-          setTimeout(() => { window.location.href = '/checkout' }, 300)
         })
       }
 
