@@ -65,6 +65,12 @@
                 <i class="fa-solid fa-square-check"></i>
                 <label class="section-item__title">Status</label>
             </div>
+
+            <div class="section-item">
+    <i class="fa-solid fa-receipt"></i>
+    <label class="section-item__title">Invoice</label>
+</div>
+
             <div class="section-item">
                 <i class="fa-solid fa-location-dot"></i>
                 <label class="section-item__title">Country</label>
@@ -132,6 +138,14 @@
                         class="section-item__status--{{this.StatusColor}}"
                     ></div>
                 </div>
+
+                <!-- Invoice -->
+                <div class="section-item">
+                    <div class="section-item__title">
+                        {{this.InvoiceStatus}}
+                    </div>
+                </div>
+
 
                 <!-- Country -->
                 <div class="section-item">

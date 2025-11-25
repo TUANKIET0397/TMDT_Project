@@ -20,6 +20,7 @@ class AdminSite {
                         WHEN si.StatusName = 'Prepare' THEN 'yellow'
                         ELSE 'gray'
                     END as StatusColor,
+                   
                     (SELECT SUM(ci.TotalPrice) 
                      FROM CartItem ci 
                      WHERE ci.CartID = i.CartID) as TotalAmount
