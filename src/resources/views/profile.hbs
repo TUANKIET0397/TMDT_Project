@@ -23,16 +23,23 @@
     <div class="user-summary">
       <div class="user-avatar">
         {{#if user.Avt}}
-        <img src="/uploads/users/{{user.Avt}}" alt="avatar" style="width:48px;height:48px;border-radius:50%" />
+        <img src="/uploads/users/{{user.Avt}}" alt="avatar"
+          style="width:48px;height:48px;border-radius:50%" />
         {{/if}}
       </div>
       <div class="user-info">
         <strong>{{user.FirstName}} {{user.LastName}}</strong>
         <!-- Edit button: click to enable editing -->
         <div class="user-actions">
-          <button id="editProfileBtn" type="button" class="btn btn-link">Edit profile</button>
-          <button id="saveProfileBtn" type="button" class="btn btn-primary" style="display:none">Save</button>
-          <button id="cancelEditBtn" type="button" class="btn" style="display:none">Cancel</button>
+          <button id="editProfileBtn" type="button" class="btn btn-link">Edit
+            profile</button>
+          <button id="saveProfileBtn" type="button" class="btn btn-primary"
+            style="display:none">Save</button>
+          <button id="cancelEditBtn" type="button" class="btn"
+            style="display:none">Cancel</button>
+          <form id="logoutForm" action="/auth/logout" method="POST" style="display:inline">
+            <button id="logoutBtn" type="button" class="btn btn-logout">Logout</button>
+          </form>
         </div>
       </div>
     </div>
@@ -46,12 +53,14 @@
       <input type="hidden" name="redirectTo" value="{{redirectTo}}" />
       <div>
         <div class="field-label">First name</div>
-        <input name="FirstName" class="field-input editable" value="{{user.FirstName}}" disabled />
+        <input name="FirstName" class="field-input editable"
+          value="{{user.FirstName}}" disabled />
       </div>
 
       <div>
         <div class="field-label">Last name</div>
-        <input name="LastName" class="field-input editable" value="{{user.LastName}}" disabled />
+        <input name="LastName" class="field-input editable"
+          value="{{user.LastName}}" disabled />
       </div>
 
       <div>
@@ -61,37 +70,39 @@
 
       <div>
         <div class="field-label">Birth date</div>
-        <input type="date" name="BirthDate" class="field-input editable" value="{{user.BirthDate}}" disabled />
+        <input type="date" name="BirthDate" class="field-input editable"
+          value="{{user.BirthDate}}" disabled />
       </div>
       <div class="field-span-2">
 
-
-
         <div class="field-label">Address</div>
-        <input name="Address" class="field-input editable" value="{{user.Address}}" disabled />
+        <input name="Address" class="field-input editable"
+          value="{{user.Address}}" disabled />
       </div>
-
-
 
       <div>
         <div class="field-label">Phone number</div>
-        <input name="PhoneNumber" class="field-input editable" value="{{user.PhoneNumber}}" disabled />
+        <input name="PhoneNumber" class="field-input editable"
+          value="{{user.PhoneNumber}}" disabled />
       </div>
 
       <div class="field-span-2">
         <div class="field-label">Email</div>
-        <input name="Email" class="field-input editable" value="{{user.Email}}" disabled />
+        <input name="Email" class="field-input editable" value="{{user.Email}}"
+          disabled />
       </div>
 
       <div class="full-width">
         <div class="field-label">Gender</div>
-        <input name="Gender" class="field-input editable" value="{{user.Gender}}" disabled />
+        <input name="Gender" class="field-input editable"
+          value="{{user.Gender}}" disabled />
 
       </div>
 
       <div>
         <div class="field-label">Region</div>
-        <select name="RegionID" class="field-select editable region-select" disabled>
+        <select name="RegionID" class="field-select editable region-select"
+          disabled>
           {{#each regions}}
           <option value="{{ID}}" {{#if selected}}selected{{/if}}>
             {{RegionName}}
@@ -159,6 +170,8 @@
     const editBtn = document.getElementById('editProfileBtn')
     const saveBtn = document.getElementById('saveProfileBtn')
     const cancelBtn = document.getElementById('cancelEditBtn')
+    const logoutBtn = document.getElementById('logoutBtn')
+    const logoutForm = document.getElementById('logoutForm')
     const form = document.querySelector('.profile-form')
     const editables = Array.from(document.querySelectorAll('.profile-form .editable'))
     const regionSelect = document.querySelector('.region-select')
@@ -210,6 +223,36 @@
     saveBtn && saveBtn.addEventListener('click', function () {
       form.submit()
     })
+
+ if (logoutBtn) {
+      logoutBtn.addEventListener('click', async function (e) {
+        const ok = confirm('Bạn có muốn đăng xuất không?')
+        if (!ok) return
+
+        // Try to POST to /auth/logout via fetch (AJAX) so we can preserve single-page behaviour.
+        try {
+          const res = await fetch('/auth/logout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({})
+          })
+          if (res.ok) {
+            // server can return JSON with redirect path
+            try {
+              const json = await res.json()
+              window.location.href = json.redirect || '/'
+            } catch (_) {
+              window.location.href = '/'
+            }
+            return
+          }
+        } catch (err) {
+          // fallback to form submit if fetch fails
+        }
+        if (logoutForm) logoutForm.submit()
+      })
+    }
 
       // initial: select visible but disabled so chỉ hiện tên hiện tại
       (function initRegionView() {

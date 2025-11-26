@@ -2,7 +2,7 @@
     width: 1100px;
     max-width: 100%;
     background: #081028;
-    margin: 0 auto;
+    margin: 50px auto 10px;
 }
 
 /* radio tabs ẩn */
@@ -131,7 +131,7 @@ label[for="tab-orders"] {
 .field-select {
     width: 100%;
     padding: 10px 12px;
-    border-radius: 4px;
+    border-radius: 8px;
     border: 1px solid #343b4f;
     background: #081028;
     color: #fff;
@@ -324,6 +324,20 @@ label[for="tab-orders"] {
 .status-prepare::before {
     background: #eda927;
 }
+
+.user-actions .btn-logout {
+  background: #ff5a65;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-left: 8px;
+  cursor: pointer;
+}
+.user-actions .btn-logout:hover {
+  opacity: 0.95;
+}
+
 
 @media (max-width: 900px) {
     .tab-header {

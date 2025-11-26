@@ -136,6 +136,29 @@ class AuthController {
         }
     }
 
+
+    // ===== [POST] /auth/logout - Đăng xuất =====
+logoutPost(req, res) {
+        const userId = req.session && req.session.userId
+
+        // Destroy session, clear cookie, return JSON with redirect
+        if (req.session) {
+            req.session.destroy((err) => {
+                if (err) {
+                    console.error("❌ Logout (POST) error:", err)
+                    return res.status(500).json({ success: false, message: "Logout failed" })
+                }
+                // clear cookie name if you configured a different one
+                res.clearCookie("connect.sid")
+                console.log("✅ User logged out (POST):", userId)
+                return res.json({ success: true, redirect: "/auth" })
+            })
+        } else {
+            // No session — just redirect
+            return res.json({ success: true, redirect: "/auth" })
+        }
+    }
+
     // ===== [GET] /auth/logout - Đăng xuất =====
     logout(req, res) {
         const userId = req.session.userId
@@ -146,6 +169,7 @@ class AuthController {
             } else {
                 console.log("✅ User logged out:", userId)
             }
+            res.clearCookie("connect.sid")
             res.redirect("/auth")
         })
     }

@@ -20,6 +20,9 @@ router.get("/login", authController.login)
 // POST /authSite/login - Xử lý đăng nhập
 router.post("/login", authController.loginPost)
 
+// Post /authSite/logout - Đăng xuất
+router.post("/logout", authController.logoutPost)
+
 // GET /authSite/logout - Đăng xuất
 router.get("/logout", authController.logout)
 
