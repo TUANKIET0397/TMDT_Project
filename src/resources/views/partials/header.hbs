@@ -19,7 +19,11 @@
     </nav>
 
     <div class="icons">
-        <a href="#!"><i class="fas fa-search"></i></a>
+        <div class="search-wrapper">
+            <i class="fas fa-search search-icon" id="headerSearchIcon"></i>
+            <input id="headerQuickSearchInput" class="quick-search-input" placeholder="Search products..." aria-label="Search products" />
+            <div id="headerQuickSearchDropdown" class="quick-search-dropdown" aria-hidden="true"></div>
+        </div>
         <i class="fa-regular fa-comment" id="chatIcon"></i>
         <a href="/profile"><i class="fas fa-user"></i></a>
         <i class="fas fa-shopping-cart"></i>

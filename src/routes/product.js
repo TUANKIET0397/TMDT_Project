@@ -12,5 +12,6 @@ router.get('/shoes', productController.shoes);
 router.get('/sweatshirts', productController.sweatshirts);
 router.get('/t_shirts', productController.tShirts);
 router.get('/detail/:id', productController.detail);
+router.get('/search', productController.search);
 
 module.exports = router;

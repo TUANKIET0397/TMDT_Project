@@ -8,6 +8,10 @@
     overflow: hidden;
 }
 
+.quick-search-input {
+    display: none !important;
+}
+
 .color-blob {
     position: absolute;
     width: clamp(

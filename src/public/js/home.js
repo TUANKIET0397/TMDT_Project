@@ -67,9 +67,121 @@ document.addEventListener("DOMContentLoaded", () => {
     const closeCart = document.getElementById("closeCart")
     const cartItemsContainer = document.getElementById("cartItems")
     const cartTotal = document.getElementById("cartTotal")
-
+    const searchIcon = document.getElementById("headerSearchIcon")
+    const quickInput = document.getElementById("headerQuickSearchInput")
+    const quickDropdown = document.getElementById("headerQuickSearchDropdown")
+    let debounceTimer = null
     let cart = JSON.parse(localStorage.getItem("cart")) || []
     let addToCartLock = false
+
+
+
+    function closeQuickDropdown() {
+        if (quickDropdown) {
+            quickDropdown.innerHTML = ""
+            quickDropdown.style.display = "none"
+            quickDropdown.setAttribute("aria-hidden", "true")
+        }
+    }
+
+    function openQuickInput() {
+        if (!quickInput) return
+        quickInput.style.display = "inline-block"
+        quickInput.focus()
+    }
+
+    if (searchIcon) {
+        searchIcon.addEventListener("click", (e) => {
+            e.stopPropagation()
+            // toggle input visibility
+            if (quickInput.style.display === "inline-block") {
+                quickInput.style.display = "none"
+                closeQuickDropdown()
+            } else {
+                openQuickInput()
+            }
+        })
+    }
+
+    // hide dropdown and input on outside click
+    document.addEventListener("click", (ev) => {
+        if (!quickInput) return
+        if (ev.target === quickInput || ev.target === searchIcon || quickInput.contains(ev.target) || searchIcon.contains(ev.target)) {
+            return
+        }
+        quickInput.style.display = "none"
+        closeQuickDropdown()
+    })
+
+    // render results
+    function renderQuickResults(items) {
+        if (!quickDropdown) return
+        quickDropdown.innerHTML = ""
+        if (!items || items.length === 0) {
+            quickDropdown.innerHTML = '<div class="qs-empty">No results</div>'
+            quickDropdown.style.display = "block"
+            quickDropdown.setAttribute("aria-hidden", "false")
+            return
+        }
+
+        const ul = document.createElement("ul")
+        ul.className = "qs-list"
+        items.forEach((it) => {
+            const li = document.createElement("li")
+            li.className = "qs-item"
+            li.innerHTML = `
+                <a href="/products/detail/${it.id}" class="qs-link">
+                    <img src="${it.img || '/img/default.jpg'}" alt="${it.name}" class="qs-img" />
+                    <div class="qs-body">
+                        <div class="qs-name">${it.name}</div>
+                        <div class="qs-price">${it.price ? '$' + Number(it.price).toFixed(2) : ''}</div>
+                    </div>
+                </a>
+            `
+            ul.appendChild(li)
+        })
+        quickDropdown.appendChild(ul)
+        quickDropdown.style.display = "block"
+        quickDropdown.setAttribute("aria-hidden", "false")
+    }
+
+    async function doSearch(q) {
+        if (!q || q.trim().length === 0) {
+            closeQuickDropdown()
+            return
+        }
+        try {
+            const res = await fetch(`/products/search?q=${encodeURIComponent(q)}`, { credentials: "same-origin" })
+            if (!res.ok) {
+                renderQuickResults([])
+                return
+            }
+            const json = await res.json()
+            renderQuickResults(json.data || [])
+        } catch (err) {
+            console.warn("Search fetch error", err)
+            renderQuickResults([])
+        }
+    }
+
+    if (quickInput) {
+        quickInput.style.display = "none" // default hidden
+        quickInput.addEventListener("input", function (e) {
+            const q = this.value || ""
+            clearTimeout(debounceTimer)
+            debounceTimer = setTimeout(() => {
+                doSearch(q.trim())
+            }, 300)
+        })
+        quickInput.addEventListener("keydown", function (e) {
+            // ESC closes
+            if (e.key === "Escape") {
+                quickInput.value = ""
+                quickInput.style.display = "none"
+                closeQuickDropdown()
+            }
+        })
+    }
 
     if (!cartDrawer || !cartOverlay || !cartItemsContainer || !cartTotal) {
         console.warn("Cart elements not found in DOM")

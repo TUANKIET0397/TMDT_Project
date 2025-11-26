@@ -48,7 +48,7 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 18px 80px;
+  padding: 12px 20px;
   background-color: rgba(217, 217, 217, 0);
   border-bottom: 1px solid #e6e6e6;
   position: sticky;
@@ -70,9 +70,14 @@ a {
     text-transform: lowercase;
     letter-spacing: 1px;
     color: #000;
+    margin-right: 60px;
 }
 
 /* --- Menu --- */
+nav {
+    flex: 1;
+}
+
 .nav-links {
     list-style: none;
     display: flex;
@@ -92,26 +97,6 @@ a {
     text-decoration: none;
 }
 
-/* --- phan mo rong cua all products (mui ten di xuong) --- */
-.nav-links .dropdown select {
-    border: none;
-    background: transparent;
-    font-size: 14px;
-    color: #bcbcbc;
-    font-family: inherit;
-    cursor: pointer;
-    text-transform: lowercase;
-    outline: none;
-    padding: 4px 8px;
-}
-
-.nav-links .dropdown {
-    position: relative;
-}
-
-.nav-links .dropdown select:hover {
-    color: #000;
-}
 
 /* --- Icons --- */
 .icons {
@@ -119,6 +104,7 @@ a {
     align-items: center;
     gap: 20px;
     font-size: 18px;
+    margin-right: 20px;
 }
 
 .icons a {

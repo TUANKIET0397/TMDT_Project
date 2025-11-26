@@ -1,8 +1,32 @@
 const Product = require("../models/Product")
 
 class ProductController {
+
+
+// GET /products/search?q=...
+    async search(req, res) {
+        try {
+            const q = (req.query.q || "").trim()
+            if (!q) {
+                return res.json({ success: true, data: [] })
+            }
+            const limit = Math.min(50, Number(req.query.limit) || 10)
+            const products = await Product.searchByQuery(q, limit)
+            const out = (products || []).map(p => ({
+                id: p.ID,
+                name: p.ProductName,
+                price: p.Price || 0,
+                img: p.ImgPath || "/img/default.jpg",
+            }))
+            return res.json({ success: true, data: out })
+        } catch (error) {
+            console.error("Product search error:", error)
+            return res.status(500).json({ success: false, message: "Server error" })
+        }
+    }
+
+
     // Trang danh sách sản phẩm
-    // ...existing code...
     async index(req, res) {
         try {
             const { price, category, size } = req.query

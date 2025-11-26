@@ -62,8 +62,39 @@ class Product {
         }
     }
 
+// search products by query
+static async searchByQuery(q, limit = 10) {
+        try {
+            const qLike = `%${q}%`
+            const [rows] = await db.query(
+                `
+                SELECT 
+                    p.ID,
+                    p.ProductName,
+                    pr.Price,
+                    COALESCE((SELECT i.ImgPath 
+                     FROM ProductImg pi 
+                     JOIN Image i ON pi.ImgID = i.ID 
+                     WHERE pi.ProductID = p.ID 
+                     LIMIT 1), '/img/default.jpg') as ImgPath
+                FROM Product p
+                LEFT JOIN Price pr ON p.ID = pr.ProductID
+                WHERE (p.ProductName LIKE ? OR p.Descriptions LIKE ?)
+                  AND pr.Price IS NOT NULL
+                ORDER BY p.ID DESC
+                LIMIT ?
+                `,
+                [qLike, qLike, Number(limit)]
+            )
+            return rows
+        } catch (error) {
+            console.error("Error in searchByQuery:", error)
+            throw error
+        }
+    }
+
+
     // Lấy chi tiết sản phẩm
-    // ...existing code...
 static async getProductById(productId) {
     try {
         const [rows] = await db.query(
