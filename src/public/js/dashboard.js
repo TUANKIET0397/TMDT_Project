@@ -741,3 +741,310 @@ window.addEventListener('load', () => {
   initCharts();
   setupDatePicker();
 });
+
+// === User dropup menu ===
+const userInfoBtn = document.getElementById('userInfoBtn');
+const userDropup = document.querySelector('.user-dropup');
+const userArrow = document.querySelector('.user-arrow');
+let isUserMenuOpen = false;
+
+if (userInfoBtn && userDropup && userArrow) {
+  console.log('✅ User menu elements found!');
+
+  userInfoBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    isUserMenuOpen = !isUserMenuOpen;
+    console.log('👆 User menu clicked! isOpen:', isUserMenuOpen);
+
+    if (isUserMenuOpen) {
+      userDropup.style.maxHeight = '200px';
+      userDropup.style.opacity = '1';
+      userArrow.style.transform = 'rotate(-90deg)';
+    } else {
+      userDropup.style.maxHeight = '0';
+      userDropup.style.opacity = '0';
+      userArrow.style.transform = 'rotate(0deg)';
+    }
+  });
+
+  // Handle dropup item clicks
+  const dropupItems = document.querySelectorAll('.dropup-item');
+  console.log('📋 Dropup items found:', dropupItems.length);
+
+  dropupItems.forEach((item) => {
+    item.addEventListener('click', function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+
+      const action = this.getAttribute('data-action');
+      console.log('🎯 Dropup item clicked:', action);
+
+      if (action === 'logout') {
+        if (confirm('Are you sure you want to logout?')) {
+          // Gửi POST request đến /auth/logout
+          fetch('/auth/logout', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.success) {
+                window.location.href = data.redirect || '/auth';
+              } else {
+                alert('Logout failed. Please try again.');
+              }
+            })
+            .catch((error) => {
+              console.error('Logout error:', error);
+              alert('An error occurred. Please try again.');
+            });
+        }
+      } else if (action === 'change-password') {
+        openChangePasswordModal();
+      }
+
+      // Close menu
+      userDropup.style.maxHeight = '0';
+      userDropup.style.opacity = '0';
+      userArrow.style.transform = 'rotate(0deg)';
+      isUserMenuOpen = false;
+    });
+  });
+} else {
+  console.error('❌ User menu elements NOT found!', {
+    userInfoBtn,
+    userDropup,
+    userArrow,
+  });
+}
+
+// Click outside sidebar to reset state
+document.addEventListener('click', function (e) {
+  const sidebar = document.querySelector('.Listproduct_sidebar');
+
+  if (sidebar && !sidebar.contains(e.target)) {
+    // Collapse dashboard menu
+    if (dashboardMenu) {
+      dashboardMenu.style.maxHeight = '0';
+      dashboardMenu.style.opacity = '0';
+    }
+    if (dashboardIcon) dashboardIcon.style.transform = 'rotate(0deg)';
+    isMenuOpen = false;
+
+    // Remove active from all menu items
+    menuItems.forEach((item) => {
+      const c = item.querySelector('.item_container');
+      if (c) c.classList.remove('menu-item--active');
+    });
+    dashboardItems.forEach((item) => {
+      item.classList.remove('dashboard_item--active');
+    });
+
+    // Close user dropup
+    if (userDropup && userArrow) {
+      userDropup.style.maxHeight = '0';
+      userDropup.style.opacity = '0';
+      userArrow.style.transform = 'rotate(0deg)';
+      isUserMenuOpen = false;
+    }
+  }
+});
+
+// === Change Password Modal ===
+const changePasswordModal = document.getElementById('changePasswordModal');
+const closeModalBtn = document.getElementById('closeModal');
+const cancelBtn = document.getElementById('cancelBtn');
+const changePasswordForm = document.getElementById('changePasswordForm');
+const newPasswordInput = document.getElementById('newPassword');
+
+// Password requirements elements
+const reqLength = document.getElementById('req-length');
+const reqUppercase = document.getElementById('req-uppercase');
+const reqLowercase = document.getElementById('req-lowercase');
+const reqNumber = document.getElementById('req-number');
+
+// Open modal function
+function openChangePasswordModal() {
+  if (changePasswordModal) {
+    changePasswordModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+// Close modal function
+function closeChangePasswordModal() {
+  if (changePasswordModal) {
+    changePasswordModal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  if (changePasswordForm) {
+    changePasswordForm.reset();
+  }
+  // Reset requirements
+  if (reqLength && reqUppercase && reqLowercase && reqNumber) {
+    [reqLength, reqUppercase, reqLowercase, reqNumber].forEach((req) => {
+      req.classList.remove('valid');
+    });
+  }
+}
+
+// Close modal events
+if (closeModalBtn) {
+  closeModalBtn.addEventListener('click', closeChangePasswordModal);
+}
+
+if (cancelBtn) {
+  cancelBtn.addEventListener('click', closeChangePasswordModal);
+}
+
+// Close modal when clicking outside
+if (changePasswordModal) {
+  changePasswordModal.addEventListener('click', function (e) {
+    if (e.target === changePasswordModal) {
+      closeChangePasswordModal();
+    }
+  });
+}
+
+// Close modal with Escape key
+document.addEventListener('keydown', function (e) {
+  if (
+    e.key === 'Escape' &&
+    changePasswordModal &&
+    changePasswordModal.classList.contains('active')
+  ) {
+    closeChangePasswordModal();
+  }
+});
+
+// Password validation on input
+if (newPasswordInput) {
+  newPasswordInput.addEventListener('input', function () {
+    const password = this.value;
+
+    // Check length
+    if (reqLength) {
+      if (password.length >= 8) {
+        reqLength.classList.add('valid');
+      } else {
+        reqLength.classList.remove('valid');
+      }
+    }
+
+    // Check uppercase
+    if (reqUppercase) {
+      if (/[A-Z]/.test(password)) {
+        reqUppercase.classList.add('valid');
+      } else {
+        reqUppercase.classList.remove('valid');
+      }
+    }
+
+    // Check lowercase
+    if (reqLowercase) {
+      if (/[a-z]/.test(password)) {
+        reqLowercase.classList.add('valid');
+      } else {
+        reqLowercase.classList.remove('valid');
+      }
+    }
+
+    // Check number
+    if (reqNumber) {
+      if (/[0-9]/.test(password)) {
+        reqNumber.classList.add('valid');
+      } else {
+        reqNumber.classList.remove('valid');
+      }
+    }
+  });
+}
+
+// Form submission
+if (changePasswordForm) {
+  changePasswordForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    // Validate passwords match
+    if (newPassword !== confirmPassword) {
+      alert('New passwords do not match!');
+      return;
+    }
+
+    // Validate password requirements
+    if (
+      newPassword.length < 8 ||
+      !/[A-Z]/.test(newPassword) ||
+      !/[a-z]/.test(newPassword) ||
+      !/[0-9]/.test(newPassword)
+    ) {
+      alert('Password does not meet requirements!');
+      return;
+    }
+
+    // Disable submit button
+    const submitBtn = this.querySelector('.btn-submit');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML =
+        '<i class="fa-solid fa-spinner fa-spin"></i> Changing...';
+    }
+
+    // Send to backend
+    fetch('/auth/change-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        oldPassword: currentPassword,
+        newPassword: newPassword,
+        confirmPassword: confirmPassword,
+      }),
+    })
+      .then((response) => {
+        console.log('Response status:', response.status);
+        return response.json();
+      })
+      .then((data) => {
+        console.log('Response data:', data);
+        if (data.success) {
+          alert('Password changed successfully!');
+          closeChangePasswordModal();
+
+          // Optional: Logout after password change
+          setTimeout(() => {
+            window.location.href = '/auth/logout';
+          }, 1000);
+        } else {
+          alert('Error: ' + data.message);
+          // Re-enable submit button
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML =
+              '<i class="fa-solid fa-check"></i> Change Password';
+          }
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+        // Re-enable submit button
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML =
+            '<i class="fa-solid fa-check"></i> Change Password';
+        }
+      });
+  });
+}
