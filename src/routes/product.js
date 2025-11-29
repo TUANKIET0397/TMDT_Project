@@ -13,5 +13,7 @@ router.get('/sweatshirts', productController.sweatshirts);
 router.get('/t_shirts', productController.tShirts);
 router.get('/detail/:id', productController.detail);
 router.get('/search', productController.search);
+router.post('/:id/delete', productController.deleteProduct);
+router.delete('/:id/delete', productController.deleteProduct);
 
 module.exports = router;

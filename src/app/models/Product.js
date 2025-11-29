@@ -212,6 +212,22 @@ static async getProductById(productId) {
             throw error
         }
     }
+
+    static async deleteById(productId) {
+        try {
+            const [result] = await db.query(
+                `
+                DELETE FROM Product 
+                WHERE ID = ?
+            `,
+                [productId]
+            )
+            return result.affectedRows
+        } catch (error) {
+            console.error("Error in deleteById:", error)
+            throw error
+        }
+    }
 }
 
 module.exports = Product

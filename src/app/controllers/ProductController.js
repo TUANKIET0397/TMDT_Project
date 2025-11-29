@@ -25,6 +25,37 @@ class ProductController {
         }
     }
 
+    async deleteProduct(req, res) {
+        const { id } = req.params
+        if (!id) {
+            return res.status(400).send("Product id is required")
+        }
+
+        try {
+            const deleted = await Product.deleteById(id)
+            if (!deleted) {
+                return res.status(404).send("Product not found")
+            }
+
+            const wantsJson =
+                req.xhr ||
+                (req.headers.accept &&
+                    req.headers.accept.includes("application/json"))
+
+            if (wantsJson) {
+                return res.json({ success: true, message: "Product has been deleted." })
+            }
+
+            return res.send("Product has been deleted.")
+        } catch (error) {
+            console.error("Delete product error:", error)
+            if (req.xhr) {
+                return res.status(500).json({ success: false, message: "Failed to delete product." })
+            }
+            return res.status(500).send("Failed to delete product")
+        }
+    }
+
 
     // Trang danh sách sản phẩm
     async index(req, res) {
