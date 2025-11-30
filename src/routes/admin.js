@@ -126,6 +126,11 @@ router.post("/invoice/:id/delete", (req, res) => {
     adminController.deleteInvoice(req, res)
 })
 
+// ===== CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG =====
+router.post("/invoice/:id/status", (req, res) => {
+    adminController.updateInvoiceStatus(req, res)
+})
+
 // XÓA NHIỀU ĐƠN HÀNG (CHỌN) - DÙNG POST
 router.post("/invoice/delete/selected", (req, res) => {
     adminController.deleteSelectedInvoices(req, res)

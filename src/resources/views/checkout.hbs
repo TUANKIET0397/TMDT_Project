@@ -121,13 +121,86 @@
                 form.method = 'POST'
                 form.submit()
             })
+
+            // Handle "Order Now" (COD) button
+            const orderNowBtn = document.querySelector('.checkout__btn-payment')
+            if (orderNowBtn) {
+                orderNowBtn.addEventListener('click', function(e) {
+                    e.preventDefault()
+
+                    const requiredFields = [
+                        { selector: '.firstName', label: 'First name' },
+                        { selector: '.lastName', label: 'Last name' },
+                        { selector: '.checkout__address', label: 'Address' },
+                        { selector: '.checkout__phone', label: 'Phone number' },
+                    ]
+
+                    const missingFields = requiredFields
+                        .filter(({ selector }) => {
+                            const input = form.querySelector(selector)
+                            return !input || !input.value.trim()
+                        })
+                        .map((field) => field.label)
+
+                    const regionSelect = form.querySelector('select[name="RegionID"]')
+                    if (!regionSelect || !regionSelect.value) {
+                        missingFields.push('Region')
+                    }
+
+                    if (missingFields.length > 0) {
+                        showStatus(
+                            `Vui lòng điền: ${missingFields.join(', ')}`,
+                            'error'
+                        )
+                        return
+                    }
+
+                    const cartDataInput = ensureCartInput()
+                    if (!cartDataInput.value) {
+                        try {
+                            const storedCart = localStorage.getItem('cart')
+                            cartDataInput.value = storedCart || '[]'
+                        } catch (storageErr) {
+                            console.error('Cannot read cart from localStorage', storageErr)
+                            cartDataInput.value = '[]'
+                        }
+                    }
+
+                    let parsedCart = []
+                    try {
+                        parsedCart = JSON.parse(cartDataInput.value || '[]')
+                    } catch (parseErr) {
+                        console.error('Invalid cart data in checkout', parseErr)
+                        showStatus('Giỏ hàng không hợp lệ, vui lòng thử lại.', 'error')
+                        return
+                    }
+
+                    if (!Array.isArray(parsedCart) || parsedCart.length === 0) {
+                        showStatus('Giỏ hàng trống. Vui lòng thêm sản phẩm.', 'error')
+                        return
+                    }
+
+                    showStatus('⏳ Đang tạo đơn hàng...')
+
+                    // Remove old payment type/amount inputs
+                    const existingPaymentType = form.querySelector('input[name="paymentType"]')
+                    if (existingPaymentType) existingPaymentType.remove()
+                    const existingAmount = form.querySelector('input[name="amount"]')
+                    if (existingAmount) existingAmount.remove()
+
+                    // Set form to POST /payment without paymentType = COD
+                    form.action = '/payment'
+                    form.method = 'POST'
+                    form.submit()
+                })
+            }
         })
     </script>
 {{/contentFor}}
 {{! Checkout }}
 <main class="checkout">
 
-    <form class="checkout__form" action="/checkout" method="get">
+    <form class="checkout__form" action="/payment" method="POST">
         <input
             type="hidden"
             name="cartData"
@@ -223,7 +296,7 @@
                     required
                 />
                 <h3 class="checkout__title-payment">Direct payment</h3>
-                <button class="checkout__btn-payment" type="submit">Order now</button>
+                <button class="checkout__btn-payment" type="button">Order now</button>
                 <p class="checkout__desc-rule">
                     Your info will be saved to a Shop account. By continuing,
                     you agree to Shop's

@@ -122,41 +122,50 @@
           <th>Dates</th>
           <th>Costs</th>
           <th>Payment</th>
-          <th>States</th>
+          <th>Status</th>
         </tr>
       </thead>
       <tbody>
         {{#each orders}}
-        <tr class="order-row" data-detail="detail-{{id}}">
+        <tr class="order-row" data-detail="detail-{{id}}" style="cursor: pointer;">
           <td class="order-id">
             <span class="order-arrow">˅</span>
-            <span>{{id}}</span>
+            <span>#{{id}}</span>
           </td>
           <td>{{quantityTypes}}</td>
           <td>{{createdAt}}</td>
           <td>${{totalCost}}</td>
-          <td>{{payment}}</td>
-          <td>{{states}}</td>
+          <td style="color: {{#if (eq this.payment 'Paid')}}#28a745{{else}}#ffc107{{/if}}; font-weight: 600;">{{payment}}</td>
+          <td style="color: {{#if (eq this.states 'Delivered')}}#28a745{{else if (eq this.states 'Cancelled')}}#e53e3e{{else if (eq this.states 'Prepare')}}#ffc107{{else}}#667eea{{/if}};">{{states}}</td>
         </tr>
 
         <tr id="detail-{{id}}" class="order-detail-row" style="display:none">
           <td colspan="6">
-            <div class="detail-header">
-              <span>Name</span>
-              <span>Quantity</span>
-              <span>Cost</span>
-            </div>
-
-            {{#each items}}
-            <div class="detail-item">
-              <div class="detail-info">
-                <img src="{{img}}" alt />
-                <p>{{productName}}</p>
+            <div style="padding: 20px; background: #f8f9fa; border-radius: 8px;">
+              <div class="detail-header" style="display: grid; grid-template-columns: 1fr 120px 120px; gap: 20px; font-weight: 600; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">
+                <span>Product Details</span>
+                <span style="text-align: center;">Quantity</span>
+                <span style="text-align: right;">Total Price</span>
               </div>
-              <div class="detail-qty">x{{qty}}</div>
-              <div class="detail-cost">${{totalPrice}}</div>
+
+              {{#if items}}
+                {{#each items}}
+                <div class="detail-item" style="display: grid; grid-template-columns: 1fr 120px 120px; gap: 20px; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee;">
+                  <div class="detail-info" style="display: flex; gap: 15px; align-items: center;">
+                    <img src="{{img}}" alt="{{productName}}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;" />
+                    <div style="flex: 1;">
+                      <p style="font-weight: 600; margin: 0 0 5px 0;">{{productName}}</p>
+                      <p style="font-size: 12px; color: #666; margin: 0;">Unit Price: ${{unitPrice}}</p>
+                    </div>
+                  </div>
+                  <div class="detail-qty" style="text-align: center; font-weight: 600;">x{{qty}}</div>
+                  <div class="detail-cost" style="text-align: right; font-weight: 600; color: #28a745;">${{totalPrice}}</div>
+                </div>
+                {{/each}}
+              {{else}}
+                <p style="text-align: center; color: #999; padding: 20px;">No items in this order</p>
+              {{/if}}
             </div>
-            {{/each}}
           </td>
         </tr>
         {{/each}}

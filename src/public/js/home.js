@@ -74,8 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let cart = JSON.parse(localStorage.getItem("cart")) || []
     let addToCartLock = false
 
-
-
     function closeQuickDropdown() {
         if (quickDropdown) {
             quickDropdown.innerHTML = ""
@@ -106,7 +104,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // hide dropdown and input on outside click
     document.addEventListener("click", (ev) => {
         if (!quickInput) return
-        if (ev.target === quickInput || ev.target === searchIcon || quickInput.contains(ev.target) || searchIcon.contains(ev.target)) {
+        if (
+            ev.target === quickInput ||
+            ev.target === searchIcon ||
+            quickInput.contains(ev.target) ||
+            searchIcon.contains(ev.target)
+        ) {
             return
         }
         quickInput.style.display = "none"
@@ -131,10 +134,14 @@ document.addEventListener("DOMContentLoaded", () => {
             li.className = "qs-item"
             li.innerHTML = `
                 <a href="/products/detail/${it.id}" class="qs-link">
-                    <img src="${it.img || '/img/default.jpg'}" alt="${it.name}" class="qs-img" />
+                    <img src="${it.img || "/img/default.jpg"}" alt="${
+                it.name
+            }" class="qs-img" />
                     <div class="qs-body">
                         <div class="qs-name">${it.name}</div>
-                        <div class="qs-price">${it.price ? '$' + Number(it.price).toFixed(2) : ''}</div>
+                        <div class="qs-price">${
+                            it.price ? "$" + Number(it.price).toFixed(2) : ""
+                        }</div>
                     </div>
                 </a>
             `
@@ -151,7 +158,10 @@ document.addEventListener("DOMContentLoaded", () => {
             return
         }
         try {
-            const res = await fetch(`/products/search?q=${encodeURIComponent(q)}`, { credentials: "same-origin" })
+            const res = await fetch(
+                `/products/search?q=${encodeURIComponent(q)}`,
+                { credentials: "same-origin" }
+            )
             if (!res.ok) {
                 renderQuickResults([])
                 return
@@ -291,16 +301,19 @@ document.addEventListener("DOMContentLoaded", () => {
         releaseLock()
     }
 
-    // Before submitting cart form, attach cart JSON to hidden input
+    // Before submitting cart form, build URL with cartData query parameter
     const cartForm = document.getElementById("cartForm")
     const cartDataInput = document.getElementById("cartData")
     if (cartForm && cartDataInput) {
-        cartForm.addEventListener("submit", function () {
+        cartForm.addEventListener("submit", function (e) {
+            e.preventDefault()
             try {
-                cartDataInput.value = JSON.stringify(cart || [])
+                const cartData = JSON.stringify(cart || [])
+                const encodedCartData = encodeURIComponent(cartData)
+                window.location.href = `/checkout?cartData=${encodedCartData}`
             } catch (err) {
                 console.error("Failed to serialize cart for checkout", err)
-                cartDataInput.value = "[]"
+                window.location.href = "/checkout?cartData=[]"
             }
         })
     }

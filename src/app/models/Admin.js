@@ -13,14 +13,14 @@ class AdminSite {
                     u.LastName,
                     u.Email,
                     COALESCE(r.RegionName, 'N/A') as Region,
-                    si.StatusName,
+                    si.StatusName as InvoiceStatus,
                     CASE 
                         WHEN si.StatusName = 'Delivered' THEN 'green'
                         WHEN si.StatusName = 'Cancelled' THEN 'red'
                         WHEN si.StatusName = 'Prepare' THEN 'yellow'
                         ELSE 'gray'
                     END as StatusColor,
-                   
+                    COALESCE(i.Payment, 'Unpaid') as InvoicePayment,
                     (SELECT SUM(ci.TotalPrice) 
                      FROM CartItem ci 
                      WHERE ci.CartID = i.CartID) as TotalAmount

@@ -15,9 +15,10 @@
                     style="padding: 8px 12px; border: 1px solid currentColor; border-radius: 4px; cursor: pointer; font-size: 14px; background: #0a1330; color: #ffffffc0;"
                 >
                     <option value="">Sort by Status</option>
+                    <option value="Prepare">Prepare</option>
+                    <option value="Done">Done</option>
                     <option value="Delivered">Delivered</option>
                     <option value="Cancelled">Cancelled</option>
-                    <option value="Prepare">Prepare</option>
                 </select>
             </div>
 
@@ -67,9 +68,9 @@
             </div>
 
             <div class="section-item">
-    <i class="fa-solid fa-receipt"></i>
-    <label class="section-item__title">Invoice</label>
-</div>
+                <i class="fa-solid fa-credit-card"></i>
+                <label class="section-item__title">Payment</label>
+            </div>
 
             <div class="section-item">
                 <i class="fa-solid fa-location-dot"></i>
@@ -134,18 +135,17 @@
 
                 <!-- Status -->
                 <div class="section-item">
-                    <div
-                        class="section-item__status--{{this.StatusColor}}"
-                    ></div>
-                </div>
-
-                <!-- Invoice -->
-                <div class="section-item">
                     <div class="section-item__title">
                         {{this.InvoiceStatus}}
                     </div>
                 </div>
 
+                <!-- Payment Status (Paid/Unpaid) -->
+                <div class="section-item">
+                    <div class="section-item__title" style="color: {{#if (eq this.InvoicePayment 'Paid')}}#28a745{{else}}#ffc107{{/if}}; font-weight: 600;">
+                        {{this.InvoicePayment}}
+                    </div>
+                </div>
 
                 <!-- Country -->
                 <div class="section-item">

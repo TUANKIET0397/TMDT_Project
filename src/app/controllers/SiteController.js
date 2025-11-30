@@ -272,7 +272,29 @@ class SiteController {
                     String(user.RegionID || user.region || ""),
             }))
 
-            const cartItems = req.session.cartItems || []
+            // 🔧 FIX: Parse cartData từ query parameter (từ cart drawer form)
+            let cartItems = []
+
+            // Cách 1: Lấy từ query.cartData (từ cart drawer)
+            if (req.query.cartData) {
+                try {
+                    cartItems = JSON.parse(req.query.cartData)
+                    console.log("✓ Loaded cartData from query:", cartItems)
+                } catch (err) {
+                    console.warn(
+                        "⚠️ Failed to parse cartData from query:",
+                        err.message
+                    )
+                    cartItems = []
+                }
+            }
+
+            // Cách 2: Nếu không có, lấy từ session
+            if (cartItems.length === 0 && req.session.cartItems) {
+                cartItems = req.session.cartItems
+                console.log("✓ Loaded cartItems from session:", cartItems)
+            }
+
             const subtotal = cartItems.reduce(
                 (sum, item) => sum + (item.price || 0) * (item.quantity || 0),
                 0
@@ -369,23 +391,23 @@ class SiteController {
             console.log("Cart items:", cartItems.length)
             console.log("Subtotal:", subtotal)
 
+            const userId = req.user?.id || req.session.userId
+
+            if (!userId) {
+                throw new Error("User not authenticated. Please login.")
+            }
+
+            console.log(`✓ User authenticated: UserID=${userId}`)
+
             // ✅ If MoMo payment is selected
             if (paymentType === "momo" && amount) {
                 try {
-                    // ✅ Lấy UserID từ req.user (middleware đã load)
-                    const userId = req.user?.id || req.session.userId
-
-                    if (!userId) {
-                        throw new Error("User not authenticated. Please login.")
-                    }
-
-                    console.log(`✓ User authenticated: UserID=${userId}`)
-
-                    // 2. Tạo Invoice với UserID
+                    // 2. Tạo Invoice với UserID và Payment='Paid' (vì MoMo)
                     const invoiceId = await Invoice.createPendingInvoice({
                         UserID: userId,
                         TotalAmount: subtotal,
-                        Status: "pending",
+                        Status: "prepare",
+                        PaymentMethod: "Paid", // MoMo = Paid
                     })
 
                     console.log("✓ Created Invoice ID:", invoiceId)
@@ -459,7 +481,59 @@ class SiteController {
                 }
             }
 
-            // ✅ For COD or other payment methods
+            // ✅ For COD (Order Now) - paymentType = undefined hoặc "cod"
+            if (!paymentType || paymentType === "cod") {
+                try {
+                    // Tạo Invoice với Payment='Unpaid' cho COD
+                    const invoiceId = await Invoice.createPendingInvoice({
+                        UserID: userId,
+                        TotalAmount: subtotal,
+                        Status: "prepare",
+                        PaymentMethod: "Unpaid", // COD = Unpaid
+                    })
+
+                    console.log("✓ Created COD Invoice ID:", invoiceId)
+
+                    // ✅ Tạo Cart và CartItems
+                    try {
+                        const cartID = await Invoice.createCartFromItems(
+                            userId,
+                            cartItems
+                        )
+                        // Update Invoice with CartID
+                        const db = require("../../config/db")
+                        await db.query(
+                            `UPDATE Invoice SET CartID = ? WHERE ID = ?`,
+                            [cartID, invoiceId]
+                        )
+                        console.log(
+                            `✓ Created Cart ${cartID} and linked to Invoice ${invoiceId}`
+                        )
+                    } catch (cartError) {
+                        console.error("Error creating cart:", cartError)
+                        // Không block user, vẫn hiển thị success
+                    }
+
+                    // Render success page
+                    return res.render("paymentSuccess", {
+                        layout: "payment",
+                        title: "Đơn hàng đã được tạo",
+                        orderId: invoiceId,
+                        message:
+                            "Đơn hàng của bạn đã được tạo. Chúng tôi sẽ liên hệ bạn sớm.",
+                    })
+                } catch (codError) {
+                    console.error("COD order error:", codError.message)
+                    return res.status(500).render("error", {
+                        layout: "payment",
+                        message: "Lỗi khi tạo đơn hàng.",
+                        error: codError.message,
+                        retryUrl: "/checkout",
+                    })
+                }
+            }
+
+            // Fallback: render checkout lại
             const itemCount = cartItems.reduce((c, it) => c + it.quantity, 0)
             const total = subtotal
             const cartDataJson = JSON.stringify(cartItems || []).replace(

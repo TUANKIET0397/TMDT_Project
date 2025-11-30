@@ -6,6 +6,7 @@ const crypto = require("crypto")
 const siteController = require("../app/controllers/SiteController")
 const Transaction = require("../app/models/Transaction")
 const Invoice = require("../app/models/Invoice")
+const db = require("../config/db")
 const {
     requireAuth,
     requireCompleteProfile,
@@ -92,11 +93,38 @@ router.get("/return", async (req, res) => {
 
             // Cập nhật trạng thái Invoice
             if (resultCode === "0") {
-                await Invoice.updateInvoiceStatus(invoiceId, "completed")
-                console.log("✓ Invoice marked as completed")
+                // ✅ Payment successful - create Cart and CartItems
+                const pendingPayment = req.session.pendingPayment
+                if (
+                    pendingPayment &&
+                    pendingPayment.cartItems &&
+                    pendingPayment.cartItems.length > 0
+                ) {
+                    try {
+                        const cartID = await Invoice.createCartFromItems(
+                            req.user?.id || req.session.userId,
+                            pendingPayment.cartItems
+                        )
+                        // Update Invoice with CartID
+                        await db.query(
+                            `UPDATE Invoice SET CartID = ? WHERE ID = ?`,
+                            [cartID, invoiceId]
+                        )
+                        console.log(
+                            `✓ Created Cart ${cartID} and linked to Invoice ${invoiceId}`
+                        )
+                    } catch (cartError) {
+                        console.error("Error creating cart:", cartError)
+                    }
+                }
+
+                // Payment successful - giữ lại status Prepare, chỉ cập nhật Payment
+                await Invoice.updateInvoicePayment(invoiceId, "Paid") // ✅ Đánh dấu là đã thanh toán
+                console.log("✓ Invoice payment successful, kept Prepare status with Paid payment")
             } else {
-                await Invoice.updateInvoiceStatus(invoiceId, "failed")
-                console.log("✗ Invoice marked as failed")
+                // Payment failed - giữ lại status Prepare, Payment = Unpaid
+                await Invoice.updateInvoicePayment(invoiceId, "Unpaid")
+                console.log("✗ Invoice payment failed, kept Prepare status")
             }
         } catch (dbError) {
             console.error("Failed to save transaction:", dbError.message)
