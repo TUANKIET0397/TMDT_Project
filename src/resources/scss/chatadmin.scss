@@ -85,6 +85,7 @@
 }
 
 .user-item {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 15px;
@@ -93,14 +94,17 @@
     border-radius: 12px;
     transition: all 0.3s;
     margin-bottom: 5px;
+    color: white;
 }
 
 .user-item:hover {
     background: #f5f6fa;
+    color: black;
 }
 
 .user-item.active {
     background: #e8eaf0;
+    color: black;
 }
 
 .user-item-avatar {
@@ -117,18 +121,34 @@
 }
 
 .user-item-name {
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 600;
-    color: #1a1d2e;
     margin-bottom: 3px;
 }
 
 .user-item-message {
-    font-size: 13px;
-    color: #8b92b2;
+    font-size: 11px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.user-item-meta {
+    display: flex;  
+    align-items: center;
+    gap: 3px;
+}
+
+.user-item-badge{
+    background: #dc4a4a;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 7px;
+    position: absolute;
+    border-radius: 100%;
+    top: 2px;
+    right: 2px;
 }
 
 /* Chat Area */
@@ -186,7 +206,7 @@
 
 .message {
     display: flex;
-    gap: 12px;
+    gap: 5px;
     max-width: 70%;
     word-break: break-word;
     overflow-wrap: break-word;
@@ -194,28 +214,45 @@
 
 .message.sent {
     align-self: flex-end;
+    flex-direction: column;
 }
 
 .message.received {
     align-self: flex-start;
-    flex-direction: row-reverse;
+    flex-direction: column;
 }
 
 .message-content {
     padding: 15px 20px;
     border-radius: 12px;
-    font-size: 20px;
+    font-size: 16px;
     line-height: 1.5;
 }
 
 .message.received .message-content {
     background: #f5f6fa;
     color: #1a1d2e;
+    text-align: left;
+    width: fit-content;
+    margin-right: auto;
 }
 
 .message.sent .message-content {
     background: #4a5fdc;
     color: #fff;
+    text-align: right;
+    width: fit-content;
+    margin-left: auto;
+}
+
+.message.sent .message-time{
+    text-align: right;
+    margin-left: auto;
+}
+
+.message-time {
+    font-size: 14px;
+    color: #999;
 }
 
 .product-message {

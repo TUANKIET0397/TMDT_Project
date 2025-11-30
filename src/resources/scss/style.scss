@@ -667,7 +667,7 @@ h3 {
 
 .message {
     display: flex;
-    gap: 12px;
+    gap: 2px;
     max-width: 70%;
     word-break: break-word; /* cắt từ dài */
     overflow-wrap: break-word;
@@ -675,11 +675,13 @@ h3 {
 
 .message.sent {
     align-self: flex-end;
+    flex-direction: column;
 }
 
 .message.received {
     align-self: flex-start;
-    flex-direction: row-reverse;
+    flex-direction: column;
+
 }
 
 .message-content {
@@ -692,11 +694,22 @@ h3 {
 .message.received .message-content {
     background: #f5f6fa;
     color: #1a1d2e;
+    text-align: left;
+    width: fit-content;
+    margin-right: auto;
 }
 
 .message.sent .message-content {
     background: #4a5fdc;
     color: #fff;
+    text-align: right;
+    width: fit-content;
+    margin-left: auto;
+}
+
+.message.sent .message-time{
+    text-align: right;
+    margin-left: auto;
 }
 
 .product-message {

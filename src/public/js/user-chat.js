@@ -228,7 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const messageDiv = document.createElement("div")
         messageDiv.className = `message ${type}`
         const timeHTML = timestamp
-            ? `<div class="message-time" style="font-size: 12px; color: #999; margin-bottom: 5px;">${formatTimestamp(
+            ? `<div class="message-time" style="font-size: 12px; color: #999; margin-bottom: 3px;">${formatTimestamp(
                   timestamp
               )}</div>`
             : ""
