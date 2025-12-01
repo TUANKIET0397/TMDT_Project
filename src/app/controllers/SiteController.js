@@ -120,12 +120,18 @@ class SiteController {
                           ", "
                       )}.`
                     : null)
+// Detect which tab should be active from query param (server-side)
+            const tabQuery = (req.query?.tab || '').toString().toLowerCase()
+            const isOrders = tabQuery === 'orders'
+
 
             res.render("profile", {
+                title: "User Profile",
                 layout: "main",
                 user,
                 account,
                 orders,
+                isOrders, // <- pass to template
                 regions: regionsWithSelection,
                 redirectTo: redirectTo || "/profile",
                 notice: noticeMessage,

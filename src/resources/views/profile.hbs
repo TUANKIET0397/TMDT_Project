@@ -16,8 +16,8 @@
     {{/if}}
   </div>
   {{/if}}
-  <input type="radio" name="tab" id="tab-profile" checked />
-  <input type="radio" name="tab" id="tab-orders" />
+  <input type="radio" name="tab" id="tab-profile" {{#unless isOrders}}checked{{/unless}} />
+  <input type="radio" name="tab" id="tab-orders" {{#if isOrders}}checked{{/if}} />
 
   <div class="tab-header">
     <div class="user-summary">
@@ -152,7 +152,7 @@
                 {{#each items}}
                 <div class="detail-item">
                   <div class="detail-info" >
-                    <img src="{{img}}" alt="{{productName}}"/>
+                    <img src="{{productImage}}" alt="{{productName}}"/>
                     <div style="flex: 1; padding-right: 85px;">
                       <p >{{productName}}</p>
                       <p >Unit Price: ${{unitPrice}}</p>
@@ -175,7 +175,9 @@
 </div>
 
 <script>
-  (function () {
+  document.addEventListener('DOMContentLoaded', function () {
+    console.log('[profile] DOMContentLoaded')
+
     const editBtn = document.getElementById('editProfileBtn')
     const saveBtn = document.getElementById('saveProfileBtn')
     const cancelBtn = document.getElementById('cancelEditBtn')
@@ -185,26 +187,37 @@
     const editables = Array.from(document.querySelectorAll('.profile-form .editable'))
     const regionSelect = document.querySelector('.region-select')
 
-    // store original values for cancel
+    // Init tab from query / hash
+    try {
+      const params = new URLSearchParams(window.location.search)
+      const tabParam = (params.get('tab') || '').toLowerCase()
+      const hash = (window.location.hash || '').replace('#', '').toLowerCase()
+      console.log('[profile] initTabFromQuery', { tabParam, hash })
+      if (tabParam === 'orders' || hash === 'orders') {
+        const ordersRadio = document.getElementById('tab-orders')
+        if (ordersRadio) ordersRadio.checked = true
+      }
+    } catch (e) {
+      console.warn('[profile] initTabFromQuery error', e)
+    }
+
+    // Save original values
     editables.forEach(el => {
       el.dataset._orig = el.value
     })
 
     function setEditable(enabled) {
       editables.forEach(el => {
-        // enable/disable inputs (select included)
         el.disabled = !enabled
       })
 
-      editBtn.style.display = enabled ? 'none' : ''
-      saveBtn.style.display = enabled ? '' : 'none'
-      cancelBtn.style.display = enabled ? '' : 'none'
+      if (editBtn) editBtn.style.display = enabled ? 'none' : ''
+      if (saveBtn) saveBtn.style.display = enabled ? '' : 'none'
+      if (cancelBtn) cancelBtn.style.display = enabled ? '' : 'none'
 
       if (regionSelect) {
-        // khi bật edit, select được enable để chọn; khi tắt, disable để chỉ hiển thị tên
         regionSelect.disabled = !enabled
         if (!enabled) {
-          // remove focus khi tắt edit
           regionSelect.blur()
         } else {
           regionSelect.focus()
@@ -212,33 +225,36 @@
       }
     }
 
-    editBtn && editBtn.addEventListener('click', function () {
-      // snapshot current values for cancel
-      editables.forEach(el => { el.dataset._orig = el.value })
-      setEditable(true)
-      const first = editables.find(e => !e.disabled)
-      if (first) first.focus()
-    })
-
-    cancelBtn && cancelBtn.addEventListener('click', function () {
-      // restore values from snapshot
-      editables.forEach(el => {
-        if (el.dataset._orig !== undefined) el.value = el.dataset._orig
-        el.disabled = true
+    if (editBtn) {
+      editBtn.addEventListener('click', function () {
+        editables.forEach(el => { el.dataset._orig = el.value })
+        setEditable(true)
+        const first = editables.find(e => !e.disabled)
+        if (first) first.focus()
       })
-      setEditable(false)
-    })
+    }
 
-    saveBtn && saveBtn.addEventListener('click', function () {
-      form.submit()
-    })
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', function () {
+        editables.forEach(el => {
+          if (el.dataset._orig !== undefined) el.value = el.dataset._orig
+          el.disabled = true
+        })
+        setEditable(false)
+      })
+    }
 
- if (logoutBtn) {
+    if (saveBtn) {
+      saveBtn.addEventListener('click', function () {
+        if (form) form.submit()
+      })
+    }
+
+    if (logoutBtn) {
       logoutBtn.addEventListener('click', async function (e) {
         const ok = confirm('Bạn có muốn đăng xuất không?')
         if (!ok) return
 
-        // Try to POST to /auth/logout via fetch (AJAX) so we can preserve single-page behaviour.
         try {
           const res = await fetch('/auth/logout', {
             method: 'POST',
@@ -247,7 +263,6 @@
             body: JSON.stringify({})
           })
           if (res.ok) {
-            // server can return JSON with redirect path
             try {
               const json = await res.json()
               window.location.href = json.redirect || '/'
@@ -263,27 +278,39 @@
       })
     }
 
-      // initial: select visible but disabled so chỉ hiện tên hiện tại
-      (function initRegionView() {
-        if (regionSelect) {
-          regionSelect.disabled = true
-        }
-      })()
+    // initial region view: display values only
+    if (regionSelect) regionSelect.disabled = true
 
-    // order row toggle (existing)
-    document.querySelectorAll(".order-row").forEach(function (row) {
-      row.addEventListener("click", function () {
-        const targetId = row.getAttribute("data-detail");
-        const detailRow = document.getElementById(targetId);
-        const isOpen = row.classList.contains("open");
+    // order row toggle -- event delegation on table for robustness
+    const ordersTable = document.querySelector('.orders-table')
+    if (ordersTable) {
+      ordersTable.addEventListener('click', function (e) {
+        const row = e.target.closest('.order-row')
+        if (!row) return
+
+        const targetId = row.getAttribute('data-detail')
+        if (!targetId) return
+
+        const detailRow = document.getElementById(targetId)
+        if (!detailRow) return
+
+        const isOpen = row.classList.contains('open')
         if (isOpen) {
-          row.classList.remove("open");
-          detailRow.style.display = "none";
+          row.classList.remove('open')
+          detailRow.style.display = 'none'
         } else {
-          row.classList.add("open");
-          detailRow.style.display = "table-row";
+          row.classList.add('open')
+          detailRow.style.display = 'table-row'
         }
-      });
-    });
-  })();
+      })
+    }
+
+    // Debug: confirm event hookup
+    console.log('[profile] events bound', {
+      editBound: !!editBtn,
+      saveBound: !!saveBtn,
+      logoutBound: !!logoutBtn,
+      ordersTableBound: !!ordersTable
+    })
+  })
 </script>
