@@ -68,7 +68,9 @@ class Transaction {
                 status,
             ])
 
-            console.log(`✓ Transaction saved: orderId=${orderId}, transId=${transId}, status=${status}`)
+            console.log(
+                `✓ Transaction saved: orderId=${orderId}, transId=${transId}, status=${status}`
+            )
             return result.insertId
         } catch (error) {
             console.error("Error in saveTransaction:", error)

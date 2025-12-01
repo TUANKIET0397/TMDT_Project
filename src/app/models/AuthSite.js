@@ -594,13 +594,21 @@ class AuthSite {
                 // nếu không có items -> bỏ qua (theo yêu cầu mới)
                 if (!items || items.length === 0) continue
 
+                // compute distinct product types (some carts may have multiple cart items for same product)
+                const distinctProductCount = new Set(
+                    items.map((it) => it.productId)
+                ).size
+
+                // Always use computed distinct product types to avoid stale DB values
+                const computedQuantityTypes = distinctProductCount
+
                 orders.push({
                     id: inv.ID,
                     createdAt: new Date(inv.DateCreated).toLocaleString(),
                     payment: inv.Payment,
                     states: inv.StatusName,
                     totalCost: Number(inv.TotalCost) || 0,
-                    quantityTypes: Number(inv.QuantityTypes) || items.length,
+                    quantityTypes: computedQuantityTypes,
                     items,
                 })
             }
