@@ -3,6 +3,7 @@
     max-width: 100%;
     background: #081028;
     margin: 50px auto 10px;
+    overflow: hidden;
 }
 
 /* radio tabs ẩn */
@@ -16,7 +17,6 @@
     display: grid;
     grid-template-columns: 280px 1fr 260px;
     border-radius: 6px 6px 0 0;
-    overflow: hidden;
 }
 
 .user-summary {
@@ -171,22 +171,43 @@ label[for="tab-orders"] {
 
 .order-id {
     position: relative;
-    padding-left: 14px;
+    /* đặt padding phải để dành chỗ cho mũi tên ở bên phải */
+    padding-right: 22px;
+    padding-left: 12px;
     cursor: pointer;
 }
 .order-arrow {
     position: absolute;
-    left: 3px;
+    /* đặt mũi tên ở bên phải */
+    left: 8px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 16px;
-    color: #ffffff;
+    /* ẩn chữ nội dung gốc (HTML vẫn giữ nguyên), sử dụng pseudo-element để vẽ mũi tên */
+    font-size: 0;
     opacity: 0.9;
-    transition: transform 0.2s ease;
 }
-/* quay mũi tên khi mở */
-.order-row.open .order-arrow {
-    transform: translateY(-50%) rotate(180deg);
+
+.order-arrow::before {
+    content: "›";
+    display: inline-block;
+    font-size: 30px;
+    color: #ffffff;
+    line-height: 1;
+    transform: rotate(0deg);
+    transition: transform 0.18s ease, color 0.18s ease;
+    transform-origin: center;
+}
+/* quay mũi tên khi mở: từ phải -> xuống (rotate +90deg) */
+.order-row.open .order-arrow::before {
+    transform: rotate(90deg);
+}
+
+/* tăng vùng hover cho hàng và hiệu ứng mềm mại */
+.order-row {
+    transition: background-color 0.12s ease, box-shadow 0.12s ease;
+}
+.order-row:hover {
+    background: rgba(9, 17, 40, 0.85);
 }
 
 /* hàng chi tiết ẩn mặc định */
@@ -198,20 +219,24 @@ label[for="tab-orders"] {
     padding: 0;
 }
 
+// style="display: grid; grid-template-columns: 1fr 120px 120px; gap: 20px; font-weight: 600; padding-bottom: 10px; border-bottom: 2px solid #ddd;"
+
 .detail-header {
     display: grid;
     grid-template-columns: 1fr 120px 120px;
     padding: 12px 40px 8px;
-    background: #061744;
+    background: #041134;
     color: #ffffff;
     font-weight: 600;
 }
+
+//  display: grid; grid-template-columns: 1fr 120px 120px; gap: 20px; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee;
 
 .detail-item {
     display: grid;
     grid-template-columns: 1fr 120px 120px;
     align-items: center;
-    padding: 12px 40px;
+    padding: 12px 15px 12px 40px;
     background: #2a2f4c;
     border-top: 1px solid #1e2340;
 }
@@ -219,22 +244,31 @@ label[for="tab-orders"] {
     background: #262b48;
 }
 
+// display: flex; gap: 15px; align-items: center
+
 .detail-info {
     display: flex;
     align-items: center;
     gap: 12px;
 }
+//  width: 60px; height: 60px; object-fit: cover; border-radius: 4px;
+
 .detail-info img {
     width: 60px;
     height: 60px;
     object-fit: cover;
     border-radius: 4px;
 }
+
+// style="font-weight: 600; margin: 0 0 5px 0;"
+// style="font-size: 12px; color: #666; margin: 0;"
 .detail-info p {
     font-size: 12px;
     line-height: 1.4;
 }
 
+//style="text-align: center; font-weight: 600;"
+//  style="text-align: right; font-weight: 600; color: #28a745;"
 .detail-qty,
 .detail-cost {
     font-size: 14px;
@@ -242,10 +276,14 @@ label[for="tab-orders"] {
     text-align: center;
 }
 
+.detail-qty {
+    padding-right: 85px;
+}
+
 .orders-table th {
     font-weight: 600;
     color: #aeb9e1;
-    border-bottom: 1px solid #2a3040;
+    border-bottom: 1px soli12d #2a3040;
 }
 
 .orders-table tbody tr:nth-child(odd) {
@@ -326,18 +364,17 @@ label[for="tab-orders"] {
 }
 
 .user-actions .btn-logout {
-  background: #ff5a65;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-  margin-left: 8px;
-  cursor: pointer;
+    background: #ff5a65;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-left: 8px;
+    cursor: pointer;
 }
 .user-actions .btn-logout:hover {
-  opacity: 0.95;
+    opacity: 0.95;
 }
-
 
 @media (max-width: 900px) {
     .tab-header {
