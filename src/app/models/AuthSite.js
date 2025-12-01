@@ -576,19 +576,47 @@ class AuthSite {
             `,
                         [inv.CartID]
                     )
-                    items = rows.map((it) => ({
-                        id: it.CartItemID,
-                        productId: it.ProductID,
-                        productName: it.ProductName,
-                        qty: it.Volume,
-                        unitPrice: Number(it.UnitPrice || 0),
-                        totalPrice:
-                            Number(it.TotalPrice) ||
-                            Number(it.UnitPrice || 0) * Number(it.Volume || 0),
-                        img: it.ImgPath
-                            ? `/uploads/products/${String(it.ImgPath).trim()}`
-                            : "/img/default.jpg",
-                    }))
+                    items = rows.map((it) => {
+                        const raw = it.ImgPath
+                            ? String(it.ImgPath).trim()
+                            : null
+
+                        let imagePath = "/img/default.jpg"
+
+                        if (raw) {
+                            // Absolute URL
+                            if (/^https?:\/\//i.test(raw)) {
+                                imagePath = raw
+                            } else if (raw.startsWith("/")) {
+                                // Already a root-relative path
+                                imagePath = raw
+                            } else if (/uploads\//i.test(raw)) {
+                                // Contains uploads but not root-leading
+                                imagePath = raw.startsWith("/")
+                                    ? raw
+                                    : `/${raw}`
+                            } else {
+                                // Plain filename -> assume stored under uploads/products
+                                imagePath = `/uploads/products/${raw}`
+                            }
+                        }
+
+                        return {
+                            id: it.CartItemID,
+                            productId: it.ProductID,
+                            productName: it.ProductName,
+                            qty: it.Volume,
+                            unitPrice: Number(it.UnitPrice || 0),
+                            totalPrice:
+                                Number(it.TotalPrice) ||
+                                Number(it.UnitPrice || 0) *
+                                    Number(it.Volume || 0),
+                            // Keep legacy key for compatibility
+                            img: imagePath,
+                            // New key used by the template
+                            productImage: imagePath,
+                        }
+                    })
                 }
 
                 // nếu không có items -> bỏ qua (theo yêu cầu mới)
