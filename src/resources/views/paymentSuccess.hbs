@@ -1,13 +1,16 @@
 <div class="payment-result payment-success">
     <div class="payment-result__container">
         <div class="payment-result__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2">
                 <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
         </div>
 
-        <h1 class="payment-result__title">✓ Thanh toán thành công!</h1>
-
+        <h1 class="payment-result__title">
+            ✓ {{#if (eq paymentType "momo")}}Thanh toán thành công!{{else}}Đặt
+            hàng thành công!{{/if}}
+        </h1>
         <p class="payment-result__message">
             Đơn hàng của bạn đã được xác nhận. Cảm ơn bạn đã mua hàng!
         </p>
@@ -16,7 +19,11 @@
         <div class="payment-result__info">
             <p><strong>Mã đơn hàng:</strong> {{orderId}}</p>
             <p><strong>Thời gian:</strong> <span id="currentTime"></span></p>
-            <p><strong>Trạng thái:</strong> <span style="color: #10b981; font-weight: bold;">✓ Đã thanh toán</span></p>
+            {{#if (eq paymentType "momo")}}
+               <p><strong>Trạng thái:</strong> <span style="color: #10b981; font-weight: bold;">✓ Đã thanh toán</span></p>
+           {{else}}
+               <p><strong>Trạng thái:</strong> <span style="color: #f97316; font-weight: bold;">✖ Chưa thanh toán</span></p>
+            {{/if}}
         </div>
         {{/if}}
         <script>
@@ -24,12 +31,17 @@
         </script>
 
         <div class="payment-result__actions">
-            <a href="/" class="payment-result__btn payment-result__btn--primary">← Tiếp tục mua sắm</a>
-            <a href="/profile?tab=orders" class="payment-result__btn payment-result__btn--secondary">Xem đơn hàng</a>
+            <a href="/"
+                class="payment-result__btn payment-result__btn--primary">← Tiếp
+                tục mua sắm</a>
+            <a href="/profile?tab=orders"
+                class="payment-result__btn payment-result__btn--secondary">Xem
+                đơn hàng</a>
         </div>
 
         <div class="payment-result__notice">
-            <p>📧 Xác nhận đơn hàng sẽ được gửi đến email của bạn trong vài phút.</p>
+            <p>📧 Xác nhận đơn hàng sẽ được gửi đến email của bạn trong vài
+                phút.</p>
         </div>
     </div>
 </div>
@@ -163,4 +175,3 @@
         transform: translateY(-2px);
     }
 </style>
-

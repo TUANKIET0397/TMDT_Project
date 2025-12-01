@@ -339,6 +339,7 @@ class SiteController {
     async payment(req, res) {
         try {
             const { paymentType, amount, cartData } = req.body
+            const effectivePaymentType = paymentType || 'cod'
 
             console.log("=== POST /payment ===")
             console.log("paymentType:", paymentType)
@@ -527,6 +528,7 @@ class SiteController {
                         orderId: invoiceId,
                         message:
                             "Đơn hàng của bạn đã được tạo. Chúng tôi sẽ liên hệ bạn sớm.",
+                        paymentType: effectivePaymentType,
                     })
                 } catch (codError) {
                     console.error("COD order error:", codError.message)
