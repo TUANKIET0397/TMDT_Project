@@ -35,12 +35,12 @@
                         </div>
                         <img src="{{#if this.ImgPath}}{{this.ImgPath}}{{else}}/img/product-other1.png{{/if}}" alt="{{this.ProductName}}">
                     </div>
-                    <div class="product-info">
+                    <div class="product-info" >
                         <div class="name_price">
-                            <div class="product-name">{{this.ProductName}}</div>
+                            <div class="product-name  clamp-text"f style="--line-content: 1">{{this.ProductName}}</div>
                             <div class="product-price">{{this.Price}}$</div>
                         </div>
-                        <div class="product-des">{{this.Descriptions}}</div>
+                        <div class="product-des clamp-text"  style="--line-content: 2">{{this.Descriptions}}</div>
                     </div>
                 </a>
                 <form action="/products/{{this.ID}}/delete" method="POST" class="delete-form">

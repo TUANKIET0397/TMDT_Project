@@ -102,10 +102,15 @@ body {
 }
 
 .detail_page {
+    display: flex;
+    flex-direction: column;
     text-decoration: none;
+    flex: 1;
 }
 
 .product-card {
+    display: flex;
+    flex-direction: column;
     background: #1a1f35;
     overflow: hidden;
     cursor: pointer;
@@ -115,6 +120,29 @@ body {
 .product-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.delete-form {
+    margin: 0;
+}
+
+.delete-btn {
+    width: 100%;
+    border: none;
+    background: #ce4040;
+    color: #fff;
+    padding: 10px 12px;
+    font-size: 1.3rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+}
+
+.delete-btn:hover {
+    background: #f04747;
 }
 
 .product-image {
@@ -150,6 +178,7 @@ body {
 }
 
 .product-info {
+    flex: 1;
     padding: 12px;
     background: #928b8b;
     color: #000;
@@ -166,7 +195,6 @@ body {
     font-size: 1.4rem;
     font-weight: bold;
     text-transform: uppercase;
-    overflow: hidden;
     max-width: 120px;
     max-height: 14px;
 }
