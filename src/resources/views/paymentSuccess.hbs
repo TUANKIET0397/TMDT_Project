@@ -21,6 +21,12 @@
         {{/if}}
         <script>
             document.getElementById('currentTime').textContent = new Date().toLocaleString('vi-VN')
+
+            // XÓA GIỎ HÀNG SAU KHI THANH TOÁN THÀNH CÔNG
+            localStorage.removeItem('cart');
+            sessionStorage.removeItem('pendingCartItem');
+            sessionStorage.removeItem('openCartAfterLogin');
+
         </script>
 
         <div class="payment-result__actions">
