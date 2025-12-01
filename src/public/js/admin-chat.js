@@ -183,9 +183,6 @@ function renderUserList() {
             <div class="user-item-info">
                 <div class="user-item-name">${user.name}</div>
                 <div class="user-item-meta">
-                    <span class="user-item-message">${escapeHtml(
-                        user.lastMessage || "New conversation"
-                    )}</span>
                     <span class="user-item-time">${formatRelativeTime(
                         user.lastActivity
                     )}</span>
@@ -193,6 +190,10 @@ function renderUserList() {
                 ${badgeHTML}
             </div>
         `
+
+        // <span class="user-item-message">${escapeHtml(
+        //     user.lastMessage || "New conversation"
+        // )}</span>
 
         userDiv.addEventListener("click", () => {
             switchToUser(user.userId)
