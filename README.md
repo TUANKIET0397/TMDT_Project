@@ -78,3 +78,9 @@ Dự án này chạy bằng **Node.js**, file khởi động chính là **index.
     ```
 
 ---
+
+## ▶️ Chạy dự án
+
+```bash
+node src/index.js
+```
