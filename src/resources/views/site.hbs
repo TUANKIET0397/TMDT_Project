@@ -113,7 +113,7 @@
 
     <div class="best-scroll">
         {{#each bestSellers}}
-            <div class="best-item">
+            <a href="/products/detail/{{this.ID}}" style="text-decoration: none; color: inherit; cursor: pointer;" class="best-item">
                 <div class="image-wrapper">
                     <span class="new-label">BEST</span>
                     <img src="{{this.ImgPath}}" alt="{{this.ProductName}}" />
@@ -124,12 +124,11 @@
                     <div class="bottom">
                         <p class="price" data-aos="fade-up">${{this.Price}}</p>
                         <button
-                            onclick="addToCart({id: {{this.ID}}, name: '{{this.ProductName}}', price: {{this.Price}}, img: '{{this.ImgPath}}'})"
                             class="buy-btn" data-aos="fade-left"
                         >Buy</button>
                     </div>
                 </div>
-            </div>
+            </a>
         {{/each}}
     </div>
 </section>
@@ -189,7 +188,7 @@
 
     <div class="best-scroll">
         {{#each newProducts}}
-            <div class="best-item" data-aos="fade-up">
+            <a href="/products/detail/{{this.ID}}" style="text-decoration: none; color: inherit; cursor: pointer;" class="best-item" data-aos="fade-up">
                 <div class="image-wrapper" >
                     <span class="new-label">{{this.Badge}}</span>
                     <img src="{{this.ImgPath}}" alt="{{this.ProductName}}" />
@@ -200,12 +199,11 @@
                     <div class="bottom">
                         <p class="price" data-aos="fade-up">${{this.Price}}</p>
                         <button
-                            onclick="addToCart({id: {{this.ID}}, name: '{{this.ProductName}}', price: {{this.Price}}, img: '{{this.ImgPath}}'})"
                             class="buy-btn" data-aos="fade-left"
                         >Buy</button>
                     </div>
                 </div>
-            </div>
+            </a>
         {{/each}}
     </div>
 </section>
