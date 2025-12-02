@@ -139,8 +139,21 @@ class AuthController {
   // ===== [POST] /auth/logout - Đăng xuất =====
   logoutPost(req, res) {
     const userId = req.session && req.session.userId;
+    const adminId = req.session && req.session.adminId;
 
-    // Destroy session, clear cookie, return JSON with redirect
+    // clear admin/session-specific keys (an toàn hơn)
+    if (req.session) {
+      delete req.session.userId;
+      delete req.session.userName;
+      delete req.session.userEmail;
+      delete req.session.userFullName;
+      delete req.session.userAvt;
+
+      delete req.session.adminId;
+      delete req.session.adminName;
+      delete req.session.adminRole;
+    }
+
     if (req.session) {
       req.session.destroy((err) => {
         if (err) {
@@ -149,26 +162,38 @@ class AuthController {
             .status(500)
             .json({ success: false, message: 'Logout failed' });
         }
-        // clear cookie name if you configured a different one
         res.clearCookie('connect.sid');
-        console.log('✅ User logged out (POST):', userId);
+        console.log('✅ User/Admin logged out (POST):', userId || adminId);
         return res.json({ success: true, redirect: '/auth' });
       });
     } else {
-      // No session — just redirect
       return res.json({ success: true, redirect: '/auth' });
     }
   }
 
   // ===== [GET] /auth/logout - Đăng xuất =====
   logout(req, res) {
-    const userId = req.session.userId;
+    const userId = req.session && req.session.userId;
+    const adminId = req.session && req.session.adminId;
+
+    // clear keys then destroy
+    if (req.session) {
+      delete req.session.userId;
+      delete req.session.userName;
+      delete req.session.userEmail;
+      delete req.session.userFullName;
+      delete req.session.userAvt;
+
+      delete req.session.adminId;
+      delete req.session.adminName;
+      delete req.session.adminRole;
+    }
 
     req.session.destroy((err) => {
       if (err) {
         console.error('❌ Logout error:', err);
       } else {
-        console.log('✅ User logged out:', userId);
+        console.log('✅ User/Admin logged out:', userId || adminId);
       }
       res.clearCookie('connect.sid');
       res.redirect('/auth');
