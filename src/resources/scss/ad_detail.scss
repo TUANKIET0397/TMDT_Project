@@ -309,10 +309,9 @@ input[type="number"] {
 .section__form {
     margin-top: 23px;
     width: 100%;
-    display: grid;
-    grid-auto-flow: column;
-    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
 }
+.modal-size-btn { pointer-events: auto; cursor: pointer; }
+.sizes-letter, .sizes-numeric, .modal-sizes-letter, .modal-sizes-numeric { display: flex; flex-wrap: wrap; }
 
 .section__form-size {
     padding: 10px 20px;
@@ -324,6 +323,7 @@ input[type="number"] {
     font-size: 2rem;
     color: #fff;
     cursor: pointer;
+    flex: 1 1 80px;
 }
 
 .section__form-size:hover {
@@ -544,8 +544,7 @@ input[type="number"] {
 
 /* Modal Size Selector */
 .modal-size-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
     gap: 12px;
     margin-top: 10px;
 }
@@ -559,6 +558,7 @@ input[type="number"] {
     font-size: 1.8rem;
     cursor: pointer;
     transition: all 0.3s;
+    flex: 1 1 50px;
 }
 
 .modal-size-btn:hover {

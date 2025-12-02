@@ -163,6 +163,9 @@
     z-index: 1;
 }
 
+.add-card__plus, .add__product-plus, .modal-image-plus { cursor: pointer; pointer-events: auto; }
+.add__product-color { cursor: pointer; }
+
 .add-card__plus:hover {
     cursor: pointer;
     opacity: 0.99;
@@ -309,9 +312,8 @@ input[type="number"] {
 .section__form {
     margin-top: 23px;
     width: 100%;
-    display: grid;
-    grid-auto-flow: column;
-    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    display: flex;
+    flex-direction: column;
 }
 
 .section__form-size {
@@ -324,6 +326,15 @@ input[type="number"] {
     font-size: 2rem;
     color: #fff;
     cursor: pointer;
+    min-width: 60px; flex: 1 1 80px;
+}
+
+.section__form .sizes-letter{
+        flex-wrap: wrap;
+}
+
+.section__form .sizes-numeric{
+    flex-wrap: wrap;
 }
 
 .section__form-size:hover {
@@ -544,12 +555,17 @@ input[type="number"] {
 
 /* Modal Size Selector */
 .modal-size-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
     gap: 12px;
     margin-top: 10px;
 }
+.modal-sizes-letter{
+        flex-wrap: wrap;
+}
 
+.modal-sizes-numeric{
+    flex-wrap: wrap;
+}
 .modal-size-btn {
     padding: 14px;
     border-radius: 8px;
@@ -559,6 +575,7 @@ input[type="number"] {
     font-size: 1.8rem;
     cursor: pointer;
     transition: all 0.3s;
+    flex: 1 1 80px;
 }
 
 .modal-size-btn:hover {

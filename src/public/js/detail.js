@@ -19,8 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const modal = document.getElementById('colorModal');
   const modalColorInput = modal.querySelector('.modal_color');
   const modalQtyInput = modal.querySelector('.modal-quantity-input');
-  const modalSizeBtns = modal.querySelectorAll('.modal-size-btn');
-  const modalSaveBtn = modal.querySelector(
+const getModalSizeBtns = () => modal.querySelectorAll('.modal-size-btn');  const modalSaveBtn = modal.querySelector(
     '.modal-quantity-wrap .modal-save-btn'
   );
   const closeModalBtn = document.getElementById('closeModalBtn');
@@ -43,6 +42,31 @@ document.addEventListener('DOMContentLoaded', () => {
   let selectedSizeInModal = null;
   let editingColorIndex = null;
   let isEditMode = false;
+
+  // THÊM: set size mode by type (show numeric sizes for shoes)
+function setSizeModeForType(typeValue) {
+  const isShoes = String(typeValue) === '7';
+  const sizesLetterWrap = document.querySelector('.sizes-letter');
+  const sizesNumericWrap = document.querySelector('.sizes-numeric');
+  const modalSizesLetter = document.querySelector('.modal-sizes-letter');
+  const modalSizesNumeric = document.querySelector('.modal-sizes-numeric');
+  if (sizesLetterWrap && sizesNumericWrap && modalSizesLetter && modalSizesNumeric) {
+    sizesLetterWrap.style.display = isShoes ? 'none' : 'flex';
+    sizesNumericWrap.style.display = isShoes ? 'flex' : 'none';
+    modalSizesLetter.style.display = isShoes ? 'none' : 'flex';
+    modalSizesNumeric.style.display = isShoes ? 'flex' : 'none';
+  }
+}
+// THÊM: clear active selections (main + modal)
+function clearActiveSizes() {
+  document.querySelectorAll('.section__form-size.active-form').forEach(el => el.classList.remove('active-form'));
+  getModalSizeBtns().forEach(el => el.classList.remove('active'));
+  selectedSizeInModal = null;
+  selectedSizeInMain = null;
+  updateQuantityVisibility();
+}
+
+
 
   // ===== DISABLE/ENABLE FUNCTIONS =====
   function disableAllInputs() {
@@ -223,37 +247,44 @@ document.addEventListener('DOMContentLoaded', () => {
     reindexColorCards();
   }
 
-  function openNewColorModal(e) {
-    e?.stopPropagation();
-    editingColorIndex = null;
-    tempColorData = { colorName: '', images: [], sizes: [] };
-    modalColorInput.value = '';
-    modalQtyInput.value = '';
-    selectedSizeInModal = null;
-    modalSizeBtns.forEach((b) => b.classList.remove('active'));
-    resetModalImages();
-    if (modalRemoveBtn) modalRemoveBtn.style.display = 'none';
-    modal.classList.add('active');
-  }
-
+ function openNewColorModal(e) {
+  e?.stopPropagation();
+  editingColorIndex = null;
+  tempColorData = { colorName: '', images: [], sizes: [] };
+  modalColorInput.value = '';
+  modalQtyInput.value = '';
+  selectedSizeInModal = null;
+  getModalSizeBtns().forEach((b) => b.classList.remove('active'));
+  resetModalImages();
+  if (modalRemoveBtn) modalRemoveBtn.style.display = 'none';
+  // ensure correct size-mode shown in modal for current type
+setSizeModeForType(typeSelect.value);
+ modal.classList.add('active');
+}
+if (typeSelect) {
+  setSizeModeForType(typeSelect.value);
+  typeSelect.addEventListener('change', function () {
+    setSizeModeForType(this.value);
+    clearActiveSizes();
+  });
+}
   function openColorModalForIndex(index) {
-    index = Number(index);
-    if (!Number.isFinite(index) || !productData.colors[index])
-      return openNewColorModal();
-
-    editingColorIndex = index;
-    const source = productData.colors[index];
-    tempColorData = {
-      colorId: source.colorId,
-      colorName: source.colorName,
-      images: [...source.images],
-      sizes: source.sizes.map((s) => ({ size: s.size, quantity: s.quantity })),
-    };
-
-    modalColorInput.value = tempColorData.colorName || '';
-    modalQtyInput.value = '';
-    selectedSizeInModal = null;
-    modalSizeBtns.forEach((b) => b.classList.remove('active'));
+  index = Number(index);
+  if (!Number.isFinite(index) || !productData.colors[index]) return openNewColorModal();
+  editingColorIndex = index;
+  const source = productData.colors[index];
+  tempColorData = {
+    colorId: source.colorId,
+    colorName: source.colorName,
+    images: [...source.images],
+    sizes: source.sizes.map((s) => ({ size: s.size, quantity: s.quantity })),
+  };
+  modalColorInput.value = tempColorData.colorName || '';
+  modalQtyInput.value = '';
+  selectedSizeInModal = null;
+  getModalSizeBtns().forEach((b) => b.classList.remove('active'));
+  resetModalImages();
+  setSizeModeForType(typeSelect.value);
 
     modalImageItems.forEach((item, idx) => {
       const preview = item.querySelector('.modal-preview-image');
@@ -279,7 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const sizeMap = {};
     tempColorData.sizes.forEach((s) => (sizeMap[s.size] = s.quantity));
-    modalSizeBtns.forEach((btn) => {
+    getModalSizeBtns().forEach((btn) => {
       const sz = btn.dataset.size;
       if (sizeMap[sz]) {
         btn.title = 'Qty: ' + sizeMap[sz];
@@ -314,48 +345,58 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function addColorCard(colorIndex) {
-    const color = productData.colors[colorIndex];
-    const colorCard = document.createElement('div');
-    colorCard.className = 'add__product-color';
-    colorCard.dataset.colorIndex = colorIndex;
-
-    const plusBlock = document.createElement('div');
-    plusBlock.className =
-      'add-card__plus add__product-plus active__product-color';
-    plusBlock.innerHTML = `<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M15 6.25V23.75" stroke="#000" stroke-linecap="round" stroke-linejoin="round" />
-        <path d="M6.25 15H23.75" stroke="#000" stroke-linecap="round" stroke-linejoin="round" />
-    </svg>`;
-    colorCard.appendChild(plusBlock);
-
-    const first = color.images[0];
-    if (first) {
-      let src = '';
-      if (first instanceof File) src = URL.createObjectURL(first);
-      else src = first;
-      colorCard.dataset.thumbUrl = src;
-      const svg = plusBlock.querySelector('svg');
-      if (svg) svg.style.display = 'none';
-      const img = document.createElement('img');
-      img.className = 'color-thumb-img';
-      img.style.width = '100%';
-      img.style.height = '100%';
-      img.style.objectFit = 'cover';
-      img.src = src;
-      plusBlock.appendChild(img);
-    }
-
-    colorCard.addEventListener('click', (ev) =>
-      openColorModalForIndex(ev.currentTarget.dataset.colorIndex)
-    );
-
-    const addNew = colorCardsContainer.querySelector(
-      '.add__product-color.add-new'
-    );
-    if (addNew) colorCardsContainer.insertBefore(colorCard, addNew);
-    else colorCardsContainer.appendChild(colorCard);
-    reindexColorCards();
+  const color = productData.colors[colorIndex];
+  const colorCard = document.createElement('div');
+  colorCard.className = 'add__product-color';
+  colorCard.dataset.colorIndex = colorIndex;
+  const plusBlock = document.createElement('div');
+  plusBlock.className = 'add-card__plus add__product-plus active__product-color';
+  plusBlock.innerHTML = `<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M15 6.25V23.75" stroke="#000" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M6.25 15H23.75" stroke="#000" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>`;
+  colorCard.appendChild(plusBlock);
+  const first = color.images[0];
+  if (first) {
+    let src = '';
+    if (first instanceof File) src = URL.createObjectURL(first);
+    else src = first;
+    colorCard.dataset.thumbUrl = src;
+    const svg = plusBlock.querySelector('svg');
+    if (svg) svg.style.display = 'none';
+    const img = document.createElement('img');
+    img.className = 'color-thumb-img';
+    img.style.width = '100%';
+    img.style.height = '100%';
+    img.style.objectFit = 'cover';
+    img.src = src;
+    plusBlock.appendChild(img);
   }
+  // add label
+  const label = document.createElement('div');
+  label.className = 'color-card-label';
+  label.textContent = color.colorName || '';
+  colorCard.appendChild(label);
+  const addNew = colorCardsContainer.querySelector('.add__product-color.add-new');
+  if (addNew) colorCardsContainer.insertBefore(colorCard, addNew);
+  else colorCardsContainer.appendChild(colorCard);
+  reindexColorCards();
+}
+
+function renderColorCards() {
+  // re-create existing cards (keep add-new)
+  if (!colorCardsContainer) return;
+  const addNewTemplate = colorCardsContainer.querySelector('.add__product-color.add-new');
+  colorCardsContainer.innerHTML = '';
+  if (addNewTemplate) colorCardsContainer.appendChild(addNewTemplate.cloneNode(true));
+  else {
+    const plus = document.createElement('div');
+    plus.className = 'add__product-color add-new';
+    plus.innerHTML = `<div class="add-card__plus add__product-plus"><svg width="30" height="30" viewBox="0 0 30 30" fill="none"><path d="M15 6.25V23.75" stroke="#000"/><path d="M6.25 15H23.75" stroke="#000"/></svg></div>`;
+    colorCardsContainer.appendChild(plus);
+  }
+  (productData.colors || []).forEach((_, i) => addColorCard(i));
+}
 
   // ===== UPDATE PRODUCT FUNCTION =====
   async function updateProduct() {
@@ -377,6 +418,14 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('Please add at least one color with sizes');
       return;
     }
+
+    const isShoes = String(productData.type) === '7';
+productData.colors.forEach((color) => {
+  color.sizes = (color.sizes || []).map((s) => ({
+    size: isShoes ? String(Number(s.size)) : String(s.size || '').trim().toUpperCase(),
+    quantity: Number(s.quantity) || 0,
+  }));
+});
 
     const formData = new FormData();
     formData.append('ProductName', productData.name);
@@ -523,18 +572,19 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Modal size buttons
-  modalSizeBtns.forEach((btn) =>
-    btn.addEventListener('click', function () {
-      modalSizeBtns.forEach((b) => b.classList.remove('active'));
-      this.classList.add('active');
-      selectedSizeInModal = this.dataset.size;
-      const exist = (tempColorData.sizes || []).find(
-        (s) => s.size === selectedSizeInModal
-      );
-      modalQtyInput.value = exist ? exist.quantity : '';
-      modalQtyInput.focus();
-    })
-  );
+    modal.addEventListener('click', function (e) {
+  const btn = e.target.closest('.modal-size-btn');
+  if (!btn) return;
+  if (getComputedStyle(btn).display === 'none') return;
+  // clear and set active on clicked
+  getModalSizeBtns().forEach((b) => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedSizeInModal = btn.dataset.size;
+  const exist = (tempColorData.sizes || []).find((s) => s.size === selectedSizeInModal);
+  modalQtyInput.value = exist ? exist.quantity : '';
+  modalQtyInput.focus();
+});
+  
 
   // Modal save quantity
   modalSaveBtn.addEventListener('click', () => {
@@ -556,7 +606,7 @@ document.addEventListener('DOMContentLoaded', () => {
         size: selectedSizeInModal,
         quantity: Number(modalQtyInput.value),
       });
-    modalSizeBtns.forEach((b) => b.classList.remove('active'));
+    getModalSizeBtns().forEach((b) => b.classList.remove('active'));
     modalQtyInput.value = '';
     selectedSizeInModal = null;
   });
@@ -616,19 +666,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initialize color cards
   (function initColorCards() {
-    const existing = colorCardsContainer.querySelectorAll(
-      '.add__product-color'
-    );
-    existing.forEach((card, i) => {
-      card.dataset.colorIndex = i;
-      card.addEventListener('click', (ev) => {
-        if (card.style.pointerEvents !== 'none') {
-          openColorModalForIndex(ev.currentTarget.dataset.colorIndex);
-        }
-      });
-    });
-  })();
+    if (!colorCardsContainer) return;
+  // Create or keep an "Add New" card
+  const addNew = colorCardsContainer.querySelector('.add__product-color.add-new');
+  if (!addNew) {
+    // ensure there is an add button for new color
+    const plus = document.createElement('div');
+    plus.className = 'add__product-color add-new';
+    plus.innerHTML = `<div class="add-card__plus add__product-plus"><svg ...></svg></div>`;
+    colorCardsContainer.appendChild(plus);
+  }
 
+  // Use delegation for clicks inside container
+  colorCardsContainer.removeEventListener('click', colorCardsContainer._delegatedHandler);
+  const delegatedHandler = (ev) => {
+    const card = ev.target.closest('.add__product-color');
+    if (!card || !colorCardsContainer.contains(card)) return;
+    if (card.classList.contains('add-new')) {
+      openNewColorModal(ev);
+      return;
+    }
+    // find index safely
+    let index = typeof card.dataset.colorIndex !== 'undefined' ? Number(card.dataset.colorIndex) : -1;
+    if (index < 0) {
+      // fallback: compute index by node list
+      const cards = Array.from(colorCardsContainer.querySelectorAll('.add__product-color:not(.add-new)'));
+      index = cards.indexOf(card);
+    }
+    if (index >= 0) openColorModalForIndex(index);
+  };
+  colorCardsContainer.addEventListener('click', delegatedHandler);
+  colorCardsContainer._delegatedHandler = delegatedHandler; // store so we can remove if re-render
+})();
   // ===== INITIALIZE =====
   initializeMainImages();
   disableAllInputs();

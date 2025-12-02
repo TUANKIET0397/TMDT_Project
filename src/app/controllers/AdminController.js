@@ -353,10 +353,12 @@ class AdminController {
         : Object.values(colorsDataRaw);
 
       // ===== Chuẩn bị payload =====
+      const TypeID = Number(req.body.TypeID) || null;
+      const isShoes = TypeID === 7;
       const payload = {
         ProductName: req.body.ProductName,
         Descriptions: req.body.Descriptions,
-        TypeID: req.body.TypeID,
+        TypeID,
         Price: Number(req.body.Price) || 0,
         mainImages: savedMain,
         colors: [],
@@ -374,6 +376,31 @@ class AdminController {
           message: 'Missing required fields',
         });
       }
+       const normalizeSizesForType = (rawSizes) => {
+        const arr = Array.isArray(rawSizes) ? rawSizes : Object.values(rawSizes);
+        return arr
+          .filter((s) => s && (s.size || s.quantity !== undefined))
+          .map((s) => {
+            const raw = String(s.size || '').trim();
+            const qty = Number(s.quantity) || 0;
+            if (isShoes) {
+              if (!/^\d+$/.test(raw)) {
+                throw new Error(`Invalid size "${raw}". For shoes (TypeID=7) size must be numeric.`);
+              }
+              const n = Number(raw);
+              if (n < 30 || n > 50) {
+                throw new Error(`Shoe size "${n}" out of allowed range (30-50).`);
+              }
+              return { size: String(n), quantity: qty };
+            } else {
+              // non-shoes expect letter sizes like S, M, L...
+              if (/^\d+$/.test(raw)) {
+                throw new Error(`Invalid size "${raw}". Non-shoe products must use letter sizes (e.g., S, M, L).`);
+              }
+              return { size: raw.toUpperCase(), quantity: qty };
+            }
+          });
+      };
 
       // ===== Xử lý màu và ảnh màu =====
       const colorImagesGroups = {};
@@ -406,20 +433,12 @@ class AdminController {
 
         // Sizes
         const rawSizes = colorData.sizes || [];
-        const sizes = Array.isArray(rawSizes)
-          ? rawSizes
-              .filter((s) => s && (s.size || s.quantity !== undefined))
-              .map((s) => ({
-                size: String(s.size || '').trim(),
-                quantity: Number(s.quantity) || 0,
-              }))
-          : Object.values(rawSizes)
-              .filter((s) => s && (s.size || s.quantity !== undefined))
-              .map((s) => ({
-                size: String(s.size || '').trim(),
-                quantity: Number(s.quantity) || 0,
-              }));
-
+        let sizes = [];
+        try {
+          sizes = normalizeSizesForType(rawSizes);
+        } catch (err) {
+          return res.status(400).json({ success: false, message: err.message });
+        }
         payload.colors.push({
           colorName: colorData.colorName || 'Default',
           images: savedColorImgs,

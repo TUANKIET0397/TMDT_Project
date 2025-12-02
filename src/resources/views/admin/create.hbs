@@ -260,12 +260,26 @@
                 </div>
             </div>
             <div class="section__form">
-                <div class="section__form-size section__form-size--M">M</div>
-                <div class="section__form-size section__form-size--L">L</div>
-                <div class="section__form-size section__form-size--XL">XL</div>
-                <div
-                    class="section__form-size section__form-size--XXL"
-                >XXL</div>
+            <div class="section__form">
+                <!-- letter sizes (default) -->
+                <div class="sizes-letter">
+                    <div class="section__form-size section__form-size--S">S</div>
+                    <div class="section__form-size section__form-size--M">M</div>
+                    <div class="section__form-size section__form-size--L">L</div>
+                    <div class="section__form-size section__form-size--XL">XL</div>
+                    <div class="section__form-size section__form-size--XXL">XXL</div>
+                </div>
+                <!-- numeric sizes for shoes (hidden by default) -->
+                <div class="sizes-numeric" style="display:none;">
+                    <div class="section__form-size section__form-size--36">36</div>
+                    <div class="section__form-size section__form-size--37">37</div>
+                    <div class="section__form-size section__form-size--38">38</div>
+                    <div class="section__form-size section__form-size--39">39</div>
+                    <div class="section__form-size section__form-size--40">40</div>
+                    <div class="section__form-size section__form-size--41">41</div>
+                    <div class="section__form-size section__form-size--42">42</div>
+                    <div class="section__form-size section__form-size--43">43</div>
+                </div>
             </div>
             <div class="add_quantity">
                 <input
@@ -550,11 +564,26 @@
                 </div>
 
                 <div class="modal-size-grid">
+                <!-- letter -->
+                <div class="modal-sizes-letter">
+                    <button class="modal-size-btn" data-size="S">S</button>
                     <button class="modal-size-btn" data-size="M">M</button>
                     <button class="modal-size-btn" data-size="L">L</button>
                     <button class="modal-size-btn" data-size="XL">XL</button>
                     <button class="modal-size-btn" data-size="XXL">XXL</button>
                 </div>
+                <!-- numeric (hidden) -->
+                <div class="modal-sizes-numeric" style="display:none;">
+                    <button class="modal-size-btn" data-size="36">36</button>
+                    <button class="modal-size-btn" data-size="37">37</button>
+                    <button class="modal-size-btn" data-size="38">38</button>
+                    <button class="modal-size-btn" data-size="39">39</button>
+                    <button class="modal-size-btn" data-size="40">40</button>
+                    <button class="modal-size-btn" data-size="41">41</button>
+                    <button class="modal-size-btn" data-size="42">42</button>
+                    <button class="modal-size-btn" data-size="43">43</button>
+                </div>
+            </div>
 
                 <div class="modal-quantity-wrap">
                     <input
