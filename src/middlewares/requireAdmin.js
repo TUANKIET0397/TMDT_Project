@@ -12,15 +12,6 @@ async function requireAdmin(req, res, next) {
       return next();
     }
 
-    // Nếu dùng chung session user/admin
-    if (req.session && req.session.userId) {
-      const user = await AuthSite.getUserById(req.session.userId);
-      if (user && (user.Roles === 'admin' || user.Role === 'admin')) {
-        req.admin = user;
-        return next();
-      }
-    }
-
     // Không có admin session → redirect về login chung của user
     // Chú ý: Đừng redirect về /admin/login
     return res.redirect('/auth?next=/admin');
