@@ -25,7 +25,7 @@ Dự án nhằm xây dựng một hệ thống thương mại điện tử đầ
 
 - Xem danh mục sản phẩm, tìm kiếm, lọc sản phẩm.
 
-- Xem chi tiết sản phẩm, đánh giá, bình luận.
+- Xem chi tiết sản phẩm.
 
 - Thêm sản phẩm vào giỏ hàng, thanh toán.
 
