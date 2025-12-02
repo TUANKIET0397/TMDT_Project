@@ -8,38 +8,39 @@ Website Thương Mại Điện Tử (E-Commerce) là nền tảng giúp người
 
 Dự án nhằm xây dựng một hệ thống thương mại điện tử đầy đủ chức năng, giúp doanh nghiệp:
 
-- Quản lý sản phẩm, đơn hàng, khách hàng và thanh toán.
+-   Quản lý sản phẩm, đơn hàng, khách hàng và thanh toán.
 
-- Tối ưu trải nghiệm mua sắm cho người dùng.
+-   Tối ưu trải nghiệm mua sắm cho người dùng.
 
-- Mở rộng hoạt động kinh doanh dễ dàng theo nhu cầu thực tế.
+-   Mở rộng hoạt động kinh doanh dễ dàng theo nhu cầu thực tế.
 
-- Tạo nền tảng sẵn sàng phát triển thành ứng dụng web/mobile.
+-   Tạo nền tảng sẵn sàng phát triển thành ứng dụng web/mobile.
 
 ---
 
 ## 🛍️ Tính năng chính
+
 **👤 Người dùng**
 
-- Đăng ký, đăng nhập, quản lý tài khoản.
+-   Đăng ký, đăng nhập, quản lý tài khoản.
 
-- Xem danh mục sản phẩm, tìm kiếm, lọc sản phẩm.
+-   Xem danh mục sản phẩm, tìm kiếm, lọc sản phẩm.
 
-- Xem chi tiết sản phẩm.
+-   Xem chi tiết sản phẩm.
 
-- Thêm sản phẩm vào giỏ hàng, thanh toán.
+-   Thêm sản phẩm vào giỏ hàng, thanh toán.
 
-- Xem lịch sử mua hàng.
+-   Xem lịch sử mua hàng.
 
 **🛡️ Admin**
 
-- Quản lý sản phẩm (CRUD).
+-   Quản lý sản phẩm (CRUD).
 
-- Quản lý đơn hàng & trạng thái giao hàng.
+-   Quản lý đơn hàng & trạng thái giao hàng.
 
-- Quản lý người dùng.
+-   Quản lý người dùng.
 
-- Thống kê doanh thu / sản phẩm bán chạy.
+-   Thống kê doanh thu / sản phẩm bán chạy.
 
 ## 💻Hướng dẫn chạy dự án tạo dự án
 
