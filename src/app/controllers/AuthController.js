@@ -2,23 +2,46 @@
 const AuthSite = require('../models/AuthSite');
 
 class AuthController {
-  // ===== [GET] /auth - Trang chủ auth (index) =====
+  // ===== [GET] /auth - Trang login/đăng ký =====
   async index(req, res) {
-    const nextUrl =
-      typeof req.query.next === 'string' && req.query.next.startsWith('/')
-        ? req.query.next
-        : null;
+    try {
+      // Nếu user hoặc admin đang login → tự logout trước
+      if (
+        (req.session && req.session.userId) ||
+        (req.session && req.session.adminId)
+      ) {
+        console.log('⚠️ Already logged in, logging out session...');
 
-    if (nextUrl && req.session) {
-      req.session.returnTo = nextUrl;
+        req.session.destroy((err) => {
+          if (err) console.error('❌ Error destroying session:', err);
+          res.clearCookie('connect.sid');
+          return res.redirect('/auth'); // redirect về /auth sau khi logout
+        });
+        return;
+      }
+
+      const nextUrl =
+        typeof req.query.next === 'string' && req.query.next.startsWith('/')
+          ? req.query.next
+          : null;
+
+      if (nextUrl && req.session) {
+        req.session.returnTo = nextUrl;
+      }
+
+      res.render('auth/index', {
+        layout: 'Auth',
+        returnTo: nextUrl || req.session?.returnTo || '',
+      });
+    } catch (err) {
+      console.error('❌ AuthController.index error:', err);
+      res.status(500).render('error', {
+        layout: 'Auth',
+        message: 'Server error',
+        error: err.message,
+      });
     }
-
-    res.render('auth/index', {
-      layout: 'Auth',
-      returnTo: nextUrl || req.session?.returnTo || '',
-    });
   }
-
   // ===== [GET] /auth/register - Hiển thị trang đăng ký =====
   async register(req, res) {
     res.render('auth/register', { layout: 'Auth' });
