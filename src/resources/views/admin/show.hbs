@@ -2,12 +2,16 @@
     <link rel="stylesheet" href="/css/listProduct.css" />
 {{/contentFor}}
 
-{{! List product }}
 <main class="main-content">
     <div class="header">
         <div class="header_search-box">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" class="header_search-input" placeholder=" Search product">
+            <input 
+                type="text" 
+                class="header_search-input" 
+                placeholder=" Search product"
+                value="{{searchKeyword}}"
+            >
         </div>
         <div class="filer_box">
             <i class="fa-solid fa-filter"></i>
@@ -22,25 +26,32 @@
         </div>
         <a href="/admin/create" class="add_page">+ Add</a>
     </div>
+
     <div id="flash-message" class="flash-message" hidden></div>
     
     <div class="product-grid">
         {{#each products}}
             <div class="product-card" data-product-id="{{this.ID}}">
-                {{!-- Link to detail page với ID sản phẩm --}}
                 <a href="/admin/detail/{{this.ID}}" class="detail_page">
                     <div class="product-image">
                         <div class="quantity-badge">
                             {{this.QuantityValue}}
                         </div>
-                        <img src="{{#if this.ImgPath}}{{this.ImgPath}}{{else}}/img/product-other1.png{{/if}}" alt="{{this.ProductName}}">
+                        <img 
+                            src="{{#if this.ImgPath}}{{this.ImgPath}}{{else}}/img/product-other1.png{{/if}}" 
+                            alt="{{this.ProductName}}"
+                        >
                     </div>
-                    <div class="product-info" >
+                    <div class="product-info">
                         <div class="name_price">
-                            <div class="product-name  clamp-text"f style="--line-content: 1">{{this.ProductName}}</div>
+                            <div class="product-name clamp-text" style="--line-content: 1">
+                                {{this.ProductName}}
+                            </div>
                             <div class="product-price">{{this.Price}}$</div>
                         </div>
-                        <div class="product-des clamp-text"  style="--line-content: 2">{{this.Descriptions}}</div>
+                        <div class="product-des clamp-text" style="--line-content: 2">
+                            {{this.Descriptions}}
+                        </div>
                     </div>
                 </a>
                 <form action="/products/{{this.ID}}/delete" method="POST" class="delete-form">
@@ -60,7 +71,8 @@
         window.location.href = `/admin/show${type ? '?type=' + encodeURIComponent(type) : ''}`
     }
 
-    ;(() => {
+    // Gói xử lý delete vào 1 hàm để còn gọi lại sau khi search
+    function attachDeleteHandlers() {
         const forms = document.querySelectorAll('.delete-form')
         const flashBox = document.getElementById('flash-message')
         let flashTimer
@@ -70,9 +82,7 @@
             flashBox.textContent = message
             flashBox.classList.toggle('error', Boolean(isError))
             flashBox.hidden = false
-            if (flashTimer) {
-                clearTimeout(flashTimer)
-            }
+            if (flashTimer) clearTimeout(flashTimer)
             flashTimer = setTimeout(() => {
                 flashBox.hidden = true
             }, 3000)
@@ -118,6 +128,110 @@
                     showFlash(error.message || 'Failed to delete product.', true)
                 }
             })
+        })
+    }
+
+    // Gọi 1 lần khi load trang
+    ;(function initDelete() {
+        attachDeleteHandlers()
+    })()
+    
+    // === SEARCH PRODUCT TRONG TRANG ADMIN /admin/show ===
+    ;(() => {
+        const searchInput = document.querySelector('.header_search-input')
+        const grid = document.querySelector('.product-grid')
+        if (!searchInput || !grid) return
+
+        let searchTimer = null
+
+        function renderProducts(items) {
+            if (!items || items.length === 0) {
+                grid.innerHTML = '<p style="padding:16px;color:#666">No products found.</p>'
+                return
+            }
+
+            const html = items.map(p => `
+                <div class="product-card" data-product-id="${p.id}">
+                    <a href="/admin/detail/${p.id}" class="detail_page">
+                        <div class="product-image">
+                            <div class="quantity-badge">
+                                ${p.quantity ?? 0}
+                            </div>
+                            <img src="${p.img}" alt="${p.name}">
+                        </div>
+                        <div class="product-info">
+                            <div class="name_price">
+                                <div class="product-name clamp-text" style="--line-content: 1">
+                                    ${p.name}
+                                </div>
+                                <div class="product-price">${p.price}$</div>
+                            </div>
+                            <div class="product-des clamp-text" style="--line-content: 2">
+                                ${p.description || ''}
+                            </div>
+                        </div>
+                    </a>
+                    <form action="/products/${p.id}/delete" method="POST" class="delete-form">
+                        <button type="submit" class="delete-btn">
+                            <i class="fa-solid fa-trash"></i>
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            `).join('')
+
+            grid.innerHTML = html
+
+            // Gắn lại handler delete cho các form mới render
+            attachDeleteHandlers()
+        }
+
+        async function runSearch(keyword) {
+            const q = keyword.trim()
+            if (!q) {
+                // Không search nữa -> load lại danh sách đầy đủ
+                window.location.href = '/admin/show'
+                return
+            }
+
+            try {
+                const res = await fetch(`/admin/products/search?q=${encodeURIComponent(q)}`, {
+                    headers: { Accept: 'application/json' },
+                    credentials: 'same-origin',
+                })
+
+                if (!res.ok) {
+                    console.warn('Search request failed')
+                    return
+                }
+
+                const json = await res.json()
+                if (!json.success) {
+                    console.warn('Search not success')
+                    return
+                }
+
+                renderProducts(json.data || [])
+            } catch (err) {
+                console.error('Search error:', err)
+            }
+        }
+
+        // Debounce input
+        searchInput.addEventListener('input', function () {
+            clearTimeout(searchTimer)
+            const keyword = this.value
+            searchTimer = setTimeout(() => {
+                runSearch(keyword)
+            }, 400)
+        })
+
+        // Enter để search ngay
+        searchInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault()
+                runSearch(this.value)
+            }
         })
     })()
 </script>

@@ -25,6 +25,10 @@ router.get('/register', (req, res) => {
   adminController.register(req, res);
 });
 
+
+router.get('/products/search', adminController.searchProductsAdmin);
+
+
 router.get('/users', (req, res) => {
   adminController.users(req, res);
 });
