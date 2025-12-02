@@ -301,9 +301,11 @@ document.addEventListener("DOMContentLoaded", () => {
         productDiv.innerHTML = `
             ${timeHTML}
             <div class="product-message">
-                <div class="product-image" style="background-image: url('${escapeHtml(
+                <div class="product-image"><img src="${escapeHtml(
                     product.productImage || "/img/default.jpg"
-                )}');"></div>
+                )}" alt="${escapeHtml(
+                        product.productName || "Product"
+                    )}"></div>
                 <div class="product-info">
                     <div class="product-name">${escapeHtml(
                         product.productName || "Product"
