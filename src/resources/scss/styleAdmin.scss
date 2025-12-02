@@ -24,14 +24,15 @@ body {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: var(--line-content);
+    line-clamp: var(--line-content);
     overflow: hidden;
     width: 180px;
 }
-
 .clamp-text-other {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: var(--line-content);
+    line-clamp: var(--line-content);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: normal;
@@ -253,7 +254,6 @@ body {
     width: 20px;
     text-align: center;
 }
-
 
 /* Modal Styles */
 .modal-overlay {
