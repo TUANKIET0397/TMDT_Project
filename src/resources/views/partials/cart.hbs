@@ -5,18 +5,31 @@
 
     <div class="cart-drawer" id="cartDrawer">
         <div class="cart-header">
-            <h3>Your Cart</h3>
+            <h3>Your cart</h3>
             <button
                 type="reset"
                 class="close-cart"
                 id="closeCart"
             >&times;</button>
         </div>
+
         <div class="cart-items" id="cartItems"></div>
+
         <div class="cart-footer">
-            <p>Total: <span id="cartTotal">$0.00</span></p>
+            <div class="cart-summary">
+                <div class="subtotal-line">
+                    <span>SUBTOTAL</span>
+                    <strong id="cartTotal">$0.00</strong>
+                </div>
+
+                <div class="free-shipping">You've unlocked free shipping! (FR
+                    only)</div>
+            </div>
+
             <input type="hidden" name="cartData" id="cartData" />
-            <button type="submit" class="checkout-btn">Checkout</button>
+            <button type="submit" class="checkout-btn">CHECK OUT</button>
+
+            <div class="cart-note">10% on your first order! &gt;&gt;</div>
         </div>
     </div>
 </form>

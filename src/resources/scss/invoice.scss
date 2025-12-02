@@ -79,7 +79,6 @@
     border-radius: 5px;
     font-size: 1rem;
     font-weight: 500;
-    background: #cb3cff;
     background: linear-gradient(
         90deg,
         rgba(203, 60, 255, 1) 0%,
@@ -92,66 +91,42 @@
     display: none;
 }
 
-/* label - heading*/
+/* ===========================
+   LABEL / HEADER + ROWS GRID
+   =========================== */
 .section__inner-label--other,
 .section__inner-label {
     display: grid;
     align-items: center;
-grid-template-columns:
-    110px      
-    2fr        
-    150px      
-    120px      
-    120px     
-    130px      
-    140px      
-    2fr       
-    80px; 
+
+    /* Cột */
+    grid-template-columns:
+        minmax(60px, 0.6fr)    /* Order / Check */
+        minmax(120px, 1fr)     /* Client */
+        minmax(80px, 0.8fr)    /* Date */
+        minmax(100px, 0.8fr)   /* Status (order) */
+        minmax(90px, 0.7fr)    /* Payment */
+        minmax(100px, 0.8fr)   /* Country */
+        minmax(100px, 0.8fr)   /* Total */
+        minmax(140px, 1fr)     /* Products */
+        minmax(60px, 0.5fr);   /* Action */
+
+    padding: 0 30px;
+
+    /* Giãn cột nhưng không quá rộng */
+    column-gap: 24px;
 }
-.section__inner-label--other,
-.section__inner-label {
-    padding-left: 50px;
-}
+
 .section__inner-label--other {
     padding-top: 30px;
     padding-bottom: 24px;
 }
 
-
-/* Header: Order + Client sang trái */
-.section__inner-label--other .section-item:nth-child(1),
-.section__inner-label--other .section-item:nth-child(2) {
-    padding-right: 30px!important;
-    justify-self: flex-start;
-}
-
-.section__inner-label--other .section-item:nth-child(3),
-.section__inner-label--other .section-item:nth-child(4),
-.section__inner-label--other .section-item:nth-child(5),
-.section__inner-label--other .section-item:nth-child(6),
-.section__inner-label--other .section-item:nth-child(7),
-.section__inner-label--other .section-item:nth-child(8){
-    padding-left: 50px;
-}
-
-.section__inner-label--other .section-item:nth-child(1),
-.section__inner-label--other .section-item:nth-child(2) {
-    justify-self: flex-start !important;
-    padding-left: 0 !important;
-}
-
-
-/* Header: Action sang phải */
-.section__inner-label--other .section-item:nth-child(9) {
-    justify-content: end;
-   padding-left: 25px;
-}
-
 .section__inner-label {
-padding: 0 30px;
- grid-auto-rows: 93px;
+    grid-auto-rows: 93px;
 }
 
+/* ziczac + hover */
 .section__inner-label:nth-child(odd) {
     background: #0e1c43b9;
 }
@@ -160,6 +135,7 @@ padding: 0 30px;
     background: #0911289c;
 }
 
+/* căn giữa các cột giữa bảng */
 
 .section-item:nth-of-type(3),
 .section-item:nth-of-type(4),
@@ -167,11 +143,11 @@ padding: 0 30px;
 .section-item:nth-of-type(6),
 .section-item:nth-of-type(7),
 .section-item:nth-of-type(8),
-.section-item:nth-of-type(2)
- {
+.section-item:nth-of-type(9) {
     justify-self: center;
 }
 
+/* Checkbox */
 .section-item__check {
     display: flex;
     align-items: center;
@@ -196,7 +172,6 @@ padding: 0 30px;
 
 /* Add status products */
 .section-checkbox {
-    /* visibility: hidden; */
     opacity: 0;
 }
 
@@ -205,6 +180,7 @@ padding: 0 30px;
     padding-top: 1px;
     font-weight: 500;
 }
+
 .section-checkmark::before {
     position: absolute;
     top: 2px;
@@ -242,6 +218,7 @@ padding: 0 30px;
     display: flex;
 }
 
+/* Info */
 .section__info-wrap {
     display: flex;
     flex-direction: column;
@@ -257,10 +234,10 @@ padding: 0 30px;
     color: #a6b1d8;
 }
 
+/* Date, Location, Total */
 .section-item__date,
 .section-item__location,
 .section-item__total {
-    padding-right: 0;       /* 🔥 xoá 80px */
     font-weight: 500;
     text-align: center;
 }
@@ -268,7 +245,7 @@ padding: 0 30px;
 /* Status - red - yellow - green */
 .section-item__status--green {
     position: relative;
-     margin: 0 auto;
+    margin: 0 auto;
     width: 60px;
     height: 18px;
     border: 1px solid #085244;
@@ -300,7 +277,7 @@ padding: 0 30px;
 .section-item__status--red {
     position: relative;
     display: block;
-     margin: 0 auto;
+    margin: 0 auto;
     width: 60px;
     height: 18px;
     border: 1px solid #632f49;
@@ -332,7 +309,7 @@ padding: 0 30px;
 .section-item__status--yellow {
     position: relative;
     display: block;
-     margin: 0 auto;
+    margin: 0 auto;
     width: 60px;
     height: 18px;
     border: 1px solid #634d2c;
@@ -361,12 +338,7 @@ padding: 0 30px;
     background: #eda927;
 }
 
-.section-item__date,
-.section-item__location,
-.section-item__total {
-    font-weight: 500;
-}
-
+/* Products wrap */
 .section-item__wrap {
     display: flex;
     flex-direction: column;
@@ -375,6 +347,7 @@ padding: 0 30px;
     padding: 7px 0;
 }
 
+/* Trash icon */
 .section-icon__trash i {
     font-size: 20px;
     transition: transform 0.3s ease, opacity 0.3s ease;
