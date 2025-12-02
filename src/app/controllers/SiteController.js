@@ -549,25 +549,6 @@ class SiteController {
                     })
                 }
             }
-          // Render success page
-          return res.render('paymentSuccess', {
-            layout: 'payment',
-            title: 'Đơn hàng đã được tạo',
-            orderId: invoiceId,
-            message:
-              'Đơn hàng của bạn đã được tạo. Chúng tôi sẽ liên hệ bạn sớm.',
-          });
-        } catch (codError) {
-          console.error('COD order error:', codError.message);
-          return res.status(500).render('error', {
-            layout: 'payment',
-            message: 'Lỗi khi tạo đơn hàng.',
-            error: codError.message,
-            retryUrl: '/checkout',
-          });
-        }
-      }
-
       // Fallback: render checkout lại
       const itemCount = cartItems.reduce((c, it) => c + it.quantity, 0);
       const total = subtotal;

@@ -353,6 +353,13 @@ class ProductController {
                 return res.status(404).send('Product not found')
             }
 
+
+            // determine if product belongs to Shoes type
+            const isShoes = String(product.TypeName || '').toLowerCase() === 'shoes'
+
+            // fetch sizes for this product (will return numeric sizes for shoes, else letter sizes)
+            const sizes = await Product.getSizesForProduct(productId, isShoes)
+ console.log('DEBUG sizes for product', productId, sizes) // <-- debug
             // debug images
             console.log('[DEBUG] product.Images6:', product.Images6)
             console.log('[DEBUG] product.ImagesByColorList:', product.ImagesByColorList)
@@ -364,7 +371,7 @@ class ProductController {
                 related = relatedProducts.filter(p => String(p.ID) !== String(productId)).slice(0, 4)
             }
 
-            return res.render('products/detail', { product, relatedProducts: related })
+            return res.render('products/detail', { product, relatedProducts: related, sizes, isShoes})
         } catch (error) {
             console.error('Detail error:', error)
             return res.status(500).send('Error loading product')

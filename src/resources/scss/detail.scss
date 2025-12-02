@@ -75,31 +75,51 @@
 .section__form {
     margin-top: 14px;
     width: 100%;
-    display: grid;
-    grid-auto-flow: column;
-    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .section__form-size {
-    padding: 10px 20px;
-    border-radius: 6px;
-    border: 1px solid rgba(0, 0, 0, 0.5);
     text-align: center;
     white-space: nowrap;
     font-weight: bold;
-    cursor: pointer;
+    font-size: 2rem;
+    padding: 10px 20px;
+    font-weight: 300;
+    border-radius: 6px;
+}
+
+.section__form-button {
+    position: relative;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    min-width: 60px; flex: 1 1 80px;
+}
+
+.section__form-quantity {
+    position: absolute;
+    top: -35px;
+    left: 28px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-top: 4px;
+    width: fit-content;
+    padding: 8px;
+    background:#636363d3;
+    border-radius: 4px;
+    text-align: center;
+    display: none; /* hide by default */
+}
+
+/* show quantity only for active size's parent */
+.section__form-button.active .section__form-quantity {
+    display: block;
+    z-index: 10;
 }
 
 .section__form-size:hover {
     outline: 1px solid #000;
-}
-
-.section__form-size--M,
-.section__form-size--L,
-.section__form-size--XL,
-.section__form-size--XXL {
-    font-size: 2rem;
-    font-weight: 300;
 }
 
 
@@ -175,7 +195,7 @@
     font-weight: bolder;
     color: #ffffff;
     padding: 2px;
-    z-index: 1000;
+    z-index: 500;
     border-radius: 3px;
 }
 

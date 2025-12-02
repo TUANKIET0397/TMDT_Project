@@ -39,20 +39,23 @@
                 </div>
 
                 <!-- form size -->
-                <div class="section__form">
-                    <div
-                        class="section__form-size section__form-size--S"
-                        data-size="S">S</div>
-                    <div
-                        class="section__form-size section__form-size--M"
-                        data-size="M">M</div>
-                    <div
-                        class="section__form-size section__form-size--L"
-                        data-size="L">L</div>
-                    <div
-                        class="section__form-size section__form-size--XL"
-                        data-size="XL">XL</div>
+                {{#if sizes}}
+                <div class="section__form" role="list">
+                    {{#each sizes}}
+                    <div class="section__form-button">
+                    <div role="button" tabindex="0"
+                        class="section__form-size {{#if ../isShoes}}section__form-size--numeric{{/if}}"
+                        data-size="{{this.SizeName}}"
+                        data-size-id="{{this.ID}}">
+                        {{this.SizeName}}
+                    </div>
+                    <div class="section__form-quantity" data-size-id="{{this.ID}}">
+                        <h5>SL: {{this.QuantityValue}}</h5>
+                    </div>
+                    </div>
+                    {{/each}}
                 </div>
+                {{/if}}
 
                 <!-- btn add to cart & buy now -->
                 <div class="section_btn-detail">
@@ -356,6 +359,7 @@
       const productImg = contentEl?.dataset.productImage ?? '{{product.ImgPath}}'
 
       let selectedSize = null
+      let selectedSizeId = null
       let selectedColor = null
 
       const addBtn = document.getElementById('addToCartBtn')
@@ -395,14 +399,55 @@
 
       // Size handlers
       document.querySelectorAll('.section__form-size').forEach(btn => {
+        // click
         btn.addEventListener('click', function () {
-          document.querySelectorAll('.section__form-size').forEach(b => b.classList.remove('active'))
+          // remove active from all buttons + parent wrappers
+          document.querySelectorAll('.section__form-button').forEach(pb => pb.classList.remove('active'))
+          document.querySelectorAll('.section__form-size').forEach(b => {
+            b.classList.remove('active')
+            b.setAttribute('aria-pressed', 'false')
+          })
+
+          // add active to clicked size and its parent wrapper
+          const parent = this.closest('.section__form-button')
+          if (parent) parent.classList.add('active')
           this.classList.add('active')
-          selectedSize = this.dataset.size || 'M'
-          if (addBtn) addBtn.textContent = `ADD TO CART - ${selectedSize}`
+          this.setAttribute('aria-pressed', 'true')
+
+          // collect selection
+          selectedSize = this.dataset.size || null
+          selectedSizeId = this.dataset.sizeId || null
+
+          if (addBtn) addBtn.textContent = `ADD TO CART - ${selectedSize || ''}`
           updateActionButtons()
         })
+
+        // keyboard activation (Enter/Space)
+        btn.addEventListener('keydown', function (ev) {
+          if (ev.key === 'Enter' || ev.key === ' ') {
+            ev.preventDefault()
+            this.click()
+          }
+        })
       })
+
+      // default size highlight (prefer M, otherwise first DB size)
+      setTimeout(() => {
+        const defaultM = document.querySelector('[data-size="M"]')
+        const firstSize = document.querySelector('.section__form-size')
+        const defaultSizeBtn = defaultM || firstSize
+
+        if (defaultSizeBtn) {
+          const parent = defaultSizeBtn.closest('.section__form-button')
+          if (parent) parent.classList.add('active')
+          defaultSizeBtn.classList.add('active')
+          defaultSizeBtn.setAttribute('aria-pressed', 'true')
+          selectedSize = selectedSize || defaultSizeBtn.dataset.size || null
+          selectedSizeId = selectedSizeId || defaultSizeBtn.dataset.sizeId || null
+          if (addBtn && selectedSize) addBtn.textContent = `ADD TO CART - ${selectedSize}`
+        }
+        updateActionButtons()
+      }, 100)
 
       // Delegated color-group click & keyboard handler (reliable even if elements change)
       document.addEventListener('click', function (ev) {

@@ -94,6 +94,39 @@ static async searchByQuery(q, limit = 10) {
     }
 
 
+   static async getSizesForProduct(productId, isShoes = false) {
+        try {
+            if (isShoes) {
+                const [rows] = await db.query(
+                    `
+                    SELECT DISTINCT s.ID, s.SizeName, COALESCE(q.QuantityValue,0) as QuantityValue
+                    FROM Quantity q
+                    JOIN SizeProduct s ON q.SizeID = s.ID
+                    WHERE q.ProductID = ? AND s.SizeName REGEXP '^[0-9]+'
+                    ORDER BY CAST(s.SizeName AS UNSIGNED) ASC
+                    `,
+                    [productId]
+                )
+                return rows
+            } else {
+                const [rows] = await db.query(
+                    `
+                    SELECT DISTINCT s.ID, s.SizeName, COALESCE(q.QuantityValue,0) as QuantityValue
+                    FROM Quantity q
+                    JOIN SizeProduct s ON q.SizeID = s.ID
+                    WHERE q.ProductID = ? AND NOT (s.SizeName REGEXP '^[0-9]+')
+                    ORDER BY FIELD(s.SizeName, 'XS','S','M','L','XL','XXL','XXXL') , s.SizeName
+                    `,
+                    [productId]
+                )
+                return rows
+            }
+        } catch (error) {
+            console.error("Error in getSizesForProduct:", error)
+            throw error
+        }
+    }
+
     // Lấy chi tiết sản phẩm
 static async getProductById(productId) {
     try {

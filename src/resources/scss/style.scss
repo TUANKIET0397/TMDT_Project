@@ -721,7 +721,7 @@ h3 {
     border-radius: 12px;
     color: #000000;
     max-width: 100%;
-    width: 100%;
+    width: 1000px;
     position: relative;
 }
 
@@ -742,6 +742,12 @@ button.Buy {
     border-radius: 8px;
     background: #5d73e7;
     flex-shrink: 0;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .product-info {
