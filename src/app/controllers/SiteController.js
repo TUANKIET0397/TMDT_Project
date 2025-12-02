@@ -327,7 +327,7 @@ class SiteController {
         } catch (error) {
             console.error("Error in checkout:", error)
             res.status(500).render("error", {
-                layout: "payment",
+                layout: "status",
                 message: "Failed to load checkout page",
                 error: error.message,
                 retryUrl: "/",
@@ -344,29 +344,32 @@ class SiteController {
             console.log("paymentType:", paymentType)
             console.log("amount:", amount)
             console.log("req.user:", req.user)
-            
-      // Parse cartData
-      let items = [];
-      if (cartData) {
-        try {
-          items = JSON.parse(cartData);
-        } catch (err) {
-          console.error('Invalid cartData JSON:', err);
-          return res.status(400).render('error', {
-            layout: 'payment',
-            message: 'Invalid cart data',
-            error: 'Failed to parse cart data',
-            retryUrl: '/checkout',
-          });
-        }
-      } else if (req.session.cartItems && req.session.cartItems.length > 0) {
-        items = req.session.cartItems;
-      }
+
+            // Parse cartData
+            let items = []
+            if (cartData) {
+                try {
+                    items = JSON.parse(cartData)
+                } catch (err) {
+                    console.error("Invalid cartData JSON:", err)
+                    return res.status(400).render("error", {
+                        layout: "status",
+                        message: "Invalid cart data",
+                        error: "Failed to parse cart data",
+                        retryUrl: "/checkout",
+                    })
+                }
+            } else if (
+                req.session.cartItems &&
+                req.session.cartItems.length > 0
+            ) {
+                items = req.session.cartItems
+            }
 
             // ✅ Validate cart có items
             if (!items || items.length === 0) {
                 return res.status(400).render("error", {
-                    layout: "payment",
+                    layout: "status",
                     message: "Cart is empty",
                     error: "Please add items to cart before checkout",
                     retryUrl: "/",
@@ -463,7 +466,7 @@ class SiteController {
                     } else {
                         console.error("MoMo payment failed:", paymentResult)
                         return res.status(400).render("error", {
-                            layout: "payment",
+                            layout: "status",
                             message:
                                 "Không thể kết nối với cổng thanh toán MoMo.",
                             error:
@@ -476,7 +479,7 @@ class SiteController {
                     console.error("MoMo payment error:", momoError.message)
                     console.error("Error details:", momoError)
                     return res.status(500).render("error", {
-                        layout: "payment",
+                        layout: "status",
                         message: "Lỗi khi xử lý thanh toán MoMo.",
                         error: momoError.message,
                         retryUrl: "/checkout",
@@ -532,7 +535,7 @@ class SiteController {
 
                     // Render success page
                     return res.render("paymentSuccess", {
-                        layout: "payment",
+                        layout: "status",
                         title: "Đơn hàng đã được tạo",
                         orderId: invoiceId,
                         message:
@@ -542,20 +545,21 @@ class SiteController {
                 } catch (codError) {
                     console.error("COD order error:", codError.message)
                     return res.status(500).render("error", {
-                        layout: "payment",
+                        layout: "status",
                         message: "Lỗi khi tạo đơn hàng.",
                         error: codError.message,
                         retryUrl: "/checkout",
                     })
                 }
             }
-      // Fallback: render checkout lại
-      const itemCount = cartItems.reduce((c, it) => c + it.quantity, 0);
-      const total = subtotal;
-      const cartDataJson = JSON.stringify(cartItems || []).replace(
-        /</g,
-        '\\u003c'
-      );
+
+            // Fallback: render checkout lại
+            const itemCount = cartItems.reduce((c, it) => c + it.quantity, 0)
+            const total = subtotal
+            const cartDataJson = JSON.stringify(cartItems || []).replace(
+                /</g,
+                "\\u003c"
+            )
 
             const regions = await AuthSite.getUserRegions()
             const regionsWithSelection = regions.map((region) => ({
@@ -582,6 +586,186 @@ class SiteController {
                 message: "Lỗi hệ thống. Vui lòng thử lại sau.",
                 error: error.message,
                 retryUrl: "/checkout",
+            })
+        }
+    }
+
+    async validateCartStock(req, res) {
+        try {
+            const { cartItems } = req.body
+
+            if (
+                !cartItems ||
+                !Array.isArray(cartItems) ||
+                cartItems.length === 0
+            ) {
+                return res.json({
+                    success: false,
+                    message: "Cart is empty",
+                })
+            }
+
+            const db = require("../../config/db")
+            const errors = []
+
+            // Check stock for each item
+            for (const item of cartItems) {
+                const productId = item.id || item.productId || item.ID
+                const requestedQty = parseInt(item.quantity || 0)
+                const size = item.size || null
+                const color = item.color || null
+
+                if (!productId || requestedQty <= 0) continue
+
+                try {
+                    let query
+                    let params
+
+                    // Case 1: Có cả size và color
+                    if (size && color) {
+                        query = `
+            SELECT 
+              p.ID,
+              p.ProductName,
+              COALESCE(q.QuantityValue, 0) AS AvailableStock,
+              sp.SizeName,
+              cp.ColorName
+            FROM Product p
+            LEFT JOIN SizeProduct sp ON sp.SizeName = ?
+            LEFT JOIN ColorProduct cp ON cp.ProductID = p.ID AND cp.ColorName = ?
+            LEFT JOIN Quantity q ON q.ProductID = p.ID 
+              AND q.SizeID = sp.ID 
+              AND q.ColorID = cp.ID
+            WHERE p.ID = ?
+            LIMIT 1
+          `
+                        params = [size, color, productId]
+                    }
+                    // Case 2: Chỉ có size
+                    else if (size) {
+                        query = `
+            SELECT 
+              p.ID,
+              p.ProductName,
+              COALESCE(SUM(q.QuantityValue), 0) AS AvailableStock,
+              sp.SizeName,
+              NULL AS ColorName
+            FROM Product p
+            LEFT JOIN SizeProduct sp ON sp.SizeName = ?
+            LEFT JOIN Quantity q ON q.ProductID = p.ID AND q.SizeID = sp.ID
+            WHERE p.ID = ?
+            GROUP BY p.ID, p.ProductName, sp.SizeName
+            LIMIT 1
+          `
+                        params = [size, productId]
+                    }
+                    // Case 3: Chỉ có color
+                    else if (color) {
+                        query = `
+            SELECT 
+              p.ID,
+              p.ProductName,
+              COALESCE(SUM(q.QuantityValue), 0) AS AvailableStock,
+              NULL AS SizeName,
+              cp.ColorName
+            FROM Product p
+            LEFT JOIN ColorProduct cp ON cp.ProductID = p.ID AND cp.ColorName = ?
+            LEFT JOIN Quantity q ON q.ProductID = p.ID AND q.ColorID = cp.ID
+            WHERE p.ID = ?
+            GROUP BY p.ID, p.ProductName, cp.ColorName
+            LIMIT 1
+          `
+                        params = [color, productId]
+                    }
+                    // Case 4: Không có size và color
+                    else {
+                        query = `
+            SELECT 
+              p.ID,
+              p.ProductName,
+              COALESCE(SUM(q.QuantityValue), 0) AS AvailableStock,
+              NULL AS SizeName,
+              NULL AS ColorName
+            FROM Product p
+            LEFT JOIN Quantity q ON q.ProductID = p.ID
+            WHERE p.ID = ?
+            GROUP BY p.ID, p.ProductName
+            LIMIT 1
+          `
+                        params = [productId]
+                    }
+
+                    const [stockResult] = await db.query(query, params)
+
+                    if (stockResult.length === 0) {
+                        errors.push({
+                            productId: productId,
+                            productName: item.name || "Unknown Product",
+                            requestedQty: requestedQty,
+                            availableStock: 0,
+                            size: size,
+                            color: color,
+                            message: "Sản phẩm không tồn tại",
+                        })
+                        continue
+                    }
+
+                    const product = stockResult[0]
+                    const availableStock = parseInt(product.AvailableStock || 0)
+
+                    if (requestedQty > availableStock) {
+                        let productLabel = product.ProductName
+                        if (size) productLabel += ` (Size: ${size})`
+                        if (color) productLabel += ` (Màu: ${color})`
+
+                        errors.push({
+                            productId: productId,
+                            productName: productLabel,
+                            requestedQty: requestedQty,
+                            availableStock: availableStock,
+                            size: size,
+                            color: color,
+                            message:
+                                availableStock > 0
+                                    ? `Chỉ còn ${availableStock} sản phẩm trong kho`
+                                    : "Sản phẩm đã hết hàng",
+                        })
+                    }
+                } catch (dbError) {
+                    console.error(
+                        `Error checking stock for product ${productId}:`,
+                        dbError
+                    )
+                    errors.push({
+                        productId: productId,
+                        productName: item.name || "Unknown Product",
+                        requestedQty: requestedQty,
+                        availableStock: 0,
+                        size: size,
+                        color: color,
+                        message: "Không thể kiểm tra tồn kho",
+                    })
+                }
+            }
+
+            if (errors.length > 0) {
+                return res.json({
+                    success: false,
+                    errors: errors,
+                    message: "Một số sản phẩm vượt quá số lượng tồn kho",
+                })
+            }
+
+            return res.json({
+                success: true,
+                message: "Tất cả sản phẩm đều có đủ số lượng",
+            })
+        } catch (error) {
+            console.error("Error in validateCartStock:", error)
+            return res.status(500).json({
+                success: false,
+                message: "Lỗi hệ thống khi kiểm tra tồn kho",
+                error: error.message,
             })
         }
     }

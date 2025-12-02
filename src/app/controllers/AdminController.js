@@ -572,6 +572,45 @@ class AdminController {
     }
   }
 
+    // [GET] /admin/products/search?q=keyword
+async searchProductsAdmin(req, res) {
+  try {
+    const q = (req.query.q || '').trim().toLowerCase();
+
+    // Nếu không có keyword thì trả mảng rỗng
+    if (!q) {
+      return res.json({ success: true, data: [] });
+    }
+
+    // Lấy toàn bộ product (dùng chung hàm đang có)
+    const allProducts = await AdminSite.getAllProducts();
+
+    // Lọc theo tên sản phẩm
+    const filtered = allProducts.filter(p =>
+      (p.ProductName || '').toLowerCase().includes(q)
+    );
+
+    // Chuẩn hóa dữ liệu trả về cho FE
+    const data = filtered.slice(0, 50).map(p => ({
+      id: p.ID,
+      name: p.ProductName,
+      price: p.Price,
+      img: p.ImgPath || '/img/product-other1.png',
+      description: p.Descriptions || '',
+      quantity: p.QuantityValue || 0,
+      typeName: p.TypeName || ''
+    }));
+
+    return res.json({ success: true, data });
+  } catch (err) {
+    console.error('Error in searchProductsAdmin:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+}
+
   // [GET] /admin/export/csv - Export dashboard data as CSV
   async exportCSV(req, res) {
     try {
@@ -1066,7 +1105,6 @@ class AdminController {
       });
     }
   }
-
   // [DELETE] /admin/color/:colorId - Xóa màu
   async deleteColor(req, res) {
     try {

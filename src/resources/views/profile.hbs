@@ -125,51 +125,64 @@
           <th>Status</th>
         </tr>
       </thead>
-      <tbody>
-        {{#each orders}}
-        <tr class="order-row" data-detail="detail-{{id}}" style="cursor: pointer;">
-          <td class="order-id">
-            <span class="order-arrow">˅</span>
-            <span>#{{id}}</span>
-          </td>
-          <td>{{quantityTypes}}</td>
-          <td>{{createdAt}}</td>
-          <td>${{totalCost}}</td>
-          <td style="color: {{#if (eq this.payment 'Paid')}}#28a745{{else}}#ffc107{{/if}}; font-weight: 600;">{{payment}}</td>
-          <td style="color: {{#if (eq this.states 'Delivered')}}#28a745{{else if (eq this.states 'Cancelled')}}#e53e3e{{else if (eq this.states 'Prepare')}}#ffc107{{else}}#667eea{{/if}};">{{states}}</td>
-        </tr>
+            <tbody>
+              {{#each orders}}
+                <tr class="order-row" data-detail="detail-{{id}}" style="cursor: pointer;">
+                  <td class="order-id">
+                    <span class="order-arrow">˅</span>
+                    <span>#{{id}}</span>
+                  </td>
+                  <td>{{quantityTypes}}</td>
+                  <td>{{createdAt}}</td>
+                  <td>${{totalCost}}</td>
+                  <td style="color: {{#if (eq this.payment 'Paid')}}#28a745{{else}}#ffc107{{/if}}; font-weight: 600;">
+                    {{payment}}
+                  </td>
+                  <td style="color: {{#if (eq this.states 'Delivered')}}#28a745{{else if (eq this.states 'Cancelled')}}#e53e3e{{else if (eq this.states 'Prepare')}}#ffc107{{else}}#667eea{{/if}};">
+                    {{states}}
+                  </td>
+                </tr>
 
-        <tr id="detail-{{id}}" class="order-detail-row" style="display:none">
-          <td colspan="6">
-            <div style="background: #f8f9fa; border-radius: 2px; padding: 1px">
-              <div class="detail-header">
-                <span>Product Details</span>
-                <span style="text-align: center;">Quantity</span>
-                <span style="text-align: right;">Total Price</span>
-              </div>
+                <tr id="detail-{{id}}" class="order-detail-row" style="display:none">
+                  <td colspan="6">
+                    <div style="background: #f8f9fa; border-radius: 2px; padding: 1px">
+                      <div class="detail-header">
+                        <span>Product Details</span>
+                        <span style="text-align: center;">Quantity</span>
+                        <span style="text-align: right;">Total Price</span>
+                      </div>
 
-              {{#if items}}
-                {{#each items}}
-                <div class="detail-item">
-                  <div class="detail-info" >
-                    <img src="{{productImage}}" alt="{{productName}}"/>
-                    <div style="flex: 1; padding-right: 85px;">
-                      <p >{{productName}}</p>
-                      <p >Unit Price: ${{unitPrice}}</p>
+                      {{!-- HIỆN CHI TIẾT ITEMS CỦA TỪNG ORDER --}}
+                      {{#each items}}
+                        <div class="detail-item">
+                          <div class="detail-info">
+                            <img src="{{productImage}}" alt="{{productName}}"/>
+                            <div style="flex: 1; padding-right: 85px;">
+                              <p>{{productName}}</p>
+                              <p>Unit Price: ${{unitPrice}}</p>
+                            </div>
+                          </div>
+                          <div class="detail-qty">x{{qty}}</div>
+                          <div class="detail-cost">${{totalPrice}}</div>
+                        </div>
+                      {{else}}
+                        <p style="text-align: center; color: #999; padding: 20px;">
+                          No items in this order
+                        </p>
+                      {{/each}}
+
                     </div>
-                  </div>
-                  <div class="detail-qty">x{{qty}}</div>
-                  <div class="detail-cost">${{totalPrice}}</div>
-                </div>
-                {{/each}}
+                  </td>
+                </tr>
               {{else}}
-                <p style="text-align: center; color: #999; padding: 20px;">No items in this order</p>
-              {{/if}}
-            </div>
-          </td>
-        </tr>
-        {{/each}}
-      </tbody>
+                <tr>
+                  <td colspan="6" style="text-align:center; color:#999; padding:20px;">
+                    You have no orders yet
+                  </td>
+                </tr>
+              {{/each}}
+            </tbody>
+
     </table>
   </div>
 </div>

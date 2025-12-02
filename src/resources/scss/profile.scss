@@ -269,15 +269,16 @@ label[for="tab-orders"] {
 
 //style="text-align: center; font-weight: 600;"
 //  style="text-align: right; font-weight: 600; color: #28a745;"
-.detail-qty,
 .detail-cost {
     font-size: 14px;
     font-weight: 600;
     text-align: center;
+    
 }
 
 .detail-qty {
     padding-right: 85px;
+    padding-left: 25%;
 }
 
 .orders-table th {

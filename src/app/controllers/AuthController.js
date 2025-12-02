@@ -2,23 +2,46 @@
 const AuthSite = require('../models/AuthSite');
 
 class AuthController {
-  // ===== [GET] /auth - Trang chủ auth (index) =====
+  // ===== [GET] /auth - Trang login/đăng ký =====
   async index(req, res) {
-    const nextUrl =
-      typeof req.query.next === 'string' && req.query.next.startsWith('/')
-        ? req.query.next
-        : null;
+    try {
+      // Nếu user hoặc admin đang login → tự logout trước
+      if (
+        (req.session && req.session.userId) ||
+        (req.session && req.session.adminId)
+      ) {
+        console.log('⚠️ Already logged in, logging out session...');
 
-    if (nextUrl && req.session) {
-      req.session.returnTo = nextUrl;
+        req.session.destroy((err) => {
+          if (err) console.error('❌ Error destroying session:', err);
+          res.clearCookie('connect.sid');
+          return res.redirect('/auth'); // redirect về /auth sau khi logout
+        });
+        return;
+      }
+
+      const nextUrl =
+        typeof req.query.next === 'string' && req.query.next.startsWith('/')
+          ? req.query.next
+          : null;
+
+      if (nextUrl && req.session) {
+        req.session.returnTo = nextUrl;
+      }
+
+      res.render('auth/index', {
+        layout: 'Auth',
+        returnTo: nextUrl || req.session?.returnTo || '',
+      });
+    } catch (err) {
+      console.error('❌ AuthController.index error:', err);
+      res.status(500).render('error', {
+        layout: 'Auth',
+        message: 'Server error',
+        error: err.message,
+      });
     }
-
-    res.render('auth/index', {
-      layout: 'Auth',
-      returnTo: nextUrl || req.session?.returnTo || '',
-    });
   }
-
   // ===== [GET] /auth/register - Hiển thị trang đăng ký =====
   async register(req, res) {
     res.render('auth/register', { layout: 'Auth' });
@@ -139,8 +162,21 @@ class AuthController {
   // ===== [POST] /auth/logout - Đăng xuất =====
   logoutPost(req, res) {
     const userId = req.session && req.session.userId;
+    const adminId = req.session && req.session.adminId;
 
-    // Destroy session, clear cookie, return JSON with redirect
+    // clear admin/session-specific keys (an toàn hơn)
+    if (req.session) {
+      delete req.session.userId;
+      delete req.session.userName;
+      delete req.session.userEmail;
+      delete req.session.userFullName;
+      delete req.session.userAvt;
+
+      delete req.session.adminId;
+      delete req.session.adminName;
+      delete req.session.adminRole;
+    }
+
     if (req.session) {
       req.session.destroy((err) => {
         if (err) {
@@ -149,26 +185,38 @@ class AuthController {
             .status(500)
             .json({ success: false, message: 'Logout failed' });
         }
-        // clear cookie name if you configured a different one
         res.clearCookie('connect.sid');
-        console.log('✅ User logged out (POST):', userId);
+        console.log('✅ User/Admin logged out (POST):', userId || adminId);
         return res.json({ success: true, redirect: '/auth' });
       });
     } else {
-      // No session — just redirect
       return res.json({ success: true, redirect: '/auth' });
     }
   }
 
   // ===== [GET] /auth/logout - Đăng xuất =====
   logout(req, res) {
-    const userId = req.session.userId;
+    const userId = req.session && req.session.userId;
+    const adminId = req.session && req.session.adminId;
+
+    // clear keys then destroy
+    if (req.session) {
+      delete req.session.userId;
+      delete req.session.userName;
+      delete req.session.userEmail;
+      delete req.session.userFullName;
+      delete req.session.userAvt;
+
+      delete req.session.adminId;
+      delete req.session.adminName;
+      delete req.session.adminRole;
+    }
 
     req.session.destroy((err) => {
       if (err) {
         console.error('❌ Logout error:', err);
       } else {
-        console.log('✅ User logged out:', userId);
+        console.log('✅ User/Admin logged out:', userId || adminId);
       }
       res.clearCookie('connect.sid');
       res.redirect('/auth');

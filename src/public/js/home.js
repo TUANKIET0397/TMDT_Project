@@ -59,7 +59,7 @@ window.addEventListener('scroll', () => {
   });
 });
 
-// === CART SYSTEM ===
+// === CART SYSTEM WITH STOCK VALIDATION ===
 document.addEventListener('DOMContentLoaded', () => {
   const cartIcon = document.querySelector('.fa-shopping-cart');
   const cartDrawer = document.getElementById('cartDrawer');
@@ -91,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (searchIcon) {
     searchIcon.addEventListener('click', (e) => {
       e.stopPropagation();
-      // toggle input visibility
       if (quickInput.style.display === 'inline-block') {
         quickInput.style.display = 'none';
         closeQuickDropdown();
@@ -101,7 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // hide dropdown and input on outside click
   document.addEventListener('click', (ev) => {
     if (!quickInput) return;
     if (
@@ -116,7 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
     closeQuickDropdown();
   });
 
-  // render results
   function renderQuickResults(items) {
     if (!quickDropdown) return;
     quickDropdown.innerHTML = '';
@@ -133,18 +130,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const li = document.createElement('li');
       li.className = 'qs-item';
       li.innerHTML = `
-                <a href="/products/detail/${it.id}" class="qs-link">
-                    <img src="${it.img || '/img/default.jpg'}" alt="${
+        <a href="/products/detail/${it.id}" class="qs-link">
+          <img src="${it.img || '/img/default.jpg'}" alt="${
         it.name
       }" class="qs-img" />
-                    <div class="qs-body">
-                        <div class="qs-name">${it.name}</div>
-                        <div class="qs-price">${
-                          it.price ? '$' + Number(it.price).toFixed(2) : ''
-                        }</div>
-                    </div>
-                </a>
-            `;
+          <div class="qs-body">
+            <div class="qs-name">${it.name}</div>
+            <div class="qs-price">${
+              it.price ? '$' + Number(it.price).toFixed(2) : ''
+            }</div>
+          </div>
+        </a>
+      `;
       ul.appendChild(li);
     });
     quickDropdown.appendChild(ul);
@@ -174,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (quickInput) {
-    quickInput.style.display = 'none'; // default hidden
+    quickInput.style.display = 'none';
     quickInput.addEventListener('input', function (e) {
       const q = this.value || '';
       clearTimeout(debounceTimer);
@@ -183,7 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 300);
     });
     quickInput.addEventListener('keydown', function (e) {
-      // ESC closes
       if (e.key === 'Escape') {
         quickInput.value = '';
         quickInput.style.display = 'none';
@@ -300,19 +296,145 @@ document.addEventListener('DOMContentLoaded', () => {
     releaseLock();
   };
 
-  // Before submitting cart form, build URL with cartData query parameter
+  // ✅ VALIDATE STOCK BEFORE CHECKOUT
+  async function validateCartStock() {
+    try {
+      const response = await fetch('/cart/validate-stock', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ cartItems: cart }),
+        credentials: 'same-origin',
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        // Show error messages
+        showStockErrors(result.errors || []);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error validating stock:', error);
+      alert('Không thể kiểm tra tồn kho. Vui lòng thử lại.');
+      return false;
+    }
+  }
+
+  function showStockErrors(errors) {
+    if (!errors || errors.length === 0) return;
+
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'stock-error-notification';
+    errorDiv.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #ff4444;
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 10000;
+      max-width: 400px;
+      animation: slideIn 0.3s ease;
+    `;
+
+    let errorHtml =
+      '<h4 style="margin: 0 0 10px 0;">⚠️ Vượt quá số lượng tồn kho</h4>';
+    errorHtml += '<ul style="margin: 10px 0; padding-left: 20px;">';
+
+    errors.forEach((err) => {
+      errorHtml += `<li><strong>${err.productName}</strong>: `;
+      errorHtml += `Bạn đặt ${err.requestedQty}, còn lại ${err.availableStock}</li>`;
+    });
+
+    errorHtml += '</ul>';
+    errorHtml +=
+      '<p style="margin-top: 10px; font-size: 14px;">Vui lòng điều chỉnh số lượng trong giỏ hàng.</p>';
+
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = '✕';
+    closeBtn.style.cssText = `
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+    `;
+    closeBtn.onclick = () => errorDiv.remove();
+
+    errorDiv.innerHTML = errorHtml;
+    errorDiv.appendChild(closeBtn);
+    document.body.appendChild(errorDiv);
+
+    // Auto remove after 8 seconds
+    setTimeout(() => {
+      if (errorDiv.parentNode) {
+        errorDiv.remove();
+      }
+    }, 8000);
+
+    // Highlight affected items in cart
+    errors.forEach((err) => {
+      const item = cart.find((it) => it.id === err.productId);
+      if (item) {
+        const itemEl = document.querySelector(
+          `.cart-item[data-product-id="${item.id}"]`
+        );
+        if (itemEl) {
+          itemEl.style.border = '2px solid #ff4444';
+          itemEl.style.backgroundColor = '#fff5f5';
+          setTimeout(() => {
+            itemEl.style.border = '';
+            itemEl.style.backgroundColor = '';
+          }, 5000);
+        }
+      }
+    });
+  }
+
+  // Before submitting cart form, validate stock
   const cartForm = document.getElementById('cartForm');
   const cartDataInput = document.getElementById('cartData');
   if (cartForm && cartDataInput) {
-    cartForm.addEventListener('submit', function (e) {
+    cartForm.addEventListener('submit', async function (e) {
       e.preventDefault();
+
+      // Show loading state
+      const checkoutBtn = cartForm.querySelector('.checkout-btn');
+      const originalText = checkoutBtn.textContent;
+      checkoutBtn.disabled = true;
+      checkoutBtn.textContent = 'Đang kiểm tra...';
+
       try {
+        // Validate stock
+        const isValid = await validateCartStock();
+
+        if (!isValid) {
+          checkoutBtn.disabled = false;
+          checkoutBtn.textContent = originalText;
+          return;
+        }
+
+        // If valid, proceed to checkout
         const cartData = JSON.stringify(cart || []);
         const encodedCartData = encodeURIComponent(cartData);
         window.location.href = `/checkout?cartData=${encodedCartData}`;
       } catch (err) {
-        console.error('Failed to serialize cart for checkout', err);
-        window.location.href = '/checkout?cartData=[]';
+        console.error('Failed to validate cart', err);
+        checkoutBtn.disabled = false;
+        checkoutBtn.textContent = originalText;
+        alert('Có lỗi xảy ra. Vui lòng thử lại.');
       }
     });
   }
@@ -335,18 +457,19 @@ document.addEventListener('DOMContentLoaded', () => {
     cart.forEach((item, index) => {
       const div = document.createElement('div');
       div.classList.add('cart-item');
+      div.setAttribute('data-product-id', item.id);
       div.innerHTML = `
-                <img src="${item.img || '/img/default.jpg'}" alt="${item.name}">
-                <div class="cart-item-details">
-                    <h4>${item.name}</h4>
-                    <p>$${Number(item.price || 0).toFixed(2)}</p>
-                    <div class="quantity">
-                        <button type="button" onclick="changeQty(${index}, -1)">-</button>
-                        <span>${item.quantity}</span>
-                        <button type="button" onclick="changeQty(${index}, 1)">+</button>
-                    </div>
-                </div>
-            `;
+        <img src="${item.img || '/img/default.jpg'}" alt="${item.name}">
+        <div class="cart-item-details">
+          <h4>${item.name}</h4>
+          <p>$${Number(item.price || 0).toFixed(2)}</p>
+          <div class="quantity">
+            <button type="button" onclick="changeQty(${index}, -1)">-</button>
+            <span>${item.quantity}</span>
+            <button type="button" onclick="changeQty(${index}, 1)">+</button>
+          </div>
+        </div>
+      `;
       cartItemsContainer.appendChild(div);
       total += (item.price || 0) * item.quantity;
     });
@@ -361,6 +484,74 @@ document.addEventListener('DOMContentLoaded', () => {
     saveCart();
     renderCart();
   };
+
+   // === HANDLE YOUTUBE SHORT THUMBNAILS ===
+  const ytThumbs = document.querySelectorAll('.youtube-short');
+
+  ytThumbs.forEach(function (thumb) {
+    const videoId = thumb.getAttribute('data-video-id');
+    const img = thumb.querySelector('img');
+
+    // Gán thumbnail tự động từ YouTube
+    if (videoId && img) {
+      img.src = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+    }
+
+    // Click -> đổi thành iframe YouTube
+    thumb.addEventListener('click', function () {
+      if (!videoId) return;
+
+      const iframe = document.createElement('iframe');
+      iframe.setAttribute(
+        'src',
+        'https://www.youtube.com/embed/' +
+          videoId +
+          '?autoplay=1&mute=0&playsinline=1'
+      );
+      iframe.setAttribute('frameborder', '0');
+      iframe.setAttribute(
+        'allow',
+        'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+      );
+      iframe.setAttribute('allowfullscreen', 'allowfullscreen');
+      iframe.style.width = '100%';
+      iframe.style.height = '100%';
+
+      thumb.innerHTML = '';
+      thumb.appendChild(iframe);
+    });
+  });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const ytThumbs = document.querySelectorAll(".youtube-short");
+
+        ytThumbs.forEach(function (thumb) {
+            thumb.addEventListener("click", function () {
+                const videoId = thumb.getAttribute("data-video-id");
+                const iframe = document.createElement("iframe");
+
+                iframe.setAttribute(
+                    "src",
+                    "https://www.youtube.com/embed/" +
+                    videoId +
+                    "?autoplay=1&mute=0&playsinline=1"
+                );
+                iframe.setAttribute("frameborder", "0");
+                iframe.setAttribute(
+                    "allow",
+                    "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                );
+                iframe.setAttribute("allowfullscreen", "allowfullscreen");
+                iframe.style.width = "100%";
+                iframe.style.height = "100%";
+
+                // xoá thumbnail + nút play, thay bằng iframe
+                thumb.innerHTML = "";
+                thumb.appendChild(iframe);
+            });
+        });
+    });
+
 
   function resumePendingCartActions() {
     if (!window.isUserLoggedIn || !window.isUserLoggedIn()) return;
@@ -384,6 +575,22 @@ document.addEventListener('DOMContentLoaded', () => {
       openCartDrawer();
     }
   }
+
+  // Add CSS for animation
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+  `;
+  document.head.appendChild(style);
 
   renderCart();
   resumePendingCartActions();
