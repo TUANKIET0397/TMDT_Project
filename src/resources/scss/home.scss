@@ -309,6 +309,10 @@ section p {
     background-image: url("/img/outerswear.png");
 }
 
+.shoes {
+    background-image: url("/img/shoes.png");
+}
+
 
 
 /* --- hien thi--- */
@@ -412,8 +416,8 @@ section p {
     animation: flickerSweatshirt 5s linear infinite;
 }
 
-/* 5 Shoes */
-@keyframes flickerShoes {
+/* 5 Pants */
+@keyframes flickerPants {
     0%,
     100% {
         background-image: url("/img/pants1.jpg");
@@ -429,7 +433,7 @@ section p {
     }
 }
 .pants:hover {
-    animation: flickerShoes 5s linear infinite;
+    animation: flickerPants 5s linear infinite;
 }
 
 /* 6 Outerwear */
@@ -450,6 +454,26 @@ section p {
 }
 .outerwear:hover {
     animation: flickerOuterwear 5s linear infinite;
+}
+
+/* 7 Shoes */
+@keyframes flickerShoes {
+    0%,
+    100% {
+        background-image: url("/img/shoes1.jpg");
+    }
+    25% {
+        background-image: url("/img/shoes2.jpg");
+    }
+    50% {
+        background-image: url("/img/shoes3.jpg");
+    }
+    75% {
+        background-image: url("/img/shoes4.jpg");
+    }
+}
+.shoes:hover {
+    animation: flickerShoes 5s linear infinite;
 }
 
 
