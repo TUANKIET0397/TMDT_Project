@@ -103,8 +103,9 @@
         <div class="field-label">Region</div>
         <select name="RegionID" class="field-select editable region-select"
           disabled>
+          <option value="" hidden selected ></option>
           {{#each regions}}
-          <option value="{{ID}}" {{#if selected}}selected{{/if}}>
+          <option value="{{ID}}" {{#if selected}} selected{{/if}}>
             {{RegionName}}
           </option>
           {{/each}}
