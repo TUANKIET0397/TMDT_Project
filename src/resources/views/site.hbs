@@ -69,12 +69,7 @@
     </p>
     <div class="cat-grid">
         {{#each categories}}
-            <div class="cat-item {{this.TypeName}}">
-                <a href="/products?type={{this.ID}}">
-                    <h3>{{this.TypeName}}</h3>
-                    <p>{{this.ProductCount}} products</p>
-                </a>
-            </div>
+            <a href="/products/{{this.TypeName}}" class="cat-item {{this.TypeName}}"></a>
         {{/each}}
     </div>
 </section>
@@ -87,24 +82,48 @@
 </section>
 
 <!-- CHUNKKY BANNER SECTION -->
-<section class="chunkky-banner">
+  <section class="chunkky-banner">
     <div class="banner-container">
-        {{#each featuredProducts}}
-            <div class="banner-item">
-                <img src="/img/{{this.ImgPath}}" alt="{{this.ProductName}}" />
-                <div class="banner-info">
-                    <div class="left">
-                        <h3>{{this.ProductName}}</h3>
-                        <p class="sizes">{{this.AvailableSizes}}</p>
-                    </div>
-                    <div class="right">
-                        <p class="price">${{this.Price}}</p>
-                    </div>
-                </div>
-            </div>
-        {{/each}}
+      <div class="banner-item">
+        <img src="./img/banner2_pic1.png" alt="Banner 1" />
+        <div class="banner-info">
+          <div class="left">
+            <h3>shirt “chuuncky Tea” - black</h3>
+            <p class="sizes">S M L <span>XL</span></p>
+          </div>
+          <div class="right">
+            <p class="price">155$</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="banner-item">
+        <img src="./img/banner2_pic2.png" alt="Banner 2" />
+        <div class="banner-info">
+          <div class="left">
+            <h3>hoodie “chunkky Tea” - gray</h3>
+            <p class="sizes">S M L <span>XL</span></p>
+          </div>
+          <div class="right">
+            <p class="price">165$</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="banner-item">
+        <img src="./img/banner2_pic3.png" alt="Banner 3" />
+        <div class="banner-info">
+          <div class="left">
+            <h3>sweatshirt “chunkky Tea” - beige</h3>
+            <p class="sizes">S M L <span>XL</span></p>
+          </div>
+          <div class="right">
+            <p class="price">175$</p>
+          </div>
+        </div>
+      </div>
     </div>
-</section>
+  </section>
 
 <!-- BEST SELLER -->
 <section class="best-seller">
@@ -222,22 +241,46 @@
     </div>
 </section>
 
-<!-- CHUNKKY BANNER SECTION 2 -->
-<section class="chunkky-banner">
+ <!-- CHUNKKY BANNER SECTION 2 -->
+  <section class="chunkky-banner">
     <div class="banner-container">
-        {{#each featuredProducts}}
-            <div class="banner-item">
-                <img src="/img/{{this.ImgPath}}" alt="{{this.ProductName}}" />
-                <div class="banner-info">
-                    <div class="left">
-                        <h3>{{this.ProductName}}</h3>
-                        <p class="sizes">{{this.AvailableSizes}}</p>
-                    </div>
-                    <div class="right">
-                        <p class="price">${{this.Price}}</p>
-                    </div>
-                </div>
-            </div>
-        {{/each}}
+      <div class="banner-item">
+        <img src="./img/banner3_pic1.png" alt="Banner 1" />
+        <div class="banner-info">
+          <div class="left">
+            <h3>shirt “chuuncky Tea” - black</h3>
+            <p class="sizes">S M L <span>XL</span></p>
+          </div>
+          <div class="right">
+            <p class="price">155$</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="banner-item">
+        <img src="./img/banner3_pic2.png" alt="Banner 2" />
+        <div class="banner-info">
+          <div class="left">
+            <h3>hoodie “chunkky Tea” - gray</h3>
+            <p class="sizes">S M L <span>XL</span></p>
+          </div>
+          <div class="right">
+            <p class="price">165$</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="banner-item">
+        <img src="./img/banner3_pic3.png" alt="Banner 3" />
+        <div class="banner-info">
+          <div class="left">
+            <h3>sweatshirt “chunkky Tea” - beige</h3>
+            <p class="sizes">S M L <span>XL</span></p>
+          </div>
+          <div class="right">
+            <p class="price">175$</p>
+          </div>
+        </div>
+      </div>
     </div>
-</section>
+  </section>
