@@ -120,7 +120,9 @@ router.get("/return", async (req, res) => {
 
                 // Payment successful - giữ lại status Prepare, chỉ cập nhật Payment
                 await Invoice.updateInvoicePayment(invoiceId, "Paid") // ✅ Đánh dấu là đã thanh toán
-                console.log("✓ Invoice payment successful, kept Prepare status with Paid payment")
+                console.log(
+                    "✓ Invoice payment successful, kept Prepare status with Paid payment"
+                )
             } else {
                 // Payment failed - giữ lại status Prepare, Payment = Unpaid
                 await Invoice.updateInvoicePayment(invoiceId, "Unpaid")
@@ -138,7 +140,7 @@ router.get("/return", async (req, res) => {
             // ✅ Payment successful
             console.log("✓ Payment successful")
             res.render("paymentSuccess", {
-                layout: "payment",
+                layout: "status",
                 title: "Thanh toán thành công",
                 orderId: orderId,
                 transId: transId,
@@ -148,7 +150,7 @@ router.get("/return", async (req, res) => {
             // ❌ Payment failed
             console.log("✗ Payment failed with code:", resultCode)
             res.render("paymentFailed", {
-                layout: "payment",
+                layout: "status",
                 title: "Thanh toán thất bại",
                 resultCode: resultCode,
                 message: message || "Giao dịch không thể hoàn tất",
@@ -157,7 +159,7 @@ router.get("/return", async (req, res) => {
     } catch (error) {
         console.error("Error in /return route:", error)
         res.status(500).render("error", {
-            layout: "payment",
+            layout: "status",
             message: "Lỗi khi xử lý kết quả thanh toán.",
             error: error.message,
             retryUrl: "/checkout",
