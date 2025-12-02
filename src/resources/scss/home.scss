@@ -902,3 +902,76 @@ section p {
     line-height: 1.4;
     margin-top: 6px;
 }
+
+.video-thumb {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+/* Thumbnail YouTube */
+.youtube-short img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Lớp phủ + nút play */
+.youtube-short .play-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.youtube-short .play-overlay i {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: #fff;
+}
+
+
+/* cho cả ảnh thumbnail & iframe cùng fill khung */
+.video-thumb.youtube-short img,
+.video-thumb.youtube-short iframe {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* phóng cho kín, không viền đen 2 bên */
+    display: block;
+    border: 0;
+}
+
+/* Lớp phủ + nút play */
+.youtube-short .play-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.youtube-short .play-overlay i {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: #fff;
+}
+
+.youtube-short {
+    cursor: pointer;
+}

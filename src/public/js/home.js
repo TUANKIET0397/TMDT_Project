@@ -485,6 +485,74 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCart();
   };
 
+   // === HANDLE YOUTUBE SHORT THUMBNAILS ===
+  const ytThumbs = document.querySelectorAll('.youtube-short');
+
+  ytThumbs.forEach(function (thumb) {
+    const videoId = thumb.getAttribute('data-video-id');
+    const img = thumb.querySelector('img');
+
+    // Gán thumbnail tự động từ YouTube
+    if (videoId && img) {
+      img.src = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+    }
+
+    // Click -> đổi thành iframe YouTube
+    thumb.addEventListener('click', function () {
+      if (!videoId) return;
+
+      const iframe = document.createElement('iframe');
+      iframe.setAttribute(
+        'src',
+        'https://www.youtube.com/embed/' +
+          videoId +
+          '?autoplay=1&mute=0&playsinline=1'
+      );
+      iframe.setAttribute('frameborder', '0');
+      iframe.setAttribute(
+        'allow',
+        'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+      );
+      iframe.setAttribute('allowfullscreen', 'allowfullscreen');
+      iframe.style.width = '100%';
+      iframe.style.height = '100%';
+
+      thumb.innerHTML = '';
+      thumb.appendChild(iframe);
+    });
+  });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const ytThumbs = document.querySelectorAll(".youtube-short");
+
+        ytThumbs.forEach(function (thumb) {
+            thumb.addEventListener("click", function () {
+                const videoId = thumb.getAttribute("data-video-id");
+                const iframe = document.createElement("iframe");
+
+                iframe.setAttribute(
+                    "src",
+                    "https://www.youtube.com/embed/" +
+                    videoId +
+                    "?autoplay=1&mute=0&playsinline=1"
+                );
+                iframe.setAttribute("frameborder", "0");
+                iframe.setAttribute(
+                    "allow",
+                    "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                );
+                iframe.setAttribute("allowfullscreen", "allowfullscreen");
+                iframe.style.width = "100%";
+                iframe.style.height = "100%";
+
+                // xoá thumbnail + nút play, thay bằng iframe
+                thumb.innerHTML = "";
+                thumb.appendChild(iframe);
+            });
+        });
+    });
+
+
   function resumePendingCartActions() {
     if (!window.isUserLoggedIn || !window.isUserLoggedIn()) return;
 
