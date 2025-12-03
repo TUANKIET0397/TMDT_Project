@@ -1,11 +1,11 @@
 // src/app/models/Product.js
-const db = require("../../config/db")
+const db = require('../../config/db');
 
 class Product {
-    // Lấy tất cả sản phẩm
-    static async getAllProducts() {
-        try {
-            const [rows] = await db.query(`
+  // Lấy tất cả sản phẩm
+  static async getAllProducts() {
+    try {
+      const [rows] = await db.query(`
                 SELECT 
                     p.ID,
                     p.ProductName,
@@ -23,19 +23,19 @@ class Product {
                 LEFT JOIN TypeProduct tp ON p.TypeID = tp.ID
                 WHERE pr.Price IS NOT NULL
                 ORDER BY p.ID DESC
-            `)
-            return rows
-        } catch (error) {
-            console.error("Error in getAllProducts:", error)
-            throw error
-        }
+            `);
+      return rows;
+    } catch (error) {
+      console.error('Error in getAllProducts:', error);
+      throw error;
     }
+  }
 
-    // Lấy sản phẩm theo loại
-    static async getProductsByType(typeName) {
-        try {
-            const [rows] = await db.query(
-                `
+  // Lấy sản phẩm theo loại
+  static async getProductsByType(typeName) {
+    try {
+      const [rows] = await db.query(
+        `
                 SELECT 
                     p.ID,
                     p.ProductName,
@@ -53,21 +53,21 @@ class Product {
                 WHERE tp.TypeName = ? AND pr.Price IS NOT NULL
                 ORDER BY p.ID DESC
             `,
-                [typeName]
-            )
-            return rows
-        } catch (error) {
-            console.error("Error in getProductsByType:", error)
-            throw error
-        }
+        [typeName]
+      );
+      return rows;
+    } catch (error) {
+      console.error('Error in getProductsByType:', error);
+      throw error;
     }
+  }
 
-// search products by query
-static async searchByQuery(q, limit = 10) {
-        try {
-            const qLike = `%${q}%`
-            const [rows] = await db.query(
-                `
+  // search products by query
+  static async searchByQuery(q, limit = 10) {
+    try {
+      const qLike = `%${q}%`;
+      const [rows] = await db.query(
+        `
                 SELECT 
                     p.ID,
                     p.ProductName,
@@ -84,54 +84,53 @@ static async searchByQuery(q, limit = 10) {
                 ORDER BY p.ID DESC
                 LIMIT ?
                 `,
-                [qLike, qLike, Number(limit)]
-            )
-            return rows
-        } catch (error) {
-            console.error("Error in searchByQuery:", error)
-            throw error
-        }
+        [qLike, qLike, Number(limit)]
+      );
+      return rows;
+    } catch (error) {
+      console.error('Error in searchByQuery:', error);
+      throw error;
     }
+  }
 
-
-   static async getSizesForProduct(productId, isShoes = false) {
-        try {
-            if (isShoes) {
-                const [rows] = await db.query(
-                    `
+  static async getSizesForProduct(productId, isShoes = false) {
+    try {
+      if (isShoes) {
+        const [rows] = await db.query(
+          `
                     SELECT DISTINCT s.ID, s.SizeName, COALESCE(q.QuantityValue,0) as QuantityValue
                     FROM Quantity q
                     JOIN SizeProduct s ON q.SizeID = s.ID
                     WHERE q.ProductID = ? AND s.SizeName REGEXP '^[0-9]+'
                     ORDER BY CAST(s.SizeName AS UNSIGNED) ASC
                     `,
-                    [productId]
-                )
-                return rows
-            } else {
-                const [rows] = await db.query(
-                    `
+          [productId]
+        );
+        return rows;
+      } else {
+        const [rows] = await db.query(
+          `
                     SELECT DISTINCT s.ID, s.SizeName, COALESCE(q.QuantityValue,0) as QuantityValue
                     FROM Quantity q
                     JOIN SizeProduct s ON q.SizeID = s.ID
                     WHERE q.ProductID = ? AND NOT (s.SizeName REGEXP '^[0-9]+')
                     ORDER BY FIELD(s.SizeName, 'XS','S','M','L','XL','XXL','XXXL') , s.SizeName
                     `,
-                    [productId]
-                )
-                return rows
-            }
-        } catch (error) {
-            console.error("Error in getSizesForProduct:", error)
-            throw error
-        }
+          [productId]
+        );
+        return rows;
+      }
+    } catch (error) {
+      console.error('Error in getSizesForProduct:', error);
+      throw error;
     }
+  }
 
-    // Lấy chi tiết sản phẩm
-static async getProductById(productId) {
+  // Lấy chi tiết sản phẩm
+  static async getProductById(productId) {
     try {
-        const [rows] = await db.query(
-            `
+      const [rows] = await db.query(
+        `
             SELECT 
                 p.ID,
                 p.ProductName,
@@ -159,69 +158,76 @@ static async getProductById(productId) {
             LEFT JOIN TypeProduct tp ON p.TypeID = tp.ID
             WHERE p.ID = ?
         `,
-            [productId]
-        )
+        [productId]
+      );
 
-        const product = rows[0]
-        if (!product) return product
+      const product = rows[0];
+      if (!product) return product;
 
-        const normalize = (p) => {
-            if (!p) return '/img/default.jpg'
-            p = String(p).trim()
-            if (/^https?:\/\//.test(p) || p.startsWith('/')) return p
-            return `/uploads/products/${p}`
-        }
+      const normalize = (p) => {
+        if (!p) return '/img/default.jpg';
+        p = String(p).trim();
+        if (/^https?:\/\//.test(p) || p.startsWith('/')) return p;
+        return `/uploads/products/${p}`;
+      };
 
-        // all images for product
-        let imgsRaw = []
-        if (product.Images && typeof product.Images === 'string') {
-            imgsRaw = product.Images.split(',').map(s => s.trim()).filter(Boolean)
-        } else if (product.ImgPath) {
-            imgsRaw = [String(product.ImgPath).trim()]
-        }
-        if (imgsRaw.length === 0) imgsRaw = [product.ImgPath || '/img/default.jpg']
-        product.ImagesArray = imgsRaw.map(String)
-        product.Images6 = imgsRaw.slice(0, 6).map(normalize)
+      // all images for product
+      let imgsRaw = [];
+      if (product.Images && typeof product.Images === 'string') {
+        imgsRaw = product.Images.split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
+      } else if (product.ImgPath) {
+        imgsRaw = [String(product.ImgPath).trim()];
+      }
+      if (imgsRaw.length === 0)
+        imgsRaw = [product.ImgPath || '/img/default.jpg'];
+      product.ImagesArray = imgsRaw.map(String);
+      product.Images6 = imgsRaw.slice(0, 6).map(normalize);
 
-        // parse ImagesByColor into map — only real color entries (no fallback)
-        const byColorMap = {}
-        if (product.ImagesByColor && typeof product.ImagesByColor === 'string') {
-            product.ImagesByColor.split(',').forEach(entry => {
-                const parts = entry.split('::')
-                if (parts.length >= 2) {
-                    const colorRaw = parts[0].trim()
-                    const path = parts.slice(1).join('::').trim()
-                    if (!colorRaw) return
-                    if (!byColorMap[colorRaw]) byColorMap[colorRaw] = []
-                    byColorMap[colorRaw].push(path)
-                }
-            })
-        }
+      // parse ImagesByColor into map — only real color entries (no fallback)
+      const byColorMap = {};
+      if (product.ImagesByColor && typeof product.ImagesByColor === 'string') {
+        product.ImagesByColor.split(',').forEach((entry) => {
+          const parts = entry.split('::');
+          if (parts.length >= 2) {
+            const colorRaw = parts[0].trim();
+            const path = parts.slice(1).join('::').trim();
+            if (!colorRaw) return;
+            if (!byColorMap[colorRaw]) byColorMap[colorRaw] = [];
+            byColorMap[colorRaw].push(path);
+          }
+        });
+      }
 
-        const byColorList = []
-        for (const [color, arr] of Object.entries(byColorMap)) {
-            const clean = arr.map(a => String(a).trim()).filter(Boolean)
-            if (clean.length === 0) continue
-            const normalized = clean.slice(0, 6).map(normalize)
-            byColorList.push({ color, images: clean.map(normalize), images6: normalized })
-        }
+      const byColorList = [];
+      for (const [color, arr] of Object.entries(byColorMap)) {
+        const clean = arr.map((a) => String(a).trim()).filter(Boolean);
+        if (clean.length === 0) continue;
+        const normalized = clean.slice(0, 6).map(normalize);
+        byColorList.push({
+          color,
+          images: clean.map(normalize),
+          images6: normalized,
+        });
+      }
 
-        product.ImagesByColorMap = byColorMap
-        product.ImagesByColorList = byColorList
+      product.ImagesByColorMap = byColorMap;
+      product.ImagesByColorList = byColorList;
 
-        return product
+      return product;
     } catch (error) {
-        console.error("Error in getProductById:", error)
-        throw error
+      console.error('Error in getProductById:', error);
+      throw error;
     }
-}
-// ...existing code...
+  }
+  // ...existing code...
 
-    // Lấy sản phẩm liên quan
-    static async getRelatedProducts(typeId, limit = 4) {
-        try {
-            const [rows] = await db.query(
-                `
+  // Lấy sản phẩm liên quan
+  static async getRelatedProducts(typeId, limit = 4) {
+    try {
+      const [rows] = await db.query(
+        `
                 SELECT 
                     p.ID,
                     p.ProductName,
@@ -237,30 +243,80 @@ static async getProductById(productId) {
                 WHERE p.TypeID = ? AND pr.Price IS NOT NULL
                 LIMIT ?
             `,
-                [typeId, limit]
-            )
-            return rows
-        } catch (error) {
-            console.error("Error in getRelatedProducts:", error)
-            throw error
-        }
+        [typeId, limit]
+      );
+      return rows;
+    } catch (error) {
+      console.error('Error in getRelatedProducts:', error);
+      throw error;
     }
+  }
 
-    static async deleteById(productId) {
-        try {
-            const [result] = await db.query(
-                `
+  static async deleteById(productId) {
+    try {
+      const [result] = await db.query(
+        `
                 DELETE FROM Product 
                 WHERE ID = ?
             `,
-                [productId]
-            )
-            return result.affectedRows
-        } catch (error) {
-            console.error("Error in deleteById:", error)
-            throw error
-        }
+        [productId]
+      );
+      return result.affectedRows;
+    } catch (error) {
+      console.error('Error in deleteById:', error);
+      throw error;
     }
+  }
+
+  // Lấy sizes cho một màu cụ thể của sản phẩm
+  static async getSizesForProductColor(productId, colorId) {
+    try {
+      const [rows] = await db.query(
+        `
+            SELECT DISTINCT 
+                s.ID, 
+                s.SizeName, 
+                COALESCE(q.QuantityValue, 0) as QuantityValue
+            FROM Quantity q
+            JOIN SizeProduct s ON q.SizeID = s.ID
+            WHERE q.ProductID = ? AND q.ColorID = ?
+            ORDER BY 
+                CASE 
+                    WHEN s.SizeName REGEXP '^[0-9]+$' THEN CAST(s.SizeName AS UNSIGNED)
+                    ELSE 999
+                END,
+                FIELD(s.SizeName, 'XS','S','M','L','XL','XXL','XXXL'),
+                s.SizeName
+            `,
+        [productId, colorId]
+      );
+      return rows;
+    } catch (error) {
+      console.error('Error in getSizesForProductColor:', error);
+      throw error;
+    }
+  }
+
+  // Lấy tất cả colors với IDs cho sản phẩm
+  static async getColorsForProduct(productId) {
+    try {
+      const [rows] = await db.query(
+        `
+            SELECT DISTINCT 
+                cp.ID as ColorID,
+                cp.ColorName
+            FROM ColorProduct cp
+            WHERE cp.ProductID = ?
+            ORDER BY cp.ID
+            `,
+        [productId]
+      );
+      return rows;
+    } catch (error) {
+      console.error('Error in getColorsForProduct:', error);
+      throw error;
+    }
+  }
 }
 
-module.exports = Product
+module.exports = Product;

@@ -38,24 +38,29 @@
                     </span>
                 </div>
 
-                <!-- form size -->
-                {{#if sizes}}
-                <div class="section__form" role="list">
-                    {{#each sizes}}
+                <!-- form size - ẨN MẶC ĐỊNH, CHỈ HIỆN KHI CHỌN MÀU -->
+                <div class="section__form" role="list" id="sizesContainer" style="{{#if colors}}display:none;{{/if}}">
+                    <!-- Sizes sẽ được inject bởi JavaScript khi chọn màu -->
+                </div>
+
+                {{#unless colors}}
+                <!-- NẾU KHÔNG CÓ COLORS (sản phẩm 1 màu), HIỂN thị sizes mặc định -->
+                <div class="section__form" role="list" id="sizesContainer">
+                    {{#each defaultSizes}}
                     <div class="section__form-button">
-                    <div role="button" tabindex="0"
-                        class="section__form-size {{#if ../isShoes}}section__form-size--numeric{{/if}}"
-                        data-size="{{this.SizeName}}"
-                        data-size-id="{{this.ID}}">
-                        {{this.SizeName}}
-                    </div>
-                    <div class="section__form-quantity" data-size-id="{{this.ID}}">
-                        <h5>SL: {{this.QuantityValue}}</h5>
-                    </div>
+                        <div role="button" tabindex="0"
+                            class="section__form-size {{#if ../isShoes}}section__form-size--numeric{{/if}}"
+                            data-size="{{this.SizeName}}"
+                            data-size-id="{{this.ID}}">
+                            {{this.SizeName}}
+                        </div>
+                        <div class="section__form-quantity" data-size-id="{{this.ID}}">
+                            <h5>SL: {{this.QuantityValue}}</h5>
+                        </div>
                     </div>
                     {{/each}}
                 </div>
-                {{/if}}
+                {{/unless}}
 
                 <!-- btn add to cart & buy now -->
                 <div class="section_btn-detail">
@@ -357,6 +362,11 @@
       const productName = contentEl?.dataset.productName ?? '{{product.ProductName}}'
       const productPrice = Number(contentEl?.dataset.productPrice) || Number({{product.Price}}) || 0
       const productImg = contentEl?.dataset.productImage ?? '{{product.ImgPath}}'
+      const isShoes = {{#if isShoes}}true{{else}}false{{/if}}
+
+      const colorSizesMap = {{{colorSizesMapJSON}}} || {}
+      console.log('🎨 colorSizesMap:', colorSizesMap)
+      console.log('🔑 Available colors:', Object.keys(colorSizesMap))
 
       let selectedSize = null
       let selectedSizeId = null
@@ -364,6 +374,7 @@
 
       const addBtn = document.getElementById('addToCartBtn')
       const buyBtn = document.getElementById('buyNowBtn')
+      const sizesContainer = document.getElementById('sizesContainer')
 
       function showDialog(message) {
         const existing = document.getElementById('tm-dialog')
@@ -379,6 +390,87 @@
         document.body.appendChild(dlg)
         document.getElementById('tm-dialog-ok').focus()
         document.getElementById('tm-dialog-ok').addEventListener('click', () => dlg.remove())
+      }
+
+      function renderSizesForColor(colorName) {
+        if (!sizesContainer) return
+        
+        console.log('📏 Rendering sizes for color:', colorName)
+        
+        const data = colorSizesMap[colorName]
+        if (!data || !data.sizes || data.sizes.length === 0) {
+          console.warn('⚠️ No sizes found for color:', colorName)
+          sizesContainer.innerHTML = '<p style="color:#999;font-size:14px;padding:10px;">No sizes available for this color</p>'
+          sizesContainer.style.display = 'block'
+          selectedSize = null
+          selectedSizeId = null
+          updateActionButtons()
+          return
+        }
+
+        const sizes = data.sizes
+        console.log('✅ Found sizes:', sizes)
+        let html = ''
+        
+        sizes.forEach(size => {
+          const sizeClass = isShoes ? 'section__form-size--numeric' : ''
+          html += `
+            <div class="section__form-button">
+              <div role="button" tabindex="0"
+                  class="section__form-size ${sizeClass}"
+                  data-size="${size.SizeName}"
+                  data-size-id="${size.ID}">
+                ${size.SizeName}
+              </div>
+              <div class="section__form-quantity" data-size-id="${size.ID}">
+                <h5>SL: ${size.QuantityValue}</h5>
+              </div>
+            </div>
+          `
+        })
+
+        sizesContainer.innerHTML = html
+        sizesContainer.style.display = 'flex'
+        
+        selectedSize = null
+        selectedSizeId = null
+        if (addBtn) addBtn.textContent = 'ADD TO CART'
+        
+        attachSizeHandlers()
+        updateActionButtons()
+      }
+
+      function attachSizeHandlers() {
+        document.querySelectorAll('.section__form-size').forEach(btn => {
+          const newBtn = btn.cloneNode(true)
+          btn.parentNode.replaceChild(newBtn, btn)
+          
+          newBtn.addEventListener('click', function () {
+            document.querySelectorAll('.section__form-button').forEach(pb => pb.classList.remove('active'))
+            document.querySelectorAll('.section__form-size').forEach(b => {
+              b.classList.remove('active')
+              b.setAttribute('aria-pressed', 'false')
+            })
+
+            const parent = this.closest('.section__form-button')
+            if (parent) parent.classList.add('active')
+            this.classList.add('active')
+            this.setAttribute('aria-pressed', 'true')
+
+            selectedSize = this.dataset.size || null
+            selectedSizeId = this.dataset.sizeId || null
+
+            if (addBtn) addBtn.textContent = `ADD TO CART - ${selectedSize || ''}`
+            updateActionButtons()
+          })
+
+          newBtn.addEventListener('keydown', function (ev) {
+            if (ev.key === 'Enter' || ev.key === ' ') {
+              ev.preventDefault()
+              this.click()
+            }
+          })
+        })
       }
 
       function updateActionButtons() {
@@ -397,129 +489,140 @@
         }
       }
 
-      // Size handlers
-      document.querySelectorAll('.section__form-size').forEach(btn => {
-        // click
-        btn.addEventListener('click', function () {
-          // remove active from all buttons + parent wrappers
-          document.querySelectorAll('.section__form-button').forEach(pb => pb.classList.remove('active'))
-          document.querySelectorAll('.section__form-size').forEach(b => {
-            b.classList.remove('active')
-            b.setAttribute('aria-pressed', 'false')
-          })
-
-          // add active to clicked size and its parent wrapper
-          const parent = this.closest('.section__form-button')
-          if (parent) parent.classList.add('active')
-          this.classList.add('active')
-          this.setAttribute('aria-pressed', 'true')
-
-          // collect selection
-          selectedSize = this.dataset.size || null
-          selectedSizeId = this.dataset.sizeId || null
-
-          if (addBtn) addBtn.textContent = `ADD TO CART - ${selectedSize || ''}`
-          updateActionButtons()
-        })
-
-        // keyboard activation (Enter/Space)
-        btn.addEventListener('keydown', function (ev) {
-          if (ev.key === 'Enter' || ev.key === ' ') {
-            ev.preventDefault()
-            this.click()
-          }
-        })
-      })
-
-      // default size highlight (prefer M, otherwise first DB size)
-      setTimeout(() => {
-        const defaultM = document.querySelector('[data-size="M"]')
-        const firstSize = document.querySelector('.section__form-size')
-        const defaultSizeBtn = defaultM || firstSize
-
-        if (defaultSizeBtn) {
-          const parent = defaultSizeBtn.closest('.section__form-button')
-          if (parent) parent.classList.add('active')
-          defaultSizeBtn.classList.add('active')
-          defaultSizeBtn.setAttribute('aria-pressed', 'true')
-          selectedSize = selectedSize || defaultSizeBtn.dataset.size || null
-          selectedSizeId = selectedSizeId || defaultSizeBtn.dataset.sizeId || null
-          if (addBtn && selectedSize) addBtn.textContent = `ADD TO CART - ${selectedSize}`
-        }
-        updateActionButtons()
-      }, 100)
-
-      // Delegated color-group click & keyboard handler (reliable even if elements change)
       document.addEventListener('click', function (ev) {
         const el = ev.target.closest('.color-group')
         if (!el) return
         ev.preventDefault()
-        // toggle active classes
+        
         document.querySelectorAll('.color-group').forEach(b => b.classList.remove('active'))
         el.classList.add('active')
         selectedColor = el.dataset.color || null
 
-        // gather color images (use data-src if you use lazy loading)
+        if (Object.keys(colorSizesMap).length > 0) {
+          renderSizesForColor(selectedColor)
+        }
+
         const colorSrcs = Array.from(el.querySelectorAll('.color-img'))
           .map(img => img.dataset.src || img.src)
           .filter(Boolean)
 
         const heroItems = Array.from(document.querySelectorAll('.section__hero-left .section__hero-item'))
-        if (colorSrcs.length === 0) {
-          // if no color images, do nothing (do not fallback to general images)
-          updateActionButtons()
-          return
+        if (colorSrcs.length > 0) {
+          heroItems.forEach((slot, idx) => {
+            const imgEl = slot.querySelector('img')
+            if (!imgEl) return
+            if (idx < colorSrcs.length) {
+              imgEl.src = colorSrcs[idx]
+              slot.style.display = ''
+            } else {
+              slot.style.display = 'none'
+            }
+          })
         }
-
-        // replace hero slots with color images, hide extra slots
-        heroItems.forEach((slot, idx) => {
-          const imgEl = slot.querySelector('img')
-          if (!imgEl) return
-          if (idx < colorSrcs.length) {
-            imgEl.src = colorSrcs[idx]
-            slot.style.display = ''
-          } else {
-            slot.style.display = 'none'
-          }
-        })
 
         updateActionButtons()
       })
 
-      // keyboard activation for color-group (Enter/Space)
       document.addEventListener('keydown', function (ev) {
         const focused = document.activeElement
-        if (!focused) return
-        if (!focused.classList.contains('color-group')) return
-        if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); focused.click() }
+        if (!focused || !focused.classList.contains('color-group')) return
+        if (ev.key === 'Enter' || ev.key === ' ') { 
+          ev.preventDefault()
+          focused.click()
+        }
       })
 
-      // default size highlight if present
-      setTimeout(() => {
-        const defaultSizeBtn = document.querySelector('[data-size="M"]')
-        if (defaultSizeBtn) {
-          defaultSizeBtn.classList.add('active')
-          selectedSize = selectedSize || 'M'
+      // ✅ INITIAL SETUP
+        if (Object.keys(colorSizesMap).length === 0) {
+        // Không có màu - sử dụng default sizes
+        console.log('📦 No color options, using default sizes')
+        attachSizeHandlers()
+        
+        setTimeout(() => {
+            const defaultM = document.querySelector('[data-size="M"]')
+            const firstSize = document.querySelector('.section__form-size')
+            const defaultSizeBtn = defaultM || firstSize
+
+            if (defaultSizeBtn) {
+            const parent = defaultSizeBtn.closest('.section__form-button')
+            if (parent) parent.classList.add('active')
+            defaultSizeBtn.classList.add('active')
+            defaultSizeBtn.setAttribute('aria-pressed', 'true')
+            selectedSize = defaultSizeBtn.dataset.size || null
+            selectedSizeId = defaultSizeBtn.dataset.sizeId || null
+            if (addBtn && selectedSize) addBtn.textContent = `ADD TO CART - ${selectedSize}`
+            }
+            updateActionButtons()
+        }, 100)
+        } else {
+        // ✅ CÓ NHIỀU MÀU - TÌM MÀU "Default" TRONG colorSizesMap
+        setTimeout(() => {
+            console.log('🔍 Looking for Default color...')
+            console.log('📋 Available colors in map:', Object.keys(colorSizesMap))
+            
+            // Tìm màu "Default" trực tiếp trong colorSizesMap (exact match)
+            let defaultColorName = null
+            
+            // Thử tìm "Default" (case-sensitive vì keys trong object phân biệt hoa thường)
+            if (colorSizesMap['Default']) {
+            defaultColorName = 'Default'
+            console.log('✅ Found "Default" color in map')
+            } else if (colorSizesMap['default']) {
+            defaultColorName = 'default'
+            console.log('✅ Found "default" color in map')
+            } else {
+            // Nếu không tìm thấy, dùng màu đầu tiên
+            const firstColor = Object.keys(colorSizesMap)[0]
+            defaultColorName = firstColor
+            console.log('⚠️ Default color not found, using first color:', firstColor)
+            }
+            
+            // ✅ QUAN TRỌNG: Không cần tìm color-group trong DOM
+            // Chỉ cần render sizes trực tiếp từ colorSizesMap
+            if (defaultColorName && colorSizesMap[defaultColorName]) {
+            selectedColor = defaultColorName
+            console.log('🎯 Auto-selected color:', selectedColor)
+            
+            // Render sizes cho màu Default ngay lập tức
+            renderSizesForColor(selectedColor)
+            
+            // Tìm và active color-group trong DOM (nếu có)
+            const allColorGroups = document.querySelectorAll('.color-group')
+            allColorGroups.forEach(group => {
+                const colorName = (group.dataset.color || '').trim()
+                if (colorName === defaultColorName) {
+                group.classList.add('active')
+                console.log('✅ Activated color-group in DOM:', colorName)
+                }
+            })
+            
+            updateActionButtons()
+            } else {
+            console.error('❌ Could not find default color in map')
+            }
+        }, 100)
         }
-        updateActionButtons()
-      }, 100)
 
       function validateAndCollect() {
         const hasColorOptions = document.querySelectorAll('.color-group').length > 0
-        if (!selectedSize) {
-          showDialog('Vui lòng chọn size trước khi tiếp tục.')
-          return null
-        }
+        
         if (hasColorOptions && !selectedColor) {
-          showDialog('Vui lòng chọn màu trước khi tiếp tục.')
+          showDialog('Vui lòng chọn màu trước.')
           return null
         }
+        
+        if (!selectedSize) {
+          showDialog('Vui lòng chọn size.')
+          return null
+        }
+        
         return {
           id: productId,
           name: productName,
           price: productPrice,
           img: productImg,
           size: selectedSize,
+          sizeId: selectedSizeId,
           color: selectedColor,
           quantity: 1
         }
@@ -538,7 +641,11 @@
       if (addBtn) {
         addBtn.addEventListener('click', function (e) {
           const enabled = addBtn.getAttribute('aria-disabled') === 'false'
-          if (!enabled) { e.preventDefault(); validateAndCollect(); return }
+          if (!enabled) { 
+            e.preventDefault()
+            validateAndCollect()
+            return
+          }
           window.addToCartDetail()
         })
       }
@@ -546,14 +653,18 @@
       if (buyBtn) {
         buyBtn.addEventListener('click', function (e) {
           const enabled = buyBtn.getAttribute('aria-disabled') === 'false'
-          if (!enabled) { e.preventDefault(); validateAndCollect(); return }
+          if (!enabled) { 
+            e.preventDefault()
+            validateAndCollect()
+            return
+          }
           window.addToCartDetail()
         })
       }
 
       updateActionButtons()
+      
     } catch (err) {
-      // keep failures visible in console but don't block other scripts
       console.error('detail page script error:', err)
     }
   })
