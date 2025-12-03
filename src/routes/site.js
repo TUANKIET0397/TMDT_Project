@@ -113,6 +113,18 @@ router.get('/return', async (req, res) => {
             console.log(
               `✓ Created Cart ${cartID} and linked to Invoice ${invoiceId}`
             );
+
+            // 🆕 TRỪ SỐ LƯỢNG SẢN PHẨM TRONG KHO SAU KHI THANH TOÁN THÀNH CÔNG
+            try {
+              await Invoice.decreaseProductStock(pendingPayment.cartItems);
+              console.log('✅ Stock decreased successfully after MoMo payment');
+            } catch (stockError) {
+              console.error(
+                '❌ Error decreasing stock after MoMo payment:',
+                stockError
+              );
+              // Log lỗi nhưng vẫn cho phép đơn hàng được lưu
+            }
           } catch (cartError) {
             console.error('Error creating cart:', cartError);
           }
