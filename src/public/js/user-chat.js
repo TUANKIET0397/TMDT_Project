@@ -78,6 +78,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 productImage: productCard.dataset.productImage,
             }
             sendProductMessage(productData)
+            // ✅ Refresh chat history ngay sau khi gửi sản phẩm
+            setTimeout(() => {
+                historyLoaded = false
+                loadChatHistory()
+            }, 500)
         })
     })
 
@@ -136,6 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             productName: msg.ProductName,
                             productPrice: msg.ProductPrice,
                             productImage: msg.ProductImage,
+                            productID: msg.ProductID,
                         },
                         msg.SendTime,
                         type
@@ -172,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function sendProductMessage(productData) {
         if (!productData || !productData.productName) return
-        const productMessage = `Tôi muốn hỏi về sản phẩm: ${productData.productName}`
+        const productMessage = `I want to ask about the product: ${productData.productName}`
         const ts = new Date().toISOString()
 
         socket.emit("user:message", {
@@ -184,7 +190,10 @@ document.addEventListener("DOMContentLoaded", () => {
             userId: userId,
         })
 
-        addProductToChat(productData, ts)
+        addProductToChat(
+            { ...productData, productID: productData.productId },
+            ts
+        )
     }
 
     socket.on("user:message-sent", (data) => {
@@ -194,6 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     productName: data.productName,
                     productPrice: data.productPrice,
                     productImage: data.productImage,
+                    productID: data.productId,
                 },
                 data.timestamp,
                 "sent"
@@ -210,6 +220,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     productName: data.productName,
                     productPrice: data.productPrice,
                     productImage: data.productImage,
+                    productID: data.productId,
                 },
                 data.timestamp,
                 "received"
@@ -300,12 +311,12 @@ document.addEventListener("DOMContentLoaded", () => {
             : ""
         productDiv.innerHTML = `
             ${timeHTML}
-            <div class="product-message">
+            <a href="/products/detail/${
+                product.productID || "#"
+            }" style="text-decoration: none; color: inherit; cursor: pointer;" class="product-message">
                 <div class="product-image"><img src="${escapeHtml(
                     product.productImage || "/img/default.jpg"
-                )}" alt="${escapeHtml(
-                        product.productName || "Product"
-                    )}"></div>
+                )}" alt="${escapeHtml(product.productName || "Product")}"></div>
                 <div class="product-info">
                     <div class="product-name">${escapeHtml(
                         product.productName || "Product"
@@ -314,7 +325,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         product.productPrice || "0"
                     )}$</div>
                 </div>
-            </div>
+            </a>
         `
         chatMessages.appendChild(productDiv)
         scrollToBottom()

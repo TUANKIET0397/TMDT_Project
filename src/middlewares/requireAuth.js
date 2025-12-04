@@ -84,7 +84,7 @@ function requireCompleteProfile(req, res, next) {
                 const query = new URLSearchParams({
                     next: req.originalUrl || "/checkout",
                     missing: missingFields.join(","),
-                    notice: "Vui lòng hoàn tất hồ sơ trước khi tiếp tục thanh toán.",
+                    notice: "Please complete the application before continuing to pay.",
                 }).toString()
 
                 return res.redirect(`/profile?${query}`)

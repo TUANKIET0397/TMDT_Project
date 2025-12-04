@@ -293,10 +293,12 @@
 }
 
 .product-image {
+    background-size: cover;
+    background-repeat: no-repeat;
     width: 90px;
     height: 100%;
     border-radius: 8px;
-    flex-shrink: 0;
+    flex-shrink: 1;
 }
 
 .product-info {

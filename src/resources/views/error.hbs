@@ -24,7 +24,7 @@
             <a href="/" class="error-btn error-btn--primary">Back to Home</a>
             {{! ✅ Fixed retry button - sử dụng retryUrl nếu có, không thì /checkout }}
             <a href="{{#if retryUrl}}{{retryUrl}}{{else}}/checkout{{/if}}" class="error-btn error-btn--secondary">
-                🔄 Thử lại thanh toán
+                🔄 Retry payment
             </a>
         </div>
     </div>

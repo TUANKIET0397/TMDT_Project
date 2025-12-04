@@ -514,7 +514,7 @@ function enableSizeButtons() {
             if (qty <= 0) {
               e.preventDefault();
               e.stopPropagation();
-              showDialog('Size này hiện đã hết hàng.');
+              showDialog('This size is currently out of stock.');
               return false;
             }
 
@@ -528,7 +528,7 @@ function enableSizeButtons() {
             if (hasColorOptions && !selectedColor) {
               e.preventDefault();
               e.stopPropagation();
-              showDialog('Vui lòng chọn màu trước.');
+              showDialog('Please choose color first.');
               return false;
             }
 
@@ -771,12 +771,12 @@ function enableSizeButtons() {
         const hasColorOptions = document.querySelectorAll('.color-group').length > 0
         
         if (hasColorOptions && !selectedColor) {
-          showDialog('Vui lòng chọn màu trước.')
+          showDialog('Please choose color first.')
           return null
         }
         
         if (!selectedSize) {
-          showDialog('Vui lòng chọn size.')
+          showDialog('Please choose size.')
           return null
         }
         

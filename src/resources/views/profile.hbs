@@ -9,7 +9,7 @@
     {{notice}}
     {{#if missingFieldsDisplay}}
     <br />
-    <strong>Thiếu:</strong>
+    <strong>Information needs to be added:</strong>
     {{#each missingFieldsDisplay}}
     {{this}}{{#unless @last}}, {{/unless}}
     {{/each}}
@@ -23,7 +23,7 @@
     <div class="user-summary">
       <div class="user-avatar">
         {{#if user.Avt}}
-        <img src="/uploads/users/{{user.Avt}}" alt="avatar"
+        <img src="/uploads/products/{{user.Avt}}" alt="avatar"
           style="width:48px;height:48px;border-radius:50%" />
         {{/if}}
       </div>
@@ -266,7 +266,7 @@
 
     if (logoutBtn) {
       logoutBtn.addEventListener('click', async function (e) {
-        const ok = confirm('Bạn có muốn đăng xuất không?')
+        const ok = confirm('Do you want to log out?')
         if (!ok) return
 
         try {

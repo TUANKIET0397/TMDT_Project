@@ -116,7 +116,7 @@ class SiteController {
             const noticeMessage =
                 req.query.notice ||
                 (missingFieldsDisplay.length
-                    ? `Vui lòng cập nhật các thông tin còn thiếu: ${missingFieldsDisplay.join(
+                    ? `Please update the missing information: ${missingFieldsDisplay.join(
                           ", "
                       )}.`
                     : null)
@@ -139,7 +139,7 @@ class SiteController {
         } catch (error) {
             console.error("Error in profile:", error)
             res.status(500).render("error", {
-                layout: "main",
+                layout: "status",
                 message: "Failed to load profile",
                 error: error.message,
                 retryUrl: "/",
@@ -200,7 +200,7 @@ class SiteController {
             }
 
             res.status(400).render("error", {
-                layout: "main",
+                layout: "status",
                 message: "Update failed",
                 error: error.message,
                 retryUrl: "/profile",
@@ -582,7 +582,7 @@ class SiteController {
         } catch (error) {
             console.error("Error in payment:", error)
             return res.status(500).render("error", {
-                layout: "payment",
+                layout: "status",
                 message: "Lỗi hệ thống. Vui lòng thử lại sau.",
                 error: error.message,
                 retryUrl: "/checkout",

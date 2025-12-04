@@ -12,20 +12,20 @@
             </svg>
         </div>
 
-        <h1 class="payment-result__title">✗ Thanh toán thất bại</h1>
+        <h1 class="payment-result__title">✗ Payment failed</h1>
 
         <p class="payment-result__message">
-            Rất tiếc, giao dịch không thể hoàn tất. Vui lòng thử lại hoặc sử
-            dụng phương thức thanh toán khác.
+            Sorry, the transaction could not be completed. Please try again or
+            use another payment method.
         </p>
 
         {{#if resultCode}}
             <div class="payment-result__info">
-                <p><strong>Mã lỗi:</strong> {{resultCode}}</p>
-                <p><strong>Trạng thái:</strong>
-                    <span style="color: #ef4444; font-weight: bold;">✗ Thanh
-                        toán thất bại</span></p>
-                <p><strong>Thời gian:</strong>
+                <p><strong>Error code:</strong> {{resultCode}}</p>
+                <p><strong>Status:</strong>
+                    <span style="color: #ef4444; font-weight: bold;">✗ Payment
+                        failed</span></p>
+                <p><strong>Time:</strong>
                     <span id="currentTime"></span></p>
             </div>
         {{/if}}
@@ -38,16 +38,16 @@
             <a
                 href="/checkout"
                 class="payment-result__btn payment-result__btn--retry"
-            >🔄 Thử lại thanh toán</a>
+            >🔄 Retry payment</a>
             <a
                 href="/"
                 class="payment-result__btn payment-result__btn--secondary"
-            >← Về trang chủ</a>
+            >← Back to home page</a>
         </div>
 
         <div class="payment-result__help">
-            <p>📞 Nếu bạn gặp sự cố liên tục, vui lòng liên hệ bộ phận hỗ trợ
-                của chúng tôi.</p>
+            <p>📞 If you experience persistent problems, please contact our
+                support.</p>
         </div>
     </div>
 </div>
