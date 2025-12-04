@@ -402,6 +402,16 @@ class AdminController {
           });
       };
 
+      // ===== Lấy danh sách màu bị xóa =====
+      let deletedColorIds = req.body.deletedColorIds || [];
+      if (typeof deletedColorIds === 'string') {
+        deletedColorIds = [deletedColorIds];
+      }
+      deletedColorIds = deletedColorIds.map(Number).filter(Number.isFinite);
+
+      console.log('Deleted color IDs from client:', deletedColorIds);
+
+      payload.deletedColorIds = deletedColorIds; // ✅ Pass sang model
       // ===== Xử lý màu và ảnh màu =====
       const colorImagesGroups = {};
       if (req.files) {
@@ -997,7 +1007,7 @@ async searchProductsAdmin(req, res) {
         return savedPaths;
       };
 
-      // ===== Lấy mainImages mới (nếu có) =====
+      // ===== Lấy mainImages mới + thông tin slot thay đổi =====
       const mainFiles = Array.isArray(req.files)
         ? req.files.filter((x) => x.fieldname === 'mainImages')
         : req.files && req.files['mainImages']
@@ -1005,21 +1015,43 @@ async searchProductsAdmin(req, res) {
         : [];
       const newMainImages = await saveUploadedFiles(mainFiles, 'main');
 
-      // ===== Lấy colorsData từ req.body =====
-      let colorsDataRaw = req.body.colors || {};
-      const colorsData = Array.isArray(colorsDataRaw)
-        ? colorsDataRaw
-        : Object.values(colorsDataRaw);
+      // Lấy danh sách slot thay đổi
+      let changedMainIndexes = req.body.mainImageChangedIndexes || [];
+      if (!Array.isArray(changedMainIndexes)) {
+        changedMainIndexes = [changedMainIndexes].filter(Boolean).map(Number);
+      } else {
+        changedMainIndexes = changedMainIndexes.map(Number);
+      }
 
-      // ===== Chuẩn bị payload =====
+      // Lấy ảnh cũ giữ lại
+      let existingMainImages = req.body.existingMainImages || [];
+      if (typeof existingMainImages === 'string') {
+        existingMainImages = [existingMainImages];
+      }
+
+      // Lấy danh sách màu bị xóa (nếu client gửi)
+      let deletedColorIds = req.body.deletedColorIds || [];
+      if (typeof deletedColorIds === 'string') {
+        deletedColorIds = [deletedColorIds];
+      }
+      deletedColorIds = deletedColorIds.map(Number).filter(Number.isFinite);
+
+      console.log('Main images:', {
+        changedIndexes: changedMainIndexes,
+        newCount: newMainImages.length,
+        existingCount: existingMainImages.length,
+      });
+
       const payload = {
         ProductName: req.body.ProductName,
         Descriptions: req.body.Descriptions,
         TypeID: req.body.TypeID,
         Price: Number(req.body.Price) || 0,
-        mainImages: newMainImages, // chỉ chứa ảnh mới upload
-        existingMainImages: req.body.existingMainImages || [], // ảnh cũ giữ lại
+        mainImages: newMainImages,
+        existingMainImages: existingMainImages,
+        mainImageChangedIndexes: changedMainIndexes,
         colors: [],
+        deletedColorIds,
       };
 
       // Validate cơ bản
@@ -1035,8 +1067,16 @@ async searchProductsAdmin(req, res) {
         });
       }
 
-      // ===== Xử lý màu và ảnh màu =====
+      // ===== THÊM: Lấy colorsData từ req.body (CẦN THIẾT) =====
+      let colorsDataRaw = req.body.colors || {};
+      const colorsData = Array.isArray(colorsDataRaw)
+        ? colorsDataRaw
+        : Object.values(colorsDataRaw);
+
+      // ===== Xử lý color images =====
       const colorImagesGroups = {};
+      const colorChangedIndexes = {}; // { colorIdx: [imageIdx1, imageIdx2] }
+
       if (req.files) {
         if (Array.isArray(req.files)) {
           req.files.forEach((f) => {
@@ -1055,17 +1095,55 @@ async searchProductsAdmin(req, res) {
           });
         }
       }
+      
+      // Parse changedImageIndexes từ body
+      // Parse changedImageIndexes từ body (FIX: phải lặp tất cả keys)
+      Object.keys(req.body).forEach((key) => {
+        const m = key.match(/^colors\[(\d+)\]\[changedImageIndexes\]$/);
+        if (m) {
+          const colorIdx = m[1];
+          const indexes = req.body[key];
+          // indexes có thể là string, array, hoặc undefined
+          if (Array.isArray(indexes)) {
+            colorChangedIndexes[colorIdx] = indexes.map((x) => Number(x)).filter(Number.isFinite);
+          } else if (indexes !== undefined && indexes !== '') {
+            colorChangedIndexes[colorIdx] = [Number(indexes)].filter(Number.isFinite);
+          } else {
+            colorChangedIndexes[colorIdx] = [];
+          }
+        }
+      });
+
+      console.log('Color changed indexes parsed:', colorChangedIndexes);
 
       // ===== Build colors array =====
       for (const [index, colorData] of Object.entries(colorsData)) {
         const groupFiles = colorImagesGroups[index] || [];
-        const newColorImgs = await saveUploadedFiles(
+        const uploadedColorImgs = await saveUploadedFiles(
           groupFiles,
           `color_${index}`
         );
 
-        // Ảnh cũ của màu này (từ form)
-        const existingColorImages = colorData.existingImages || [];
+        // Lấy ảnh cũ giữ lại
+        let existingColorImages = colorData.existingImages || [];
+        if (typeof existingColorImages === 'string') {
+          existingColorImages = [existingColorImages];
+        }
+
+        const changedIndexes = colorChangedIndexes[index] || [];
+
+        // ✅ FIX: Build complete images array
+        // changedIndexes = [slot0, slot1, ...] : các vị trí bị thay đổi
+        // uploadedColorImgs = [img_path0, img_path1, ...] : ảnh mới tương ứng
+        // existingColorImages = [img_path_old0, img_path_old1, ...] : ảnh giữ lại (thứ tự từ DB)
+        // Result: images[] map theo changedIndexes để model biết update vị trí nào
+        const images = uploadedColorImgs; // model sẽ parse từ changedIndexes
+        console.log(`Color ${index}:`, {
+          changedIndexes,
+          uploadedCount: uploadedColorImgs.length,
+          existingCount: existingColorImages.length,
+          totalImages: images.length,
+        });
 
         // Sizes
         const rawSizes = colorData.sizes || [];
@@ -1084,18 +1162,16 @@ async searchProductsAdmin(req, res) {
               }));
 
         payload.colors.push({
-          colorId: colorData.colorId || null, // ID màu cũ (nếu đang edit)
+          colorId: colorData.colorId || null,
           colorName: colorData.colorName || 'Default',
-          images: newColorImgs, // ảnh mới upload
-          existingImages: existingColorImages, // ảnh cũ giữ lại
+          images: images,
+          existingImages: existingColorImages,
+          changedImageIndexes: changedIndexes,
           sizes: sizes,
         });
       }
 
-      console.log(
-        ' Processed update payload:',
-        JSON.stringify(payload, null, 2)
-      );
+      console.log(' Processed update payload:', JSON.stringify(payload, null, 2));
 
       // ===== Cập nhật database =====
       const result = await AdminSite.updateProductWithColors(
@@ -1121,33 +1197,6 @@ async searchProductsAdmin(req, res) {
         success: false,
         message: 'Server error',
         error: err.message,
-      });
-    }
-  }
-  // [DELETE] /admin/color/:colorId - Xóa màu
-  async deleteColor(req, res) {
-    try {
-      const colorId = req.params.colorId;
-      console.log('🗑️ Deleting color:', colorId);
-
-      const result = await AdminSite.deleteColor(colorId);
-
-      if (result && result > 0) {
-        return res.json({
-          success: true,
-          message: 'Color deleted successfully',
-        });
-      }
-
-      return res.status(404).json({
-        success: false,
-        message: 'Color not found',
-      });
-    } catch (error) {
-      console.error(' Error deleting color:', error);
-      return res.status(500).json({
-        success: false,
-        message: 'Server error: ' + error.message,
       });
     }
   }

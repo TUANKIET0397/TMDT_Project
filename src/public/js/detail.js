@@ -192,59 +192,59 @@ function clearActiveSizes() {
   }
 
   function reindexColorCards() {
-    const cards = Array.from(
-      colorCardsContainer.querySelectorAll('.add__product-color')
-    );
-    const addNew = cards.find((c) => c.classList.contains('add-new'));
-    let idx = 0;
-    cards.forEach((c) => {
-      if (c === addNew) return;
-      c.dataset.colorIndex = idx;
-      idx++;
-    });
-  }
+  const cards = Array.from(
+    colorCardsContainer.querySelectorAll('.add__product-color:not(.add-new)')
+  );
+  let idx = 0;
+  cards.forEach((c) => {
+    c.dataset.colorIndex = idx;
+    idx++;
+  });
+}
 
-  async function removeColorAt(index) {
-    index = Number(index);
-    if (!Number.isFinite(index)) return;
+ // ✅ FIX 5: Chỉ reindex khi thực sự xóa
+async function removeColorAt(index) {
+  index = Number(index);
+  if (!Number.isFinite(index)) return;
 
-    const color = productData.colors[index];
+  const color = productData.colors[index];
 
-    // Nếu color có colorId (đã lưu trong DB), gọi API xóa
-    if (color && color.colorId) {
-      try {
-        const res = await fetch(`/admin/color/${color.colorId}`, {
-          method: 'DELETE',
-        });
-        const data = await res.json();
+  if (color && color.colorId) {
+    try {
+      const res = await fetch(`/admin/color/${color.colorId}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
 
-        if (!res.ok || !data.success) {
-          console.error('Failed to delete color:', data);
-          alert('Failed to delete color: ' + (data.message || 'Unknown error'));
-          return;
-        }
-
-        console.log(' Color deleted from database');
-      } catch (err) {
-        console.error('Error deleting color:', err);
-        alert('Error deleting color. Please try again.');
+      if (!res.ok || !data.success) {
+        console.error('Failed to delete color:', data);
+        alert('Failed to delete color: ' + (data.message || 'Unknown error'));
         return;
       }
+      console.log(' Color deleted from database');
+    } catch (err) {
+      console.error('Error deleting color:', err);
+      alert('Error deleting color. Please try again.');
+      return;
     }
+  }
 
-    // Xóa UI
-    const card = colorCardsContainer.querySelector(
-      `.add__product-color[data-color-index="${index}"]`
-    );
-    if (card && card.dataset.thumbUrl) {
-      try {
-        URL.revokeObjectURL(card.dataset.thumbUrl);
-      } catch (e) {}
-    }
+  const card = colorCardsContainer.querySelector(
+    `.add__product-color[data-color-index="${index}"]`
+  );
+  if (card && card.dataset.thumbUrl) {
+    try {
+      URL.revokeObjectURL(card.dataset.thumbUrl);
+    } catch (e) {}
+  }
 
-    productData.colors.splice(index, 1);
-    if (card) card.remove();
-    reindexColorCards();
+  // ✅ MARK AS DELETED, không xóa khỏi array ngay
+  productData.colors[index]._deleted = true;
+  if (card) card.remove();
+  
+  // ✅ Reindex tất cả remaining cards
+  reindexColorCards();
+
   }
 
  function openNewColorModal(e) {
@@ -330,17 +330,26 @@ if (typeSelect) {
       modalRemoveBtn.className = 'modal-remove-btn';
       modalRemoveBtn.textContent = 'Delete Color';
       modalContent.appendChild(modalRemoveBtn);
-      modalRemoveBtn.addEventListener('click', async (ev) => {
-        ev.stopPropagation();
-        if (!confirm('Delete this color? This cannot be undone.')) return;
+      modalRemoveBtn.addEventListener('click', () => {
+      if (editingColorIndex !== null) {
+        // ✅ Mark màu này là deleted (không xóa khỏi array)
+        productData.colors[editingColorIndex]._deleted = true;
+        
+        // Remove card from UI
+        const card = colorCardsContainer.querySelector(
+          `.add__product-color[data-color-index="${editingColorIndex}"]`
+        );
+        if (card) card.remove();
 
-        await removeColorAt(editingColorIndex);
-        editingColorIndex = null;
-        tempColorData = { colorName: '', images: [], sizes: [] };
-        resetModalImages();
-        modal.classList.remove('active');
-      });
-    }
+        console.log(`Marked color ${editingColorIndex} as deleted`);
+      }
+
+      modal.classList.remove('active');
+      editingColorIndex = null;
+      tempColorData = { colorName: '', images: [], sizes: [] };
+    });
+    reindexColorCards(); // ✅ Reindex tất cả remaining colors
+  }
     modalRemoveBtn.style.display = '';
   }
 
@@ -400,81 +409,111 @@ function renderColorCards() {
 
   // ===== UPDATE PRODUCT FUNCTION =====
   async function updateProduct() {
-    productData.name = productNameInput.value.trim();
-    productData.description = descriptionInput.value.trim();
-    productData.type = typeSelect.value;
-    productData.cost = costInput.value.trim();
+  productData.name = productNameInput.value.trim();
+  productData.description = descriptionInput.value.trim();
+  productData.type = typeSelect.value;
+  productData.cost = costInput.value.trim();
 
-    if (
-      !productData.name ||
-      !productData.description ||
-      !productData.type ||
-      !productData.cost
-    ) {
-      alert('Please fill all required fields');
-      return;
-    }
-    if (productData.colors.length === 0) {
-      alert('Please add at least one color with sizes');
-      return;
-    }
-
-    const isShoes = String(productData.type) === '7';
-productData.colors.forEach((color) => {
-  color.sizes = (color.sizes || []).map((s) => ({
-    size: isShoes ? String(Number(s.size)) : String(s.size || '').trim().toUpperCase(),
-    quantity: Number(s.quantity) || 0,
-  }));
-});
-
-    const formData = new FormData();
-    formData.append('ProductName', productData.name);
-    formData.append('Descriptions', productData.description);
-    formData.append('TypeID', productData.type);
-    formData.append('Price', productData.cost);
-
-    productData.mainImages.forEach((file) => {
-      if (file instanceof File) {
-        formData.append('mainImages', file);
-      }
-    });
-
-    productData.colors.forEach((color, ci) => {
-      if (color.colorId) {
-        formData.append(`colors[${ci}][colorId]`, color.colorId);
-      }
-      formData.append(`colors[${ci}][colorName]`, color.colorName);
-
-      (color.images || []).forEach((file) => {
-        if (file instanceof File) {
-          formData.append(`colors[${ci}][images]`, file);
-        }
-      });
-
-      (color.sizes || []).forEach((s, si) => {
-        formData.append(`colors[${ci}][sizes][${si}][size]`, s.size);
-        formData.append(`colors[${ci}][sizes][${si}][quantity]`, s.quantity);
-      });
-    });
-
-    try {
-      const res = await fetch(`/admin/detail/${productData.id}`, {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        alert('Product updated successfully!');
-        window.location.reload();
-      } else {
-        console.error('Update failed', data);
-        alert('Update failed: ' + (data.message || 'Unknown'));
-      }
-    } catch (err) {
-      console.error('Request error', err);
-      alert('Request error. See console.');
-    }
+  if (
+    !productData.name ||
+    !productData.description ||
+    !productData.type ||
+    !productData.cost
+  ) {
+    alert('Please fill all required fields');
+    return;
   }
+
+  // ✅ FIX 1: Filter bỏ colors đã xóa
+  const activeColors = productData.colors.filter(c => !c._deleted);
+  
+  if (activeColors.length === 0) {
+    alert('Please add at least one color with sizes');
+    return;
+  }
+
+  const isShoes = String(productData.type) === '7';
+  activeColors.forEach((color) => {
+    color.sizes = (color.sizes || []).map((s) => ({
+      size: isShoes ? String(Number(s.size)) : String(s.size || '').trim().toUpperCase(),
+      quantity: Number(s.quantity) || 0,
+    }));
+  });
+
+  const formData = new FormData();
+  formData.append('ProductName', productData.name);
+  formData.append('Descriptions', productData.description);
+  formData.append('TypeID', productData.type);
+  formData.append('Price', productData.cost);
+
+  // Main images
+  productData.mainImages.forEach((file, idx) => {
+    if (file instanceof File) {
+      formData.append('mainImages', file);
+      formData.append('mainImageChangedIndexes', idx);
+    } else if (typeof file === 'string' && file.length > 0) {
+      formData.append('existingMainImages', file);
+    }
+  });
+
+  // ✅ FIX 2: Collect deleted color IDs
+  const deletedColorIds = productData.colors
+    .filter(c => c._deleted && c.colorId)
+    .map(c => c.colorId);
+
+  // ✅ FIX 3: Send only ACTIVE colors with correct indexes
+  activeColors.forEach((color, ci) => {  // ✅ ci từ activeColors, không phải productData.colors
+    if (color.colorId) {
+      formData.append(`colors[${ci}][colorId]`, color.colorId);
+    }
+    formData.append(`colors[${ci}][colorName]`, color.colorName);
+
+    const changedSlots = [];
+    (color.images || []).forEach((file, idx) => {
+      if (file instanceof File) {
+        formData.append(`colors[${ci}][images]`, file);
+        changedSlots.push(idx);
+      } else if (typeof file === 'string' && file.length > 0) {
+        formData.append(`colors[${ci}][existingImages]`, file);
+      }
+    });
+
+    changedSlots.forEach((slot) => {
+      formData.append(`colors[${ci}][changedImageIndexes]`, slot);
+    });
+
+    (color.sizes || []).forEach((s, si) => {
+      formData.append(`colors[${ci}][sizes][${si}][size]`, s.size);
+      formData.append(`colors[${ci}][sizes][${si}][quantity]`, s.quantity);
+    });
+  });
+
+  // Send deleted color IDs
+  deletedColorIds.forEach((id) => {
+    formData.append('deletedColorIds', id);
+  });
+
+  console.log('✅ Active colors:', activeColors.length);
+  console.log('✅ Deleted color IDs:', deletedColorIds);
+
+  try {
+    const res = await fetch(`/admin/detail/${productData.id}`, {
+      method: 'POST',
+      body: formData,
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      alert('Product updated successfully!');
+      window.location.reload();
+    } else {
+      console.error('Update failed', data);
+      alert('Update failed: ' + (data.message || 'Unknown'));
+    }
+  } catch (err) {
+    console.error('Request error', err);
+    alert('Request error. See console.');
+  }
+}
 
   // ===== EVENT LISTENERS =====
 
@@ -621,6 +660,15 @@ productData.colors.forEach((color) => {
       return;
     }
 
+    // ===== TRACK CHANGED IMAGE SLOTS =====
+    const changedSlots = [];
+    (tempColorData.images || []).forEach((img, idx) => {
+      if (img instanceof File) {
+        changedSlots.push(idx); // Slot này có ảnh mới (File)
+      }
+    });
+    tempColorData.changedImageIndexes = changedSlots; // LƯU vào tempColorData
+
     if (editingColorIndex !== null) {
       productData.colors[editingColorIndex] = tempColorData;
       const card = colorCardsContainer.querySelector(
@@ -687,7 +735,9 @@ productData.colors.forEach((color) => {
       return;
     }
     // find index safely
-    let index = typeof card.dataset.colorIndex !== 'undefined' ? Number(card.dataset.colorIndex) : -1;
+    let index = typeof card.dataset.colorIndex !== 'undefined' 
+    ? Number(card.dataset.colorIndex) 
+    : -1;
     if (index < 0) {
       // fallback: compute index by node list
       const cards = Array.from(colorCardsContainer.querySelectorAll('.add__product-color:not(.add-new)'));
