@@ -395,113 +395,216 @@
       }
 
       function renderSizesForColor(colorName) {
-        if (!sizesContainer) return
-        
-        console.log('📏 Rendering sizes for color:', colorName)
-        
-        const data = colorSizesMap[colorName]
-        if (!data || !data.sizes || data.sizes.length === 0) {
-          console.warn('⚠️ No sizes found for color:', colorName)
-          sizesContainer.innerHTML = '<p style="color:#999;font-size:14px;padding:10px;">No sizes available for this color</p>'
-          sizesContainer.style.display = 'block'
-          selectedSize = null
-          selectedSizeId = null
-          updateActionButtons()
-          return
-        }
+  if (!sizesContainer) return;
 
-        const sizes = data.sizes
-        console.log('✅ Found sizes:', sizes)
-        let html = ''
-        
-        sizes.forEach(size => {
-          const sizeClass = isShoes ? 'section__form-size--numeric' : ''
-          html += `
-            <div class="section__form-button">
-              <div role="button" tabindex="0"
-                  class="section__form-size ${sizeClass}"
-                  data-size="${size.SizeName}"
-                  data-size-id="${size.ID}">
-                ${size.SizeName}
-              </div>
-              <div class="section__form-quantity" data-size-id="${size.ID}">
-                <h5>SL: ${size.QuantityValue}</h5>
-              </div>
-            </div>
-          `
-        })
+  const data = colorSizesMap[colorName];
+  if (!data || !Array.isArray(data.sizes) || data.sizes.length === 0) {
+    sizesContainer.innerHTML = '<p style="color:#999;font-size:14px;padding:10px;">No sizes available for this color</p>';
+    sizesContainer.style.display = 'block';
+    selectedSize = null;
+    selectedSizeId = null;
+    updateActionButtons();
+    return;
+  }
 
-        sizesContainer.innerHTML = html
-        sizesContainer.style.display = 'flex'
-        
-        selectedSize = null
-        selectedSizeId = null
-        if (addBtn) addBtn.textContent = 'ADD TO CART'
-        
-        attachSizeHandlers()
-        updateActionButtons()
-      }
+  // Với shoes: chỉ giữ sizes có tên là số (36, 37.5 ...)
+  // Ngược lại (non-shoes): lọc bỏ các size chỉ là số (giữ S, M, L, XL...)
+  const rawSizes = data.sizes;
+  const filteredSizes = Array.isArray(rawSizes)
+    ? rawSizes.filter(s => {
+        const name = String(s.SizeName || s.size || '').trim();
+        const isNumeric = /^\d+(\.\d+)?$/.test(name);
+        return isShoes ? isNumeric : !isNumeric;
+      })
+    : [];
 
-      function disableSizeButtons() {
+  if (filteredSizes.length === 0) {
+    sizesContainer.innerHTML = '<p style="color:#999;font-size:14px;padding:10px;">No sizes available for this color</p>';
+    sizesContainer.style.display = 'block';
+    selectedSize = null;
+    selectedSizeId = null;
+    updateActionButtons();
+    return;
+  }
+
+  let html = '';
+
+  filteredSizes.forEach(size => {
+    const qty = Number(size.QuantityValue || size.quantity || 0);
+    const outOfStock = qty <= 0;
+    const sizeClass = isShoes ? 'section__form-size--numeric' : '';
+    const disabledClass = outOfStock ? ' out-of-stock' : '';
+    const ariaDisabled = outOfStock ? 'true' : 'false';
+    const tabIdx = outOfStock ? '-1' : '0';
+
+    html += `
+      <div class="section__form-button ${outOfStock ? 'btn-disabled-wrap' : ''}">
+        <div role="button" tabindex="${tabIdx}"
+             class="section__form-size ${sizeClass}${disabledClass}"
+             data-size="${size.SizeName || size.size}"
+             data-size-id="${size.ID || size.id}"
+             data-quantity="${qty}"
+             aria-disabled="${ariaDisabled}">
+          ${size.SizeName || size.size}
+        </div>
+        <div class="section__form-quantity" data-size-id="${size.ID || size.id}">
+          <h5>SL: ${qty}</h5>
+        </div>
+      </div>
+    `;
+  });
+
+  sizesContainer.innerHTML = html;
+  sizesContainer.style.display = 'flex';
+
+  selectedSize = null;
+  selectedSizeId = null;
+  if (addBtn) addBtn.textContent = 'ADD TO CART';
+
+  attachSizeHandlers();
+  updateActionButtons();
+}
+function disableSizeButtons() {
+  document.querySelectorAll('.section__form-size').forEach(btn => {
+    btn.classList.add('disabled');
+    btn.setAttribute('aria-disabled', 'true');
+    btn.style.opacity = '0.5';
+    btn.style.cursor = 'not-allowed';
+    btn.style.pointerEvents = 'none';
+    btn.setAttribute('tabindex', '-1');
+    const parent = btn.closest('.section__form-button');
+    if (parent) parent.classList.add('btn-disabled-wrap');
+  });
+}
+
+function enableSizeButtons() {
+  document.querySelectorAll('.section__form-size').forEach(btn => {
+    const qty = Number(btn.dataset.quantity || 0);
+    if (qty <= 0) {
+      // keep disabled if quantity zero
+      btn.classList.add('disabled');
+      btn.setAttribute('aria-disabled', 'true');
+      btn.style.opacity = '0.5';
+      btn.style.cursor = 'not-allowed';
+      btn.style.pointerEvents = 'none';
+      btn.setAttribute('tabindex', '-1');
+      const parent = btn.closest('.section__form-button');
+      if (parent) parent.classList.add('btn-disabled-wrap');
+    } else {
+      btn.classList.remove('disabled');
+      btn.setAttribute('aria-disabled', 'false');
+      btn.style.opacity = '1';
+      btn.style.cursor = 'pointer';
+      btn.style.pointerEvents = 'auto';
+      btn.setAttribute('tabindex', '0');
+      const parent = btn.closest('.section__form-button');
+      if (parent) parent.classList.remove('btn-disabled-wrap');
+    }
+  });
+}
+
+  function attachSizeHandlers() {
         document.querySelectorAll('.section__form-size').forEach(btn => {
-          btn.classList.add('disabled')
-          btn.setAttribute('aria-disabled', 'true')
-          btn.style.opacity = '0.5'
-          btn.style.cursor = 'not-allowed'
-          btn.style.pointerEvents = 'none'
-        })
-      }
+          const newBtn = btn.cloneNode(true);
+          btn.parentNode.replaceChild(newBtn, btn);
 
-      function enableSizeButtons() {
-        document.querySelectorAll('.section__form-size').forEach(btn => {
-          btn.classList.remove('disabled')
-          btn.setAttribute('aria-disabled', 'false')
-          btn.style.opacity = '1'
-          btn.style.cursor = 'pointer'
-          btn.style.pointerEvents = 'auto'
-        })
-      }
-
-      function attachSizeHandlers() {
-        document.querySelectorAll('.section__form-size').forEach(btn => {
-          const newBtn = btn.cloneNode(true)
-          btn.parentNode.replaceChild(newBtn, btn)
-          
           newBtn.addEventListener('click', function (e) {
-            // 🆕 Check if color is required but not selected
-            const hasColorOptions = document.querySelectorAll('.color-group').length > 0
-            if (hasColorOptions && !selectedColor) {
-              e.preventDefault()
-              e.stopPropagation()
-              showDialog('Vui lòng chọn màu trước.')
-              return false
+            // ✅ Check if size is out of stock
+            const qty = Number(this.dataset.quantity || 0);
+            if (qty <= 0) {
+              e.preventDefault();
+              e.stopPropagation();
+              showDialog('Size này hiện đã hết hàng.');
+              return false;
             }
 
-            document.querySelectorAll('.section__form-button').forEach(pb => pb.classList.remove('active'))
+            // ignore clicks on disabled buttons
+            if (this.classList.contains('disabled') || this.getAttribute('aria-disabled') === 'true') {
+              e.preventDefault();
+              return false;
+            }
+
+            const hasColorOptions = document.querySelectorAll('.color-group').length > 0;
+            if (hasColorOptions && !selectedColor) {
+              e.preventDefault();
+              e.stopPropagation();
+              showDialog('Vui lòng chọn màu trước.');
+              return false;
+            }
+
+            
+            document.querySelectorAll('.section__form-button').forEach(pb => pb.classList.remove('active'));
             document.querySelectorAll('.section__form-size').forEach(b => {
-              b.classList.remove('active')
-              b.setAttribute('aria-pressed', 'false')
-            })
+              b.classList.remove('active');
+              b.setAttribute('aria-pressed', 'false');
+            });
 
-            const parent = this.closest('.section__form-button')
-            if (parent) parent.classList.add('active')
-            this.classList.add('active')
-            this.setAttribute('aria-pressed', 'true')
+            const parent = this.closest('.section__form-button');
+            if (parent) parent.classList.add('active');
+            this.classList.add('active');
+            this.setAttribute('aria-pressed', 'true');
 
-            selectedSize = this.dataset.size || null
-            selectedSizeId = this.dataset.sizeId || null
+            selectedSize = this.dataset.size || null;
+            selectedSizeId = this.dataset.sizeId || null;
 
-            if (addBtn) addBtn.textContent = `ADD TO CART - ${selectedSize || ''}`
-            updateActionButtons()
-          })
+            if (addBtn) addBtn.textContent = `ADD TO CART - ${selectedSize || ''}`;
+            updateActionButtons();
+          });
 
           newBtn.addEventListener('keydown', function (ev) {
             if (ev.key === 'Enter' || ev.key === ' ') {
-              ev.preventDefault()
-              this.click()
+              ev.preventDefault();
+              this.click();
             }
-          })
-        })
+          });
+
+          // ✅ Show tooltip on hover (ALL sizes, not just out-of-stock)
+          newBtn.addEventListener('mouseenter', function () {
+            const parent = this.closest('.section__form-button');
+            if (parent) {
+              const qtyDiv = parent.querySelector('.section__form-quantity');
+              if (qtyDiv) {
+                qtyDiv.style.visibility = 'visible';
+                qtyDiv.style.opacity = '1';
+              }
+            }
+          });
+
+          // Hide tooltip on mouseleave
+          newBtn.addEventListener('mouseleave', function () {
+            const parent = this.closest('.section__form-button');
+            if (parent) {
+              const qtyDiv = parent.querySelector('.section__form-quantity');
+              if (qtyDiv) {
+                qtyDiv.style.visibility = 'hidden';
+                qtyDiv.style.opacity = '0';
+              }
+            }
+          });
+
+          // Also handle focus/blur for keyboard navigation
+          newBtn.addEventListener('focus', function () {
+            const parent = this.closest('.section__form-button');
+            if (parent) {
+              const qtyDiv = parent.querySelector('.section__form-quantity');
+              if (qtyDiv) {
+                qtyDiv.style.visibility = 'visible';
+                qtyDiv.style.opacity = '1';
+              }
+            }
+          });
+
+          newBtn.addEventListener('blur', function () {
+            const parent = this.closest('.section__form-button');
+            if (parent) {
+              const qtyDiv = parent.querySelector('.section__form-quantity');
+              if (qtyDiv) {
+                qtyDiv.style.visibility = 'hidden';
+                qtyDiv.style.opacity = '0';
+              }
+            }
+          });
+        });
       }
 
       function updateActionButtons() {

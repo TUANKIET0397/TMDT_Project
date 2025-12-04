@@ -304,70 +304,104 @@ class ProductController {
     }
   }
 
-  // Chi tiết sản phẩm
+   // Chi tiết sản phẩm
   async detail(req, res) {
     try {
-      const rawId = req.params.id;
-      const productId = (() => {
-        const n = Number(rawId);
-        return Number.isNaN(n) ? rawId : n;
-      })();
+      const id = req.params.id;
+      if (!id) return res.status(400).send('Product id required');
 
-      const product = await Product.getProductById(productId);
-      if (!product) {
-        return res.status(404).send('Product not found');
+      const product = await Product.getProductById(id);
+      if (!product) return res.status(404).render('error', { message: 'Product not found' });
+
+       // Prefer backend-provided map built inside Product.getProductById
+      let colorSizesMap = (product && product._colorSizesMap && Object.keys(product._colorSizesMap).length)
+        ? product._colorSizesMap
+        : {};
+
+      // If model didn't supply map, build it from ImagesByColorList / colors (fallback)
+      if (!colorSizesMap || Object.keys(colorSizesMap).length === 0) {
+        colorSizesMap = {};
+
+        // try to get color id list (if helper exists)
+        let colorsList = [];
+        if (typeof Product.getColorsForProduct === 'function') {
+          try {
+            colorsList = await Product.getColorsForProduct(id);
+          } catch (e) {
+            colorsList = [];
+          }
+        }
+        const colorIdLookup = {};
+        if (Array.isArray(colorsList)) {
+          colorsList.forEach(c => {
+            if (c.ColorName) colorIdLookup[c.ColorName] = c.ID || c.ColorID || null;
+          });
+        }
+
+        // build from ImagesByColorList (expected shape from model) if available
+        (product.ImagesByColorList || []).forEach(cb => {
+          const colorName = cb.color;
+          const images = cb.images || [];
+          const images6 = cb.images6 || (images.slice(0, 6));
+          colorSizesMap[colorName] = {
+            colorId: colorIdLookup[colorName] || null,
+            images,
+            images6,
+            sizes: []
+          };
+        });
+
+        // also try product.colors (if model returned sizes directly)
+        if (Array.isArray(product.colors) && product.colors.length) {
+          product.colors.forEach(c => {
+            const name = c.ColorName || c.color || null;
+            if (!name) return;
+            colorSizesMap[name] = colorSizesMap[name] || {};
+            colorSizesMap[name].colorId = colorSizesMap[name].colorId || (c.ColorID || c.ID || null);
+            colorSizesMap[name].images = colorSizesMap[name].images || (c.images || []);
+            colorSizesMap[name].images6 = colorSizesMap[name].images6 || (c.images6 || (c.images || []).slice(0,6));
+            colorSizesMap[name].sizes = colorSizesMap[name].sizes && colorSizesMap[name].sizes.length ? colorSizesMap[name].sizes : (c.sizes || []);
+          });
+        }
+
+        // fetch sizes per color if helper exists and sizes still missing
+        if (typeof Product.getSizesForProductColor === 'function') {
+          for (const colorName of Object.keys(colorSizesMap)) {
+            if (Array.isArray(colorSizesMap[colorName].sizes) && colorSizesMap[colorName].sizes.length) continue;
+            const colorId = colorSizesMap[colorName].colorId || null;
+            try {
+              const sizes = await Product.getSizesForProductColor(id, colorId);
+              colorSizesMap[colorName].sizes = Array.isArray(sizes) ? sizes : [];
+            } catch (e) {
+              colorSizesMap[colorName].sizes = [];
+            }
+          }
+        }
       }
-
-      const isShoes = String(product.TypeName || '').toLowerCase() === 'shoes';
-
-      // Lấy colors với IDs
-      const colors = await Product.getColorsForProduct(productId);
-
-      // Lấy sizes cho từng màu
-      const colorSizesMap = {};
-      for (const color of colors) {
-        const sizes = await Product.getSizesForProductColor(
-          productId,
-          color.ColorID
-        );
-        colorSizesMap[color.ColorName] = {
-          colorId: color.ColorID,
-          sizes: sizes,
-        };
-      }
-
-      // ✅ CONVERT TO JSON STRING
-      const colorSizesMapJSON = JSON.stringify(colorSizesMap);
-
-      // Fallback sizes nếu không có colors
+ 
+      // Default sizes when no colors (call existing API if available)
       let defaultSizes = [];
-      if (colors.length === 0) {
-        defaultSizes = await Product.getSizesForProduct(productId, isShoes);
+      try {
+        if (typeof Product.getSizesForProduct === 'function') {
+          // detect shoes by typeID if needed
+          const isShoes = product.TypeName && product.TypeName.toLowerCase().includes('shoe');
+          defaultSizes = await Product.getSizesForProduct(id, !!isShoes);
+        }
+      } catch (e) {
+        defaultSizes = [];
       }
 
-      // Related products
-      let related = [];
-      if (product.TypeName) {
-        const relatedProducts = await Product.getProductsByType(
-          product.TypeName
-        );
-        related = relatedProducts
-          .filter((p) => String(p.ID) !== String(productId))
-          .slice(0, 4);
-      }
-
-      return res.render('products/detail', {
+      res.render('products/detail', {
         product,
-        relatedProducts: related,
-        colors,
-        colorSizesMap,
-        colorSizesMapJSON, // ✅ PASS AS STRING
+        colorSizesMapJSON: JSON.stringify(colorSizesMap),
+        colors: Object.keys(colorSizesMap),
         defaultSizes,
-        isShoes,
+        isShoes: product.TypeName && product.TypeName.toLowerCase().includes('shoe'),
+        relatedProducts: await Product.getRelatedProducts(product.TypeID || null, 4)
       });
     } catch (error) {
-      console.error('Detail error:', error);
-      return res.status(500).send('Error loading product');
+      console.error('Product detail error:', error);
+      res.status(500).render('error', { message: 'Server error' });
     }
   }
 }

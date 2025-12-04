@@ -39,7 +39,50 @@
     line-height: 1;
     color: #000;
 }
+.section__form-size.out-of-stock {
+  background: #fff7d8; /* pale yellow */
+  border-color: #f0e0a0;
+  color: #333;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
 
+/* Quantity tooltip */
+.section__form-button {
+  position: relative;
+  display: inline-block;
+}
+
+.section__form-button .section__form-quantity {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+  background: rgba(51, 51, 51, 0.95);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  z-index: 30;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+
+/* show SL when hovering size button */
+.section__form-button:hover .section__form-quantity {
+  visibility: visible;
+  opacity: 1;
+}
+.section__form-button .section__form-size.active ~ .section__form-quantity {
+    visibility: visible;
+    opacity: 1;
+}
 .section__heading {
     width: 437px;
     font-size: 2rem;
@@ -108,14 +151,8 @@
     background: #636363d3;
     border-radius: 4px;
     text-align: center;
-    display: none; /* hide by default */
 }
 
-/* show quantity only for active size's parent */
-.section__form-button.active .section__form-quantity {
-    display: block;
-    z-index: 10;
-}
 
 .section__form-size:hover {
     outline: 1px solid #000;

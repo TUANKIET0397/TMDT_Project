@@ -1,6 +1,24 @@
 // src/app/models/Product.js
 const db = require('../../config/db');
 
+function normalizeImagePath(p) {
+  if (!p) return null;
+  p = String(p).trim();
+  // absolute url -> use pathname
+  try {
+    if (/^https?:\/\//i.test(p)) {
+      const u = new URL(p);
+      p = u.pathname;
+    }
+  } catch (e) {
+    // ignore
+  }
+  if (!p) return null;
+  if (p.startsWith('/')) return p;
+  // if it's just a filename, make it consistent path
+  return `/uploads/products/${p}`;
+}
+
 class Product {
   // Lấy tất cả sản phẩm
   static async getAllProducts() {
@@ -30,6 +48,7 @@ class Product {
       throw error;
     }
   }
+
 
   // Lấy sản phẩm theo loại
   static async getProductsByType(typeName) {
@@ -129,96 +148,121 @@ class Product {
   // Lấy chi tiết sản phẩm
   static async getProductById(productId) {
     try {
+      // 1) Basic product
       const [rows] = await db.query(
-        `
-            SELECT 
-                p.ID,
-                p.ProductName,
-                p.Descriptions,
-                pr.Price,
-                tp.TypeName,
-                p.TypeID,
-                (SELECT GROUP_CONCAT(i.ImgPath SEPARATOR ',') 
-                 FROM ProductImg pi 
-                 JOIN Image i ON pi.ImgID = i.ID 
-                 WHERE pi.ProductID = p.ID) as Images,
-                -- images grouped by color via ColorProduct -> ColorProductImage -> Image
-                (SELECT GROUP_CONCAT(CONCAT(cp.ColorName, '::', i.ImgPath) SEPARATOR ',')
-                 FROM ColorProduct cp
-                 JOIN ColorProductImage cpi ON cpi.ColorProductID = cp.ID
-                 JOIN Image i ON cpi.ImgID = i.ID
-                 WHERE cp.ProductID = p.ID) as ImagesByColor,
-                COALESCE((SELECT i.ImgPath 
-                 FROM ProductImg pi 
-                 JOIN Image i ON pi.ImgID = i.ID 
-                 WHERE pi.ProductID = p.ID 
-                 LIMIT 1), '/img/default.jpg') as ImgPath
-            FROM Product p
-            LEFT JOIN Price pr ON p.ID = pr.ProductID
-            LEFT JOIN TypeProduct tp ON p.TypeID = tp.ID
-            WHERE p.ID = ?
-        `,
+        `SELECT p.ID, p.ProductName, p.Descriptions, p.TypeID, tp.TypeName,
+                (SELECT Price FROM Price pr WHERE pr.ProductID = p.ID LIMIT 1) AS Price
+         FROM Product p
+         LEFT JOIN TypeProduct tp ON p.TypeID = tp.ID
+         WHERE p.ID = ?`,
         [productId]
-      );
+      )
+      if (!rows || rows.length === 0) return null
+      const product = rows[0]
 
-      const product = rows[0];
-      if (!product) return product;
+      // 2) Find ImgIDs that belong to color images (so we can exclude them from main)
+      const [colorImgIdRows] = await db.query(
+        `SELECT DISTINCT cpi.ImgID
+         FROM ColorProductImage cpi
+         JOIN ColorProduct cp ON cpi.ColorProductID = cp.ID
+         WHERE cp.ProductID = ?`,
+        [productId]
+      )
+      const colorImgIds = colorImgIdRows.map(r => r.ImgID).filter(Boolean)
 
-      const normalize = (p) => {
-        if (!p) return '/img/default.jpg';
-        p = String(p).trim();
-        if (/^https?:\/\//.test(p) || p.startsWith('/')) return p;
-        return `/uploads/products/${p}`;
-      };
-
-      // all images for product
-      let imgsRaw = [];
-      if (product.Images && typeof product.Images === 'string') {
-        imgsRaw = product.Images.split(',')
-          .map((s) => s.trim())
-          .filter(Boolean);
-      } else if (product.ImgPath) {
-        imgsRaw = [String(product.ImgPath).trim()];
+      // 3) Get main images (exclude color images)
+      let mainQuery = `
+        SELECT img.ImgPath
+        FROM ProductImg pi
+        JOIN Image img ON pi.ImgID = img.ID
+        WHERE pi.ProductID = ?
+      `
+      const params = [productId]
+      if (colorImgIds.length > 0) {
+        const ph = colorImgIds.map(() => '?').join(',')
+        mainQuery += ` AND pi.ImgID NOT IN (${ph})`
+        params.push(...colorImgIds)
       }
-      if (imgsRaw.length === 0)
-        imgsRaw = [product.ImgPath || '/img/default.jpg'];
-      product.ImagesArray = imgsRaw.map(String);
-      product.Images6 = imgsRaw.slice(0, 6).map(normalize);
+      mainQuery += ' ORDER BY pi.ID ASC'
+      const [mainImgs] = await db.query(mainQuery, params)
+      const mainPaths = mainImgs.map(r => normalizeImagePath(r.ImgPath)).filter(Boolean)
 
-      // parse ImagesByColor into map — only real color entries (no fallback)
-      const byColorMap = {};
-      if (product.ImagesByColor && typeof product.ImagesByColor === 'string') {
-        product.ImagesByColor.split(',').forEach((entry) => {
-          const parts = entry.split('::');
-          if (parts.length >= 2) {
-            const colorRaw = parts[0].trim();
-            const path = parts.slice(1).join('::').trim();
-            if (!colorRaw) return;
-            if (!byColorMap[colorRaw]) byColorMap[colorRaw] = [];
-            byColorMap[colorRaw].push(path);
-          }
-        });
+      // Build Images6 (pad to 6 slots, fallback to first / default)
+      const defaultImg = normalizeImagePath('/img/default.jpg') || '/img/default.jpg'
+      const images6 = new Array(6).fill(null).map((_, i) => mainPaths[i] || mainPaths[0] || defaultImg)
+
+      // 4) Load colors
+      const [colorsRows] = await db.query(
+        `SELECT cp.ID as ColorID, cp.ColorName
+         FROM ColorProduct cp
+         WHERE cp.ProductID = ?
+         ORDER BY cp.ID ASC`,
+        [productId]
+      )
+
+      const colors = []
+      const colorMap = {} // for controller/view JSON
+      for (const c of colorsRows) {
+        const color = { ColorID: c.ColorID, ColorName: c.ColorName }
+
+        // images for this color
+        const [cImgs] = await db.query(
+          `SELECT img.ImgPath
+           FROM ColorProductImage cpi
+           JOIN Image img ON cpi.ImgID = img.ID
+           WHERE cpi.ColorProductID = ?
+           ORDER BY cpi.ID ASC`,
+          [c.ColorID]
+        )
+        const cPaths = cImgs.map(r => normalizeImagePath(r.ImgPath)).filter(Boolean)
+        const cImages6 = new Array(6).fill(null).map((_, i) => cPaths[i] || cPaths[0] || defaultImg)
+        color.images = cPaths
+        color.images6 = cImages6
+
+        // sizes / quantities for this color
+        // use LEFT JOIN SizeProduct to ensure consistent columns
+        const [sizes] = await db.query(
+          `SELECT sp.ID, sp.SizeName, COALESCE(q.QuantityValue, 0) AS QuantityValue
+           FROM SizeProduct sp
+           LEFT JOIN Quantity q ON sp.ID = q.SizeID AND q.ColorID = ? AND q.ProductID = ?
+           ORDER BY sp.ID ASC`,
+          [c.ColorID, productId]
+        )
+        // normalize size fields names for frontend (keep existing shape)
+        color.sizes = (sizes || []).map(s => ({
+          ID: s.ID,
+          SizeName: s.SizeName,
+          QuantityValue: s.QuantityValue ?? 0
+        }))
+
+        colors.push(color)
+
+        // build map used by detail.hbs script: colorName -> { colorId, images, images6, sizes }
+        colorMap[c.ColorName] = {
+          colorId: c.ColorID,
+          images: color.images,
+          images6: color.images6,
+          sizes: color.sizes
+        }
       }
 
-      const byColorList = [];
-      for (const [color, arr] of Object.entries(byColorMap)) {
-        const clean = arr.map((a) => String(a).trim()).filter(Boolean);
-        if (clean.length === 0) continue;
-        const normalized = clean.slice(0, 6).map(normalize);
-        byColorList.push({
-          color,
-          images: clean.map(normalize),
-          images6: normalized,
-        });
-      }
+      // attach to product object (fields expected by templates)
+      product.Images = mainPaths
+      product.Images6 = images6
+      product.colors = colors
+      product.ImagesByColorList = colors.map(c => ({
+        color: c.ColorName,
+        images: c.images,
+        images6: c.images6
+      }))
 
-      product.ImagesByColorMap = byColorMap;
-      product.ImagesByColorList = byColorList;
+      // also expose colorMap string if someone imports Product.getProductById directly
+      product._colorSizesMap = colorMap
 
-      return product;
-    } catch (error) {
-      console.error('Error in getProductById:', error);
-      throw error;
+      return product
+    } catch (err) {
+      console.error('Error in Product.getProductById:', err)
+      throw err
     }
   }
   // ...existing code...

@@ -459,23 +459,26 @@ class AdminSite {
     }
 
     // ===== TẠO SẢN PHẨM MỚI VỚI MÀU SẮC VÀ KÍCH CỠ (FIXED) =====
+
+
+    // ===== TẠO SẢN PHẨM MỚI VỚI MÀU SẮC VÀ KÍCH CỠ =====
     static async createProductWithColors(payload) {
         const conn = await db.getConnection()
         try {
             await conn.beginTransaction()
 
             // 1) Insert Product
-            const [prodRes] = await conn.query(
+            const [productRes] = await conn.query(
                 "INSERT INTO Product (ProductName, Descriptions, TypeID) VALUES (?, ?, ?)",
                 [payload.ProductName, payload.Descriptions, payload.TypeID]
             )
-            const productId = prodRes.insertId
+            const productId = productRes.insertId
 
             // 2) Insert Price
-            await conn.query(
-                "INSERT INTO Price (ProductID, Price) VALUES (?, ?)",
-                [productId, payload.Price]
-            )
+            await conn.query("INSERT INTO Price (ProductID, Price) VALUES (?, ?)", [
+                productId,
+                payload.Price,
+            ])
 
             // Helper: insert image and return id
             const insertImage = async (imgPath) => {
@@ -486,88 +489,337 @@ class AdminSite {
                 return imgRes.insertId
             }
 
-            // 3) Main images → ONLY Image + ProductImg
-            if (Array.isArray(payload.mainImages)) {
-                for (const imgPath of payload.mainImages) {
-                    if (!imgPath) continue
-                    const imgId = await insertImage(imgPath)
+            // ===== 3) INSERT MAIN IMAGES (6 SLOTS) =====
+            const mainImages = payload.mainImages || [];
+            const TOTAL_MAIN_SLOTS = 6;
 
-                    await conn.query(
-                        "INSERT INTO ProductImg (ProductID, ImgID) VALUES (?, ?)",
-                        [productId, imgId]
-                    )
-                }
+            for (let i = 0; i < TOTAL_MAIN_SLOTS; i++) {
+                const imgPath = mainImages[i];
+                if (!imgPath) continue;
+
+                const imgId = await insertImage(imgPath);
+                await conn.query(
+                    "INSERT INTO ProductImg (ProductID, ImgID) VALUES (?, ?)",
+                    [productId, imgId]
+                );
+                console.log(`➕ Inserted main image slot ${i}`);
             }
 
-            console.log(` Saved ${payload.mainImages?.length || 0} main images`)
+            console.log(`✅ Created ${Math.min(mainImages.length, TOTAL_MAIN_SLOTS)} main images`);
 
-            // 4) Process colors with multiple images
+            // ===== 4) INSERT COLORS VỚI IMAGES & SIZES =====
             for (const color of payload.colors || []) {
-                // Insert ColorProduct (WITHOUT ImgID)
+                // Insert color
                 const [colorRes] = await conn.query(
                     "INSERT INTO ColorProduct (ProductID, ColorName) VALUES (?, ?)",
                     [productId, color.colorName || "Default"]
-                )
-                const colorId = colorRes.insertId
+                );
+                const colorId = colorRes.insertId;
 
-                if (Array.isArray(color.images)) {
-                    for (const imgPath of color.images) {
-                        if (!imgPath) continue
+                console.log(`✅ Created colorId=${colorId} (${color.colorName})`);
 
-                        const imgId = await insertImage(imgPath)
-
-                        await conn.query(
-                            "INSERT INTO ColorProductImage (ColorProductID, ImgID) VALUES (?, ?)",
-                            [colorId, imgId]
-                        )
-                    }
-
-                    console.log(
-                        ` Color "${color.colorName}": saved ${color.images.length} images to ColorProductImage`
-                    )
+                // Insert color images
+                for (const imgPath of (color.images || [])) {
+                    if (!imgPath) continue;
+                    const imgId = await insertImage(imgPath);
+                    await conn.query(
+                        "INSERT INTO ColorProductImage (ColorProductID, ImgID) VALUES (?, ?)",
+                        [colorId, imgId]
+                    );
                 }
 
-                // Insert sizes and quantities
-                for (const s of color.sizes || []) {
-                    if (!s || !s.size) continue
-                    const sizeName = String(s.size).trim()
+                console.log(`  ➕ Added ${(color.images || []).length} color images`);
 
-                    // Find or create size
+                // Insert sizes & quantities
+                for (const s of (color.sizes || [])) {
+                    if (!s || !s.size) continue;
+                    const sizeName = String(s.size).trim();
+
+                    // Get or create size
                     const [rows] = await conn.query(
                         "SELECT ID FROM SizeProduct WHERE SizeName = ?",
                         [sizeName]
-                    )
-                    let sizeId
+                    );
+                    let sizeId;
                     if (rows && rows.length) {
-                        sizeId = rows[0].ID
+                        sizeId = rows[0].ID;
                     } else {
                         const [sizeRes] = await conn.query(
                             "INSERT INTO SizeProduct (SizeName) VALUES (?)",
                             [sizeName]
-                        )
-                        sizeId = sizeRes.insertId
+                        );
+                        sizeId = sizeRes.insertId;
                     }
 
-                    // Insert into Quantity
-                    const quantityVal = Number(s.quantity) || 0
+                    const quantityVal = Number(s.quantity) || 0;
                     await conn.query(
-                        `INSERT INTO Quantity (QuantityValue, SizeID, ColorID, ProductID)
-           VALUES (?, ?, ?, ?)
-           ON DUPLICATE KEY UPDATE QuantityValue = VALUES(QuantityValue)`,
+                        "INSERT INTO Quantity (QuantityValue, SizeID, ColorID, ProductID) VALUES (?, ?, ?, ?)",
                         [quantityVal, sizeId, colorId, productId]
-                    )
+                    );
+                }
+
+                console.log(`  ➕ Added ${(color.sizes || []).length} sizes for color`);
+            }
+
+            await conn.commit();
+            console.log("✅ Product created successfully:", productId);
+            return { success: true, productId };
+        } catch (err) {
+            await conn.rollback();
+            console.error("createProductWithColors error:", err);
+            throw err;
+        } finally {
+            conn.release();
+        }
+    }
+
+    // ===== CẬP NHẬT SẢN PHẨM VỚI MÀU SẮC VÀ KÍCH CỠ (FIXED) =====
+    static async updateProductWithColors(productId, payload) {
+        const conn = await db.getConnection()
+        try {
+            await conn.beginTransaction()
+
+            // 1) Update Product info
+            await conn.query(
+                "UPDATE Product SET ProductName = ?, Descriptions = ?, TypeID = ? WHERE ID = ?",
+                [
+                    payload.ProductName,
+                    payload.Descriptions,
+                    payload.TypeID,
+                    productId,
+                ]
+            )
+
+            // 2) Update Price
+            await conn.query("UPDATE Price SET Price = ? WHERE ProductID = ?", [
+                payload.Price,
+                productId,
+            ])
+
+            // Helper: insert image and return id
+            const insertImage = async (imgPath) => {
+                const [imgRes] = await conn.query(
+                    "INSERT INTO Image (ImgPath) VALUES (?)",
+                    [imgPath]
+                )
+                return imgRes.insertId
+            }
+
+            // ===== 3) UPDATE MAIN IMAGES (MAP ĐÚNG VỊ TRÍ) =====
+            const mainChangedIndexes = payload.mainImageChangedIndexes || [];
+            const existingMainImages = payload.existingMainImages || [];
+            const newMainImages = payload.mainImages || [];
+
+            // Lấy tất cả ProductImg cũ (giữ nguyên thứ tự)
+            const [allMainImgs] = await conn.query(
+                'SELECT ID, ImgID FROM ProductImg WHERE ProductID = ? ORDER BY ID',
+                [productId]
+            );
+
+            // Build final 6-slot array
+            const TOTAL_SLOTS = 6;
+            const finalMainImages = new Array(TOTAL_SLOTS).fill(null);
+            let newIdx = 0;
+            let existIdx = 0;
+
+            for (let i = 0; i < TOTAL_SLOTS; i++) {
+              if (mainChangedIndexes.includes(i)) {
+                if (newIdx < newMainImages.length) {
+                  finalMainImages[i] = newMainImages[newIdx++];
+                }
+              } else {
+                if (existIdx < existingMainImages.length) {
+                  finalMainImages[i] = existingMainImages[existIdx++];
+                }
+              }
+            }
+
+            // UPDATE hoặc INSERT ProductImg records
+            for (let i = 0; i < TOTAL_SLOTS; i++) {
+              const imgPath = finalMainImages[i];
+              if (!imgPath) continue;
+
+              const imgId = await insertImage(imgPath);
+
+              if (i < allMainImgs.length) {
+                // UPDATE existing record
+                const recordId = allMainImgs[i].ID;
+                await conn.query(
+                  'UPDATE ProductImg SET ImgID = ? WHERE ID = ?',
+                  [imgId, recordId]
+                );
+                console.log(`✏️ Updated main slot ${i} (record ${recordId})`);
+              } else {
+                // INSERT new record
+                await conn.query(
+                  'INSERT INTO ProductImg (ProductID, ImgID) VALUES (?, ?)',
+                  [productId, imgId]
+                );
+                console.log(`➕ Inserted main slot ${i}`);
+              }
+            }
+
+            console.log(`✅ Updated ${mainChangedIndexes.length} main image slots`);
+
+            // ===== 4) HANDLE COLORS =====
+            const [existingColors] = await conn.query(
+                "SELECT ID, ColorName FROM ColorProduct WHERE ProductID = ?",
+                [productId]
+            );
+
+            const existingColorById = {};
+            const existingColorByName = {};
+            existingColors.forEach((c) => {
+                existingColorById[Number(c.ID)] = Number(c.ID);
+                if (c.ColorName !== undefined && c.ColorName !== null) {
+                    existingColorByName[c.ColorName] = Number(c.ID);
+                }
+            });
+            const processedColorIds = new Set();
+
+            for (const color of payload.colors || []) {
+                const providedId = color.colorId !== undefined && color.colorId !== null ? Number(color.colorId) : null;
+                let colorId = null;
+
+                if (providedId && existingColorById[providedId]) {
+                    colorId = providedId;
+                } else if (color.colorName && existingColorByName[color.colorName]) {
+                    colorId = existingColorByName[color.colorName];
+                }
+
+                if (colorId) {
+                    processedColorIds.add(colorId);
+
+                    if (color.colorName && color.colorName !== "Default") {
+                       await conn.query(
+                           'UPDATE ColorProduct SET ColorName = ? WHERE ID = ?',
+                           [color.colorName, colorId]
+                       );
+                       console.log(`✏️ Updated colorId=${colorId} name to "${color.colorName}"`);
+                   }
+
+                    // Fetch current color images (ordered)
+                    const [allColorImgs] = await conn.query(
+                        'SELECT ID, ImgID FROM ColorProductImage WHERE ColorProductID = ? ORDER BY ID',
+                        [colorId]
+                    );
+
+                    const changedSlots = Array.isArray(color.changedImageIndexes)
+                        ? color.changedImageIndexes.map(Number).filter(Number.isFinite)
+                        : [];
+
+                    // Map changed slots to new images
+                    for (let k = 0; k < changedSlots.length; k++) {
+                        const slotIdx = changedSlots[k];
+                        const newImgPath = (color.images || [])[k];
+
+                        if (!newImgPath) continue;
+
+                        const newImgId = await insertImage(newImgPath);
+
+                        if (slotIdx < allColorImgs.length) {
+                            const recordId = allColorImgs[slotIdx].ID;
+                            await conn.query(
+                                'UPDATE ColorProductImage SET ImgID = ? WHERE ID = ?',
+                                [newImgId, recordId]
+                            );
+                            console.log(`✏️ Updated colorId=${colorId} slot ${slotIdx}`);
+                        } else {
+                            await conn.query(
+                                'INSERT INTO ColorProductImage (ColorProductID, ImgID) VALUES (?, ?)',
+                                [colorId, newImgId]
+                            );
+                            console.log(`➕ Appended image for colorId=${colorId}`);
+                        }
+                    }
+                } else {
+                    // create new color
+                    const [colorRes] = await conn.query(
+                        "INSERT INTO ColorProduct (ProductID, ColorName) VALUES (?, ?)",
+                        [productId, color.colorName || "Default"]
+                    );
+                    colorId = colorRes.insertId;
+                    processedColorIds.add(colorId);
+
+                    for (const imgPath of (color.images || [])) {
+                        if (!imgPath) continue;
+                        const imgId = await insertImage(imgPath);
+                        await conn.query(
+                            "INSERT INTO ColorProductImage (ColorProductID, ImgID) VALUES (?, ?)",
+                            [colorId, imgId]
+                        );
+                    }
+                    console.log(`✅ Created new colorId=${colorId}`);
+                }
+
+                // ===== UPDATE QUANTITIES (SIZES) =====
+                await conn.query(
+                    "DELETE FROM Quantity WHERE ColorID = ? AND ProductID = ?",
+                    [colorId, productId]
+                );
+
+                for (const s of color.sizes || []) {
+                    if (!s || !s.size) continue;
+                    const sizeName = String(s.size).trim();
+
+                    const [rows] = await conn.query(
+                        "SELECT ID FROM SizeProduct WHERE SizeName = ?",
+                        [sizeName]
+                    );
+                    let sizeId;
+                    if (rows && rows.length) {
+                        sizeId = rows[0].ID;
+                    } else {
+                        const [sizeRes] = await conn.query(
+                            "INSERT INTO SizeProduct (SizeName) VALUES (?)",
+                            [sizeName]
+                        );
+                        sizeId = sizeRes.insertId;
+                    }
+
+                    const quantityVal = Number(s.quantity) || 0;
+                    await conn.query(
+                        "INSERT INTO Quantity (QuantityValue, SizeID, ColorID, ProductID) VALUES (?, ?, ?, ?)",
+                        [quantityVal, sizeId, colorId, productId]
+                    );
                 }
             }
 
-            await conn.commit()
-            console.log("Product created successfully:", productId)
-            return { success: true, productId }
+            // ===== 5) XÓA COLORS BỊ MARK (THÊM PHẦN NÀY) =====
+            const deletedColorIds = payload.deletedColorIds || [];
+            if (Array.isArray(deletedColorIds) && deletedColorIds.length > 0) {
+              const placeholders = deletedColorIds.map(() => "?").join(",");
+
+              // Xóa ColorProductImage
+              await conn.query(
+                `DELETE FROM ColorProductImage WHERE ColorProductID IN (${placeholders})`,
+                deletedColorIds
+              );
+
+              // Xóa Quantity
+              await conn.query(
+                `DELETE FROM Quantity WHERE ColorID IN (${placeholders})`,
+                deletedColorIds
+              );
+
+              // Xóa ColorProduct
+              await conn.query(
+                `DELETE FROM ColorProduct WHERE ID IN (${placeholders})`,
+                deletedColorIds
+              );
+
+              console.log(`🗑️ Deleted ${deletedColorIds.length} colors`);
+            }
+
+            await conn.commit();
+            console.log(" Product updated successfully:", productId);
+            return { success: true, productId };
         } catch (err) {
-            await conn.rollback()
-            console.error(" createProductWithColors error:", err)
-            throw err
+            await conn.rollback();
+            console.error("updateProductWithColors error:", err);
+            throw err;
         } finally {
-            conn.release()
+            conn.release();
         }
     }
 
