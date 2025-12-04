@@ -118,38 +118,36 @@ section p {
     flex-wrap: wrap;
     justify-content: center;
     padding: 10px 0;
-    gap: 10px;
+    gap: 3px;
 }
 
 /* MỖI SẢN PHẨM */
 .best-item {
-    flex: 0 0 calc(25% - 12px);   
+    flex: 0 0 calc(25% - 12px);
     max-width: calc(25% - 12px);
     display: flex;
     flex-direction: column;
     position: relative;
     overflow: hidden;
+    border-radius: 3px;
 
     /* border gradient setup */
-    border: 2px solid transparent; 
-    background-image:
-        linear-gradient(#fff, #fff),            
+    border: 2px solid transparent;
+    background-image: linear-gradient(#fff, #fff),
         linear-gradient(135deg, #e5e5e5, #e5e5e5);
     background-origin: border-box;
     background-clip: padding-box, border-box;
 
-    transition: transform 0.3s ease, box-shadow 0.3s ease, background-image 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease,
+        background-image 0.3s ease;
 }
-
 
 .best-item:hover {
     transform: translateY(-8px);
     box-shadow: 0 14px 30px rgba(0, 0, 0, 0.25);
-    background-image:
-        linear-gradient(#fff, #fff),
-        linear-gradient(135deg, #000, #444, #000); /* viền gradient đen */
+    background-image: linear-gradient(#fff, #fff),
+        linear-gradient(135deg, #b48181, #444, #a08585); /* viền gradient đen */
 }
-
 
 /* anh*/
 .image-wrapper {
