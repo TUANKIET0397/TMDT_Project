@@ -520,7 +520,6 @@
 
 .about__item-bottom-label {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     padding: 7px 1px 0 4px;
 }
@@ -528,6 +527,13 @@
 .about__item-bottom-heading {
     font-size: 2.4rem;
     font-weight: 600;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    overflow: hidden;
+    width: 180px;
 }
 
 .about__item-bottom-price {
