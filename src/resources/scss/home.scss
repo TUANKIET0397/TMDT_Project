@@ -286,10 +286,10 @@ section p {
 }
 
 /*anh mac dinh */
-.t-shirt {
+.t-shirts {
     background-image: url("/img/t-shirt.png");
 }
-.shirt {
+.shirts {
     background-image: url("/img/shirt.png");
 }
 
@@ -297,7 +297,7 @@ section p {
     background-image: url("/img/knitwear.jpg");
 }
 
-.sweatshirt  {
+.sweatshirts {
     background-image: url("/img/swearshirt.png");
 }
 
@@ -312,8 +312,6 @@ section p {
 .shoes {
     background-image: url("/img/shoes.png");
 }
-
-
 
 /* --- hien thi--- */
 .cat-item p {
@@ -475,8 +473,6 @@ section p {
 .shoes:hover {
     animation: flickerShoes 5s linear infinite;
 }
-
-
 
 /* ======== CHUNKKY TEXT SECTION ======== */
 .chunkky-section {
@@ -970,7 +966,6 @@ section p {
     font-size: 22px;
     color: #fff;
 }
-
 
 /* cho cả ảnh thumbnail & iframe cùng fill khung */
 .video-thumb.youtube-short img,
