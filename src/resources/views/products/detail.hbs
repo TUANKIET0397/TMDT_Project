@@ -371,6 +371,8 @@
       let selectedSize = null
       let selectedSizeId = null
       let selectedColor = null
+      let selectedColorId = null
+      let selectedColorImage = null
 
       const addBtn = document.getElementById('addToCartBtn')
       const buyBtn = document.getElementById('buyNowBtn')
@@ -440,12 +442,41 @@
         updateActionButtons()
       }
 
+      function disableSizeButtons() {
+        document.querySelectorAll('.section__form-size').forEach(btn => {
+          btn.classList.add('disabled')
+          btn.setAttribute('aria-disabled', 'true')
+          btn.style.opacity = '0.5'
+          btn.style.cursor = 'not-allowed'
+          btn.style.pointerEvents = 'none'
+        })
+      }
+
+      function enableSizeButtons() {
+        document.querySelectorAll('.section__form-size').forEach(btn => {
+          btn.classList.remove('disabled')
+          btn.setAttribute('aria-disabled', 'false')
+          btn.style.opacity = '1'
+          btn.style.cursor = 'pointer'
+          btn.style.pointerEvents = 'auto'
+        })
+      }
+
       function attachSizeHandlers() {
         document.querySelectorAll('.section__form-size').forEach(btn => {
           const newBtn = btn.cloneNode(true)
           btn.parentNode.replaceChild(newBtn, btn)
           
-          newBtn.addEventListener('click', function () {
+          newBtn.addEventListener('click', function (e) {
+            // 🆕 Check if color is required but not selected
+            const hasColorOptions = document.querySelectorAll('.color-group').length > 0
+            if (hasColorOptions && !selectedColor) {
+              e.preventDefault()
+              e.stopPropagation()
+              showDialog('Vui lòng chọn màu trước.')
+              return false
+            }
+
             document.querySelectorAll('.section__form-button').forEach(pb => pb.classList.remove('active'))
             document.querySelectorAll('.section__form-size').forEach(b => {
               b.classList.remove('active')
@@ -497,14 +528,29 @@
         document.querySelectorAll('.color-group').forEach(b => b.classList.remove('active'))
         el.classList.add('active')
         selectedColor = el.dataset.color || null
+        
+        // 🆕 Enable size buttons when color is selected
+        enableSizeButtons()
+        
+        // Get ColorID and Color Image from colorSizesMap
+        if (selectedColor && colorSizesMap[selectedColor]) {
+          selectedColorId = colorSizesMap[selectedColor].colorId || null
+          console.log('✅ Selected Color:', selectedColor, 'ColorID:', selectedColorId)
+        }
+
+        // Get first image from color's image list (for cart thumbnail)
+        const colorSrcs = Array.from(el.querySelectorAll('.color-img'))
+          .map(img => img.dataset.src || img.src)
+          .filter(Boolean)
+        
+        if (colorSrcs.length > 0) {
+          selectedColorImage = colorSrcs[0] // Store first color image
+          console.log('🖼️ Selected Color Image:', selectedColorImage)
+        }
 
         if (Object.keys(colorSizesMap).length > 0) {
           renderSizesForColor(selectedColor)
         }
-
-        const colorSrcs = Array.from(el.querySelectorAll('.color-img'))
-          .map(img => img.dataset.src || img.src)
-          .filter(Boolean)
 
         const heroItems = Array.from(document.querySelectorAll('.section__hero-left .section__hero-item'))
         if (colorSrcs.length > 0) {
@@ -535,7 +581,9 @@
       // ✅ INITIAL SETUP
         if (Object.keys(colorSizesMap).length === 0) {
         // Không có màu - sử dụng default sizes
+        // 🆕 But still disable sizes initially since it's first load
         console.log('📦 No color options, using default sizes')
+        disableSizeButtons()
         attachSizeHandlers()
         
         setTimeout(() => {
@@ -552,6 +600,9 @@
             selectedSizeId = defaultSizeBtn.dataset.sizeId || null
             if (addBtn && selectedSize) addBtn.textContent = `ADD TO CART - ${selectedSize}`
             }
+            
+            // 🆕 For products without color options, enable sizes immediately
+            enableSizeButtons()
             updateActionButtons()
         }, 100)
         } else {
@@ -581,7 +632,9 @@
             // Chỉ cần render sizes trực tiếp từ colorSizesMap
             if (defaultColorName && colorSizesMap[defaultColorName]) {
             selectedColor = defaultColorName
-            console.log('🎯 Auto-selected color:', selectedColor)
+            // 🆕 Set ColorID on auto-select
+            selectedColorId = colorSizesMap[defaultColorName].colorId || null
+            console.log('🎯 Auto-selected color:', selectedColor, 'ColorID:', selectedColorId)
             
             // Render sizes cho màu Default ngay lập tức
             renderSizesForColor(selectedColor)
@@ -592,6 +645,14 @@
                 const colorName = (group.dataset.color || '').trim()
                 if (colorName === defaultColorName) {
                 group.classList.add('active')
+                // 🆕 Also get first color image on auto-select
+                const colorImgs = Array.from(group.querySelectorAll('.color-img'))
+                  .map(img => img.dataset.src || img.src)
+                  .filter(Boolean)
+                if (colorImgs.length > 0) {
+                  selectedColorImage = colorImgs[0]
+                  console.log('🖼️ Auto-selected color image:', selectedColorImage)
+                }
                 console.log('✅ Activated color-group in DOM:', colorName)
                 }
             })
@@ -620,10 +681,12 @@
           id: productId,
           name: productName,
           price: productPrice,
-          img: productImg,
+          img: selectedColorImage && hasColorOptions ? selectedColorImage : productImg,
           size: selectedSize,
           sizeId: selectedSizeId,
-          color: selectedColor,
+          color: hasColorOptions ? selectedColor : null, // null nếu no color options
+          colorId: hasColorOptions ? selectedColorId : null, // null nếu no color options
+          colorImage: hasColorOptions ? selectedColorImage : null, // null nếu no color options
           quantity: 1
         }
       }

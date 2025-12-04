@@ -535,10 +535,16 @@ h3 {
 }
 
 .cart-item-details h4 {
+    width: 230px;
     margin: 0 0 6px 0;
     font-size: 15px;
     font-weight: 600;
     color: #111;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
 }
 
 .cart-item-details .brand {

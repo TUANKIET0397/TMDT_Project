@@ -151,6 +151,19 @@
     right: 2px;
 }
 
+.user-empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    color: #8b92b2;
+    font-size: 18px;
+    padding: 12px 0;
+    background: #0b173927;
+}
+
 /* Chat Area */
 .chat-area {
     flex: 1;

@@ -248,7 +248,10 @@ document.addEventListener("DOMContentLoaded", () => {
             price: Number(product.price ?? product.Price ?? 0) || 0,
             img: product.img ?? product.ImgPath ?? "/img/default.jpg",
             size: product.size ?? product.Size ?? null,
+            sizeId: product.sizeId ?? product.SizeID ?? null,
             color: product.color ?? product.Color ?? null,
+            colorId: product.colorId ?? product.ColorID ?? null,
+            colorImage: product.colorImage ?? product.ColorImage ?? null,
         }
         return normalized.name ? normalized : null
     }
@@ -282,7 +285,8 @@ document.addEventListener("DOMContentLoaded", () => {
             (item) =>
                 item.name === normalized.name &&
                 item.size === normalized.size &&
-                item.color === normalized.color
+                item.color === normalized.color &&
+                item.colorId === normalized.colorId
         )
 
         if (found) {
@@ -461,12 +465,28 @@ document.addEventListener("DOMContentLoaded", () => {
             const div = document.createElement("div")
             div.classList.add("cart-item")
             div.setAttribute("data-product-id", item.id)
+            
+            // 🆕 Use color image if available, otherwise use main product image
+            const displayImg = (item.colorImage && item.color) ? item.colorImage : (item.img || "/img/default.jpg")
+            
+            // 🆕 Build color display HTML only if color exists and is not null
+            let colorHtml = ""
+            if (item.color && item.colorId) {
+              colorHtml = `
+                <p style="display:flex;align-items:center;gap:8px;margin:4px 0;">
+                  Color: <span style="font-weight:600">${item.color}</span>
+                  ${item.colorImage ? `<img src="${item.colorImage}" alt="${item.color}" style="width:20px;height:20px;border-radius:3px;border:1px solid #ddd">` : ""}
+                </p>
+              `
+            }
+            
             div.innerHTML = `
-        <img src="${item.img || "/img/default.jpg"}" alt="${item.name}">
+        <img src="${displayImg}" alt="${item.name}">
         <div class="cart-item-details">
           <div class="brand">${item.brand || ""}</div>
           <h4>${item.name}</h4>
           <p>Size: ${item.size || "—"}</p>
+          ${colorHtml}
           <div class="quantity">
             <button type="button" onclick="changeQty(${index}, -1)">-</button>
             <span>${item.quantity}</span>
