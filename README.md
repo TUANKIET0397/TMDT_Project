@@ -76,6 +76,7 @@ Dự án này chạy bằng **Node.js**, file khởi động chính là **index.
     💡 Do trong quá trình phát triển và kiểm thử, đồng thời chưa có domain hoặc server, nên cần chạy MySQL cục bộ để xem được demo.
     - Xây dựng database dựa vào thư mục database
     - Đổi password theo root database của bạn
+    - Xây dựng thêm file .env để có thể truy cập đến database
     ```
 
 ---
